@@ -1,0 +1,28 @@
+{
+  "name": "PrimeX",
+  "short_name": "PrimeX",
+  "description": "The ultimate premium video & social platform. Watch, create, and connect.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["entertainment", "social", "video"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Copy, Code2, Twitter, Facebook, Mail, Link2, QrCode, Check,
-  Share2, MessageCircle, Send, ExternalLink, BarChart3,
+  Share2, MessageCircle, Send, ExternalLink, BarChart3, Download,
 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -28,13 +29,6 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
   const copyToClipboard = async (text: string, type: 'link' | 'embed') => {
     try {
       await navigator.clipboard.writeText(text);
-      if (type === 'link') {
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 2000);
-      } else {
-        setCopiedEmbed(true);
-        setTimeout(() => setCopiedEmbed(false), 2000);
-      }
     } catch {
       const textarea = document.createElement('textarea');
       textarea.value = text;
@@ -42,13 +36,21 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      if (type === 'link') {
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 2000);
-      } else {
-        setCopiedEmbed(true);
-        setTimeout(() => setCopiedEmbed(false), 2000);
-      }
+    }
+    if (type === 'link') {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+      toast({
+        title: 'Link Copied! 🔗',
+        description: 'Video link has been copied to your clipboard.',
+      });
+    } else {
+      setCopiedEmbed(true);
+      setTimeout(() => setCopiedEmbed(false), 2000);
+      toast({
+        title: 'Embed Code Copied!',
+        description: 'Embed code has been copied to your clipboard.',
+      });
     }
   };
 
@@ -96,15 +98,13 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
   const generateQRPattern = () => {
     const seed = videoId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const pattern: number[][] = [];
-    // Corner patterns (finder patterns)
     for (let row = 0; row < 15; row++) {
       pattern[row] = [];
       for (let col = 0; col < 15; col++) {
-        // Finder patterns in corners
         const inTopLeft = row < 5 && col < 5;
         const inTopRight = row < 5 && col >= 10;
         const inBottomLeft = row >= 10 && col < 5;
-        
+
         if (inTopLeft || inTopRight || inBottomLeft) {
           const r = inTopLeft ? row : inTopRight ? row : row - 10;
           const c = inTopLeft ? col : inTopRight ? col - 10 : col;
@@ -112,7 +112,6 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
           else if (r >= 1 && r <= 3 && c >= 1 && c <= 3) pattern[row][col] = 1;
           else pattern[row][col] = 0;
         } else {
-          // Pseudo-random data based on seed
           const idx = row * 15 + col;
           pattern[row][col] = ((seed * (idx + 1) * 7 + idx * 13) % 3 === 0) ? 1 : 0;
         }
@@ -122,6 +121,18 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
   };
 
   const qrPattern = generateQRPattern();
+
+  const downloadQR = () => {
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300"><rect fill="white" width="300" height="300"/>${qrPattern.map((row, r) => row.map((cell, c) => cell ? `<rect x="${c*20}" y="${r*20}" width="20" height="20" fill="black"/>` : '').join('')).join('')}</svg>`;
+    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `primex-${videoId}-qr.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'QR Code Downloaded!', description: 'SVG file saved successfully.' });
+  };
 
   return (
     <AnimatePresence>
@@ -148,9 +159,14 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
             {/* Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-border/50">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center">
+                <motion.div
+                  initial={{ rotate: -10, scale: 0.8 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{ type: 'spring', damping: 15 }}
+                  className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center"
+                >
                   <Share2 className="w-4 h-4 text-white" />
-                </div>
+                </motion.div>
                 <div>
                   <h2 className="text-lg font-bold text-shimmer">Share Video</h2>
                   <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[280px]">{videoTitle}</p>
@@ -175,7 +191,8 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
 
             {/* Tabs */}
             <div className="flex gap-1 px-6 pt-4 pb-2">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab('share')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === 'share'
@@ -185,8 +202,9 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
               >
                 <Link2 className="w-4 h-4 inline mr-1.5" />
                 Share Link
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab('embed')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === 'embed'
@@ -196,10 +214,10 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
               >
                 <Code2 className="w-4 h-4 inline mr-1.5" />
                 Embed Code
-              </button>
+              </motion.button>
             </div>
 
-            <div className="px-6 pb-6">
+            <div className="px-6 pb-6 max-h-[60vh] overflow-y-auto premium-scrollbar">
               <AnimatePresence mode="wait">
                 {activeTab === 'share' ? (
                   <motion.div
@@ -217,20 +235,39 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                         <div className="flex-1 glass-input px-3 py-2.5 rounded-xl text-sm font-mono truncate">
                           {shareUrl}
                         </div>
-                        <button
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
                           onClick={() => copyToClipboard(shareUrl, 'link')}
                           className={`btn-primex btn-sm flex items-center gap-1.5 shrink-0 ${
                             copiedLink ? '!bg-green-500/80' : ''
                           }`}
                           aria-label="Copy link"
                         >
-                          {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                          <AnimatePresence mode="wait">
+                            {copiedLink ? (
+                              <motion.div
+                                key="check"
+                                initial={{ scale: 0, rotate: -90 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                exit={{ scale: 0, rotate: 90 }}
+                                transition={{ type: 'spring', damping: 12 }}
+                              >
+                                <Check className="w-4 h-4" />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                key="copy"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                           <span>{copiedLink ? 'Copied!' : 'Copy'}</span>
-                        </button>
+                        </motion.button>
                       </div>
-                      {copiedLink && (
-                        <p className="text-xs text-green-400 mt-1 notification-pop">Link copied to clipboard!</p>
-                      )}
                     </div>
 
                     <div className="divider-primex" />
@@ -239,17 +276,22 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                     <div>
                       <label className="text-xs text-muted-foreground mb-2.5 block font-medium">Share to</label>
                       <div className="grid grid-cols-3 gap-2.5">
-                        {socialButtons.map((btn) => (
-                          <button
+                        {socialButtons.map((btn, idx) => (
+                          <motion.button
                             key={btn.label}
                             onClick={btn.onClick}
-                            className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.05, duration: 0.3 }}
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all group"
                           >
                             <div className={`w-10 h-10 rounded-full ${btn.color} ${btn.hoverColor} flex items-center justify-center transition-colors`}>
                               <btn.icon className={`w-5 h-5 ${btn.textColor}`} />
                             </div>
                             <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
-                          </button>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
@@ -261,7 +303,6 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                       <label className="text-xs text-muted-foreground mb-2 block font-medium">QR Code</label>
                       <div className="flex items-center gap-4 glass-card p-4 rounded-xl hover-lift">
                         <div className="w-24 h-24 rounded-xl bg-white p-2 shrink-0">
-                          {/* CSS-based QR code pattern */}
                           <div className="w-full h-full grid grid-cols-15 gap-0" style={{ gridTemplateColumns: 'repeat(15, 1fr)' }}>
                             {qrPattern.flat().map((cell, i) => (
                               <div
@@ -281,20 +322,10 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                             Point your camera at this QR code to open the video link on any device.
                           </p>
                           <button
-                            onClick={() => {
-                              // Create a simple SVG QR code for download
-                              const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300"><rect fill="white" width="300" height="300"/>${qrPattern.map((row, r) => row.map((cell, c) => cell ? `<rect x="${c*20}" y="${r*20}" width="20" height="20" fill="black"/>` : '').join('')).join('')}</svg>`;
-                              const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-                              const url = URL.createObjectURL(blob);
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = `primex-${videoId}-qr.svg`;
-                              a.click();
-                              URL.revokeObjectURL(url);
-                            }}
+                            onClick={downloadQR}
                             className="text-xs text-primex hover:underline mt-1.5 inline-flex items-center gap-1"
                           >
-                            <Copy className="w-3 h-3" /> Download QR
+                            <Download className="w-3 h-3" /> Download QR
                           </button>
                         </div>
                       </div>
@@ -319,7 +350,8 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                           className="w-full glass-input px-4 py-3 rounded-xl text-sm font-mono resize-none h-28 text-muted-foreground focus:ring-0"
                           onClick={(e) => (e.target as HTMLTextAreaElement).select()}
                         />
-                        <button
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
                           onClick={() => copyToClipboard(embedCode, 'embed')}
                           className={`absolute top-3 right-3 p-2 rounded-lg transition-all active-press ${
                             copiedEmbed
@@ -329,11 +361,8 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                           aria-label="Copy embed code"
                         >
                           {copiedEmbed ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </button>
+                        </motion.button>
                       </div>
-                      {copiedEmbed && (
-                        <p className="text-xs text-green-400 mt-1 notification-pop">Embed code copied!</p>
-                      )}
                     </div>
 
                     {/* Embed Preview */}

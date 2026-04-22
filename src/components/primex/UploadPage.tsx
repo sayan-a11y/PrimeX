@@ -2,16 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '@/store';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Film, Play, Lock, X, CheckCircle, CloudUpload, Sparkles } from 'lucide-react';
+import { Upload, Film, Play, Lock, X, CheckCircle, CloudUpload, Sparkles, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function UploadPage() {
-  const { token, setCurrentView } = useAppStore();
+  const { token } = useAppStore();
   const [activeTab, setActiveTab] = useState('video');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -39,7 +37,6 @@ export default function UploadPage() {
   const [privateTitle, setPrivateTitle] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const thumbInputRef = useRef<HTMLInputElement>(null);
 
   // Mock progress animation for upload
   useEffect(() => {
@@ -242,7 +239,11 @@ export default function UploadPage() {
       />
       <div className="relative z-10 p-8 text-center">
         {file ? (
-          <div className="flex items-center gap-3 justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center gap-3 justify-center"
+          >
             <div className="w-12 h-12 rounded-xl bg-primex/10 flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-primex" />
             </div>
@@ -254,14 +255,15 @@ export default function UploadPage() {
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); setFile(null); }}
-              className="p-1 hover:bg-muted rounded-full"
+              className="p-1.5 hover:bg-red-500/10 rounded-full transition-colors hover:text-red-400"
             >
               <X className="w-4 h-4" />
             </button>
-          </div>
+          </motion.div>
         ) : (
           <>
-            <div className="orb-primex-sm -top-10 -right-10" />
+            <div className="orb-primex-sm -top-10 -right-10 float-medium" />
+            <div className="orb-primex-sm -bottom-8 -left-8 opacity-50 float-slow" />
             <CloudUpload className="w-12 h-12 mx-auto text-primex/60 mb-3 float-slow" />
             <p className="text-sm font-medium mb-1">Drag & drop your file here</p>
             <p className="text-xs text-muted-foreground">or click to browse</p>
@@ -277,84 +279,126 @@ export default function UploadPage() {
   const displayProgress = uploading ? Math.min(mockProgress, uploadProgress) : uploadProgress;
 
   return (
-    <div className="max-w-2xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+    <div className="max-w-2xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
-      <div className="orb-primex-sm top-20 -left-20" />
-      <div className="orb-primex-sm bottom-40 -right-16" />
+      <div className="orb-primex top-20 -left-20 float-slow" />
+      <div className="orb-primex-sm bottom-40 -right-16 float-medium" />
+      <div className="orb-primex-sm top-1/2 -left-10 opacity-30 float-slow" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6">
-        <h1 className="text-2xl font-bold text-shimmer">Upload Content</h1>
-        <p className="text-muted-foreground text-sm mt-1">Share your videos, reels, or private content</p>
+      <div className="relative z-10 mb-6 page-header-premium">
+        <div className="flex items-center gap-3">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+          >
+            <Upload className="w-5 h-5 text-primex" />
+          </motion.div>
+          <div>
+            <h1 className="text-2xl font-bold text-shimmer">Upload Content</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">Share your videos, reels, or private content</p>
+          </div>
+        </div>
       </div>
 
       {/* Upload Card */}
       <div className="glass-card-premium p-6 rounded-2xl card-shine relative z-10">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-6">
-            <TabsTrigger value="video" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
-              <Film className="w-4 h-4 mr-2" />Long Video
-            </TabsTrigger>
-            <TabsTrigger value="reel" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
-              <Play className="w-4 h-4 mr-2" />Reel
-            </TabsTrigger>
-            <TabsTrigger value="private" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
-              <Lock className="w-4 h-4 mr-2" />Private
-            </TabsTrigger>
-          </TabsList>
+        {/* Premium Tab Switcher with glass styling & active indicator */}
+        <div className="glass-card p-1.5 rounded-xl w-full mb-6 flex relative">
+          {/* Sliding active indicator */}
+          <motion.div
+            className="absolute top-1.5 bottom-1.5 rounded-lg bg-primex/20 border border-primex/30"
+            style={{ width: 'calc(33.333% - 4px)' }}
+            animate={{ left: activeTab === 'video' ? '4px' : activeTab === 'reel' ? 'calc(33.333% + 2px)' : 'calc(66.666% + 0px)' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+          <button
+            className={`flex-1 relative z-10 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors hover-lift ${activeTab === 'video' ? 'text-primex' : 'text-muted-foreground hover:text-foreground'}`}
+            onClick={() => setActiveTab('video')}
+          >
+            <Film className="w-4 h-4" />Long Video
+          </button>
+          <button
+            className={`flex-1 relative z-10 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors hover-lift ${activeTab === 'reel' ? 'text-primex' : 'text-muted-foreground hover:text-foreground'}`}
+            onClick={() => setActiveTab('reel')}
+          >
+            <Play className="w-4 h-4" />Reel
+          </button>
+          <button
+            className={`flex-1 relative z-10 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors hover-lift ${activeTab === 'private' ? 'text-primex' : 'text-muted-foreground hover:text-foreground'}`}
+            onClick={() => setActiveTab('private')}
+          >
+            <Lock className="w-4 h-4" />Private
+          </button>
+        </div>
 
-          {/* Error */}
+        {/* Error */}
+        <AnimatePresence>
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Success */}
-          <AnimatePresence>
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4" />Upload successful!
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Animated Progress Bar */}
-          {uploading && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2"
             >
-              <div className="progress-bar h-2">
+              <X className="w-4 h-4 shrink-0" />{error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Success */}
+        <AnimatePresence>
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="mb-4 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-sm flex items-center gap-2 notification-pop"
+            >
+              <CheckCircle className="w-4 h-4 shrink-0" />Upload successful!
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Animated Progress Bar */}
+        {uploading && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-4"
+          >
+            <div className="glass-card-hover p-3 rounded-xl">
+              <div className="progress-bar h-2 mb-2">
                 <div
                   className="progress-bar-fill"
                   style={{ width: `${displayProgress}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
+              <div className="progress-shimmer h-1 rounded-full mb-2" />
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Zap className="w-3 h-3 text-primex" />
                   Uploading... {Math.round(displayProgress)}%
                 </p>
                 <div className="loading-dots">
-                  <span />
-                  <span />
-                  <span />
+                  <span /><span /><span />
                 </div>
               </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
+        )}
 
-          <div className="divider-primex mb-4" />
+        <div className="divider-primex mb-4" />
 
-          {/* Long Video Tab */}
-          <TabsContent value="video" className="space-y-4">
+        {/* Long Video Tab */}
+        {activeTab === 'video' && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-4"
+          >
             {renderDropZone(videoFile, 'video', setVideoFile)}
             <div>
               <Label className="text-sm text-muted-foreground mb-1.5 block">Thumbnail</Label>
@@ -368,14 +412,17 @@ export default function UploadPage() {
                   if (f) setVideoThumbnail(f);
                 }}
               />
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                className="glass-input border-border/50 rounded-xl w-full hover-lift"
+                className="glass-input border-border/50 rounded-xl w-full hover-lift active-press px-4 py-2.5 text-sm text-muted-foreground flex items-center gap-2"
                 onClick={() => document.getElementById('thumb-input')?.click()}
               >
-                {videoThumbnail ? videoThumbnail.name : 'Choose Thumbnail'}
-              </Button>
+                {videoThumbnail ? (
+                  <><CheckCircle className="w-4 h-4 text-primex" />{videoThumbnail.name}</>
+                ) : (
+                  <><Upload className="w-4 h-4" />Choose Thumbnail</>
+                )}
+              </button>
             </div>
             <div>
               <Label className="text-sm text-muted-foreground mb-1.5 block">Title *</Label>
@@ -404,23 +451,29 @@ export default function UploadPage() {
                 className="glass-input border-border/50 h-11 rounded-xl"
               />
             </div>
-            <Button
+            <button
               onClick={handleVideoUpload}
               disabled={uploading || !videoFile}
-              className="w-full h-11 rounded-xl btn-primex"
+              className="btn-primex active-press w-full h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? (
                 <><div className="spinner-primex-sm mr-2" />Uploading...</>
               ) : (
                 <><Upload className="w-4 h-4 mr-2" />Upload Video</>
               )}
-            </Button>
-          </TabsContent>
+            </button>
+          </motion.div>
+        )}
 
-          <div className="divider-primex" />
+        <div className="divider-primex my-4" />
 
-          {/* Reel Tab */}
-          <TabsContent value="reel" className="space-y-4">
+        {/* Reel Tab */}
+        {activeTab === 'reel' && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-4"
+          >
             {renderDropZone(reelFile, 'reel', setReelFile)}
             <div>
               <Label className="text-sm text-muted-foreground mb-1.5 block">Caption</Label>
@@ -431,27 +484,32 @@ export default function UploadPage() {
                 className="glass-input border-border/50 rounded-xl min-h-[80px]"
               />
             </div>
-            <Button
+            <button
               onClick={handleReelUpload}
               disabled={uploading || !reelFile}
-              className="w-full h-11 rounded-xl btn-primex"
+              className="btn-primex active-press w-full h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? (
                 <><div className="spinner-primex-sm mr-2" />Uploading...</>
               ) : (
                 <><Sparkles className="w-4 h-4 mr-2" />Upload Reel</>
               )}
-            </Button>
-          </TabsContent>
+            </button>
+          </motion.div>
+        )}
 
-          <div className="divider-primex" />
-
-          {/* Private Tab */}
-          <TabsContent value="private" className="space-y-4">
-            <div className="glass-card-premium p-4 rounded-xl mb-2 gradient-border-primex">
+        {/* Private Tab */}
+        {activeTab === 'private' && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-4"
+          >
+            <div className="glass-card-hover p-4 rounded-xl gradient-border-primex">
               <div className="flex items-center gap-2 text-primex mb-1">
                 <Lock className="w-4 h-4" />
                 <span className="text-sm font-medium">Friends Only</span>
+                <span className="tag-primex text-[10px] ml-auto">🔒 Private</span>
               </div>
               <p className="text-xs text-muted-foreground">
                 This content will only be visible to your accepted friends.
@@ -467,19 +525,19 @@ export default function UploadPage() {
                 className="glass-input border-border/50 h-11 rounded-xl"
               />
             </div>
-            <Button
+            <button
               onClick={handlePrivateUpload}
               disabled={uploading || !privateFile}
-              className="w-full h-11 rounded-xl btn-primex"
+              className="btn-primex active-press w-full h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? (
                 <><div className="spinner-primex-sm mr-2" />Uploading...</>
               ) : (
                 <><Lock className="w-4 h-4 mr-2" />Upload Private Content</>
               )}
-            </Button>
-          </TabsContent>
-        </Tabs>
+            </button>
+          </motion.div>
+        )}
       </div>
     </div>
   );

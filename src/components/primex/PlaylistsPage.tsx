@@ -8,12 +8,8 @@ import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ListVideo, Plus, Lock, Globe, Trash2, Play, X, Film, Eye,
-  ChevronLeft, Check, Bookmark, Search,
+  ChevronLeft, Check, Bookmark, Search, Music, Sparkles,
 } from 'lucide-react';
-
-/* ────────────────────────────────────────────
-   Types
-   ──────────────────────────────────────────── */
 
 interface PlaylistVideoItem {
   id: string;
@@ -46,10 +42,6 @@ interface PlaylistData {
   videos: PlaylistVideoItem[];
 }
 
-/* ────────────────────────────────────────────
-   Helpers
-   ──────────────────────────────────────────── */
-
 function formatViews(views: number): string {
   if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
   if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
@@ -79,16 +71,13 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(months / 12)}y ago`;
 }
 
-/* ────────────────────────────────────────────
-   Main Component
-   ──────────────────────────────────────────── */
-
 export default function PlaylistsPage() {
   const { user, token, setCurrentView } = useAppStore();
   const [playlists, setPlaylists] = useState<PlaylistData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activePlaylist, setActivePlaylist] = useState<PlaylistData | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Create playlist form
   const [newName, setNewName] = useState('');
@@ -96,7 +85,7 @@ export default function PlaylistsPage() {
   const [newPublic, setNewPublic] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  // Playlist picker (for adding videos from VideoPlayer integration)
+  // Playlist picker
   const [showPicker, setShowPicker] = useState(() => {
     if (typeof window === 'undefined') return false;
     return !!localStorage.getItem('primex_picker_video');
@@ -205,7 +194,6 @@ export default function PlaylistsPage() {
       });
       const data = await res.json();
       if (data.success) {
-        // Update local state
         setPlaylists((prev) =>
           prev.map((p) =>
             p.id === playlistId
@@ -237,7 +225,6 @@ export default function PlaylistsPage() {
       });
       const data = await res.json();
       if (data.success) {
-        // Refresh playlists
         fetchPlaylists();
         setShowPicker(false);
         setPickerVideoId(null);
@@ -252,26 +239,32 @@ export default function PlaylistsPage() {
     setCurrentView('video');
   };
 
-  /* ──────────────────────────────────────────
-     Loading
-     ────────────────────────────────────────── */
+  const filteredPlaylists = searchQuery.trim()
+    ? playlists.filter((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : playlists;
+
   if (loading) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+        <div className="orb-primex-sm top-10 -right-16 opacity-40" />
+        <div className="relative z-10 flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="skeleton-circle w-10 h-10" />
-            <div className="skeleton-heading w-36 h-7" />
+            <div className="skeleton-circle w-10 h-10 skeleton-pulse" />
+            <div className="skeleton-heading w-36 h-7 skeleton-pulse" />
           </div>
-          <div className="skeleton-line w-36 h-9" />
+          <div className="skeleton-line w-36 h-9 skeleton-pulse rounded-lg" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="glass-card rounded-xl overflow-hidden">
+            <div key={i} className="glass-card-premium rounded-xl overflow-hidden">
               <div className="skeleton-pulse aspect-video" />
               <div className="p-4 space-y-2">
-                <div className="skeleton-heading w-3/4 h-5" />
-                <div className="skeleton-line w-1/2 h-4" />
+                <div className="skeleton-heading w-3/4 h-5 skeleton-pulse" />
+                <div className="skeleton-line w-1/2 h-4 skeleton-pulse" />
+                <div className="skeleton-line w-1/3 h-3 skeleton-pulse" />
               </div>
             </div>
           ))}
@@ -280,31 +273,28 @@ export default function PlaylistsPage() {
     );
   }
 
-  /* ──────────────────────────────────────────
-     Playlist Detail View
-     ────────────────────────────────────────── */
+  // Playlist Detail View
   if (activePlaylist) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
-        {/* Back button */}
-        <Button
-          variant="ghost"
-          className="mb-4 gap-2 text-muted-foreground hover:text-foreground btn-ghost-primex"
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+        <div className="orb-primex-sm top-20 -right-16 opacity-30" />
+        <button
+          className="btn-ghost-primex mb-4 gap-2 text-muted-foreground hover:text-foreground relative z-10"
           onClick={() => setActivePlaylist(null)}
         >
           <ChevronLeft className="w-4 h-4" /> Back to Playlists
-        </Button>
+        </button>
 
         {/* Playlist header */}
-        <div className="glass-card p-6 rounded-2xl mb-6 hover-lift">
+        <div className="glass-card-premium p-6 rounded-2xl mb-6 hover-lift card-shine relative z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-bold mb-1">{activePlaylist.name}</h1>
+              <h1 className="text-2xl font-bold text-shimmer mb-1">{activePlaylist.name}</h1>
               {activePlaylist.description && (
                 <p className="text-sm text-muted-foreground mb-2">{activePlaylist.description}</p>
               )}
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
+                <span className="tag-primex text-[10px] flex items-center gap-1">
                   {activePlaylist.isPublic ? (
                     <><Globe className="w-3 h-3" /> Public</>
                   ) : (
@@ -312,32 +302,33 @@ export default function PlaylistsPage() {
                   )}
                 </span>
                 <span>•</span>
-                <span>{activePlaylist.videos.length} video{activePlaylist.videos.length !== 1 ? 's' : ''}</span>
+                <span className="badge-pulse px-2 text-[9px]">{activePlaylist.videos.length} video{activePlaylist.videos.length !== 1 ? 's' : ''}</span>
                 <span>•</span>
                 <span>Updated {timeAgo(activePlaylist.updatedAt)}</span>
               </div>
             </div>
-            <Button
-              variant="outline"
+            <button
               className="btn-outline-primex border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
               onClick={() => handleDeletePlaylist(activePlaylist.id)}
             >
               <Trash2 className="w-4 h-4 mr-2" /> Delete
-            </Button>
+            </button>
           </div>
         </div>
 
+        <div className="divider-primex relative z-10 mb-6" />
+
         {/* Videos list */}
         {activePlaylist.videos.length === 0 ? (
-          <div className="flex flex-col items-center py-16">
-            <div className="w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mb-4">
+          <div className="empty-state-premium relative z-10">
+            <div className="empty-icon w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
               <Film className="w-8 h-8 text-primex/50" />
             </div>
             <p className="text-muted-foreground mb-2">No videos in this playlist yet</p>
             <p className="text-xs text-muted-foreground">Add videos from the video player</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 relative z-10">
             <AnimatePresence>
               {activePlaylist.videos.map((pv, index) => (
                 <motion.div
@@ -346,16 +337,16 @@ export default function PlaylistsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ delay: index * 0.05, duration: 0.3 }}
-                  className="glass-card p-4 rounded-xl hover-lift card-shine group cursor-pointer"
+                  className="glass-card-premium p-4 rounded-xl hover-lift card-shine group cursor-pointer"
                   onClick={() => handlePlayVideo(pv.video.id)}
                 >
                   <div className="flex gap-4">
                     {/* Thumbnail */}
-                    <div className="relative w-36 sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-muted">
+                    <div className="relative w-36 sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-muted group-hover:ring-2 group-hover:ring-primex/40 transition-all duration-300">
                       {pv.video.thumbnail ? (
                         <img src={pv.video.thumbnail} alt={pv.video.title} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 to-primex-secondary/20">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 to-primex-secondary/20 shimmer">
                           <Film className="w-8 h-8 text-primex/40" />
                         </div>
                       )}
@@ -365,7 +356,7 @@ export default function PlaylistsPage() {
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <div className="w-10 h-10 rounded-full bg-primex/90 flex items-center justify-center">
+                        <div className="play-button-hover w-10 h-10">
                           <Play className="w-5 h-5 text-white ml-0.5" />
                         </div>
                       </div>
@@ -419,36 +410,41 @@ export default function PlaylistsPage() {
     );
   }
 
-  /* ──────────────────────────────────────────
-     Empty State
-     ────────────────────────────────────────── */
+  // Empty State
   if (playlists.length === 0 && !showCreateModal) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center">
-            <ListVideo className="w-5 h-5 text-primex" />
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+        <div className="orb-primex-sm top-20 -right-16 opacity-40" />
+        <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
+        <div className="relative z-10 mb-6 page-header-premium">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            >
+              <ListVideo className="w-5 h-5 text-primex" />
+            </motion.div>
+            <h1 className="text-2xl font-bold text-shimmer">My Playlists</h1>
           </div>
-          <h1 className="text-2xl font-bold primex-gradient-text">My Playlists</h1>
         </div>
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6">
-            <ListVideo className="w-10 h-10 text-primex/50" />
+        <div className="empty-state-premium relative z-10">
+          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6 breathe">
+            <Music className="w-10 h-10 text-primex/50" />
           </div>
           <h2 className="text-xl font-semibold mb-2">No playlists yet</h2>
           <p className="text-muted-foreground mb-6 text-center max-w-sm">
             Create playlists to organize and save your favorite videos.
           </p>
-          <Button
+          <button
             className="btn-primex"
             onClick={() => setShowCreateModal(true)}
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Your First Playlist
-          </Button>
+          </button>
         </div>
 
-        {/* Create Modal */}
         <CreatePlaylistModal
           open={showCreateModal}
           onClose={() => setShowCreateModal(false)}
@@ -465,45 +461,74 @@ export default function PlaylistsPage() {
     );
   }
 
-  /* ──────────────────────────────────────────
-     Main Playlists Grid
-     ────────────────────────────────────────── */
+  // Main Playlists Grid
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      {/* Decorative orbs */}
+      <div className="orb-primex-sm top-10 -right-16 opacity-40" />
+      <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center">
-            <ListVideo className="w-5 h-5 text-primex" />
+      <div className="relative z-10 mb-6 page-header-premium">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            >
+              <ListVideo className="w-5 h-5 text-primex" />
+            </motion.div>
+            <div>
+              <h1 className="text-2xl font-bold text-shimmer">My Playlists</h1>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                {playlists.length} playlist{playlists.length !== 1 ? 's' : ''}
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold primex-gradient-text">My Playlists</h1>
+          <button
+            className="btn-primex"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Playlist
+          </button>
         </div>
-        <Button
-          className="btn-primex"
-          onClick={() => setShowCreateModal(true)}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Playlist
-        </Button>
       </div>
 
+      {/* Search */}
+      <div className="relative z-10 mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search playlists..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="glass-input w-full h-10 pl-9 pr-4 text-sm rounded-xl"
+          />
+        </div>
+      </div>
+
+      <div className="divider-primex relative z-10 mb-6" />
+
       {/* Playlist Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
         <AnimatePresence>
-          {playlists.map((playlist, index) => {
+          {filteredPlaylists.map((playlist, index) => {
             const firstThumbnail = playlist.videos[0]?.video?.thumbnail;
             return (
               <motion.div
                 key={playlist.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: index * 0.05, duration: 0.3 }}
-                className="glass-card rounded-xl overflow-hidden hover-lift card-shine cursor-pointer gradient-border-primex group"
+                className="glass-card-premium rounded-xl overflow-hidden hover-lift card-shine cursor-pointer group"
                 onClick={() => setActivePlaylist(playlist)}
               >
-                {/* Cover */}
-                <div className="relative aspect-video bg-muted">
+                {/* Cover with gradient-border-primex hover ring */}
+                <div className="relative aspect-video bg-muted gradient-border-primex group-hover:ring-2 group-hover:ring-primex/50 transition-all duration-300">
                   {firstThumbnail ? (
                     <img
                       src={firstThumbnail}
@@ -511,7 +536,7 @@ export default function PlaylistsPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 via-primex-secondary/10 to-primex-tertiary/20">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 via-primex-secondary/10 to-primex-tertiary/20 shimmer">
                       <ListVideo className="w-12 h-12 text-primex/30" />
                     </div>
                   )}
@@ -523,12 +548,20 @@ export default function PlaylistsPage() {
                     {playlist.videos.length}
                   </div>
                   {/* Privacy badge */}
-                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/50 text-white text-[10px] font-medium flex items-center gap-1">
-                    {playlist.isPublic ? (
-                      <><Globe className="w-3 h-3" /> Public</>
-                    ) : (
-                      <><Lock className="w-3 h-3" /> Private</>
-                    )}
+                  <div className="absolute top-2 left-2">
+                    <span className="tag-primex text-[10px] bg-black/50 backdrop-blur-sm">
+                      {playlist.isPublic ? (
+                        <><Globe className="w-3 h-3" /> Public</>
+                      ) : (
+                        <><Lock className="w-3 h-3" /> Private</>
+                      )}
+                    </span>
+                  </div>
+                  {/* Play overlay on hover */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="play-button-hover w-12 h-12">
+                      <Play className="w-6 h-6 text-white ml-0.5" />
+                    </div>
                   </div>
                 </div>
 
@@ -564,7 +597,17 @@ export default function PlaylistsPage() {
         </AnimatePresence>
       </div>
 
-      {/* Create Playlist Modal */}
+      {/* No results from search */}
+      {filteredPlaylists.length === 0 && searchQuery.trim() && (
+        <div className="empty-state-premium relative z-10 py-12">
+          <div className="empty-icon w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
+            <Search className="w-8 h-8 text-primex/50" />
+          </div>
+          <p className="text-muted-foreground mb-1">No playlists match &ldquo;{searchQuery}&rdquo;</p>
+          <p className="text-sm text-muted-foreground/60">Try a different search term</p>
+        </div>
+      )}
+
       <CreatePlaylistModal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -595,16 +638,17 @@ export default function PlaylistsPage() {
               className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold">Save to Playlist</h3>
-                <Button variant="ghost" size="icon" onClick={() => { setShowPicker(false); setPickerVideoId(null); }}>
+                <h3 className="text-lg font-bold text-shimmer">Save to Playlist</h3>
+                <button className="btn-ghost-primex p-2" onClick={() => { setShowPicker(false); setPickerVideoId(null); }}>
                   <X className="w-5 h-5" />
-                </Button>
+                </button>
               </div>
+              <div className="divider-primex mb-4" />
               <div className="space-y-2 max-h-80 overflow-y-auto premium-scrollbar">
                 {playlists.map((pl) => (
                   <button
                     key={pl.id}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors text-left hover-lift"
                     onClick={() => handleAddToPlaylist(pl.id)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-primex/10 flex items-center justify-center shrink-0">
@@ -612,7 +656,12 @@ export default function PlaylistsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{pl.name}</p>
-                      <p className="text-xs text-muted-foreground">{pl.videos.length} video{pl.videos.length !== 1 ? 's' : ''}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{pl.videos.length} video{pl.videos.length !== 1 ? 's' : ''}</span>
+                        <span className="tag-primex text-[9px] py-0 px-1">
+                          {pl.isPublic ? 'Public' : 'Private'}
+                        </span>
+                      </div>
                     </div>
                     <Bookmark className="w-4 h-4 text-muted-foreground" />
                   </button>
@@ -631,9 +680,7 @@ export default function PlaylistsPage() {
   );
 }
 
-/* ────────────────────────────────────────────
-   Create Playlist Modal
-   ──────────────────────────────────────────── */
+/* ── Create Playlist Modal ───────────────────────────────── */
 
 interface CreatePlaylistModalProps {
   open: boolean;
@@ -669,14 +716,13 @@ function CreatePlaylistModal({
             className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10"
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold primex-gradient-text">Create Playlist</h3>
-              <Button variant="ghost" size="icon" onClick={onClose}>
+              <h3 className="text-lg font-bold text-shimmer">Create Playlist</h3>
+              <button className="btn-ghost-primex p-2" onClick={onClose}>
                 <X className="w-5 h-5" />
-              </Button>
+              </button>
             </div>
 
             <div className="space-y-4">
-              {/* Name */}
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Playlist Name</label>
                 <Input
@@ -688,7 +734,6 @@ function CreatePlaylistModal({
                 />
               </div>
 
-              {/* Description */}
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Description <span className="text-muted-foreground">(optional)</span></label>
                 <Input
@@ -699,6 +744,8 @@ function CreatePlaylistModal({
                   maxLength={300}
                 />
               </div>
+
+              <div className="divider-primex" />
 
               {/* Privacy toggle */}
               <div className="flex items-center justify-between">
@@ -717,16 +764,27 @@ function CreatePlaylistModal({
                 </button>
               </div>
 
+              {/* Visibility tags */}
+              <div className="flex gap-2">
+                <span className={`tag-primex text-[10px] ${isPublic ? 'ring-1 ring-primex/30' : 'opacity-40'}`}>
+                  <Globe className="w-3 h-3" /> Public
+                </span>
+                <span className={`tag-primex text-[10px] ${!isPublic ? 'ring-1 ring-primex/30' : 'opacity-40'}`}>
+                  <Lock className="w-3 h-3" /> Private
+                </span>
+              </div>
+
+              <div className="divider-primex" />
+
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <Button
-                  variant="outline"
+                <button
                   className="flex-1 btn-outline-primex"
                   onClick={onClose}
                 >
                   Cancel
-                </Button>
-                <Button
+                </button>
+                <button
                   className="flex-1 btn-primex"
                   onClick={onCreate}
                   disabled={!name.trim() || creating}
@@ -737,7 +795,7 @@ function CreatePlaylistModal({
                     <Check className="w-4 h-4 mr-2" />
                   )}
                   Create
-                </Button>
+                </button>
               </div>
             </div>
           </motion.div>

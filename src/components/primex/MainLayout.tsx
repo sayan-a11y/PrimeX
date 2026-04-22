@@ -11,6 +11,7 @@ import {
   Home, Film, Upload, MessageCircle, User, Search, Bell, LogOut,
   Shield, BarChart3, Users, X, Menu, Compass, TrendingUp, Settings,
   Clock, ListVideo, DollarSign, Clock3, TrendingUp as TrendingIcon, XCircle,
+  BookmarkPlus,
 } from 'lucide-react';
 import HomeFeed from './HomeFeed';
 import ReelsFeed from './ReelsFeed';
@@ -170,6 +171,7 @@ export default function MainLayout() {
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [watchLaterCount, setWatchLaterCount] = useState(0);
   const prevUnreadRef = useRef(0);
 
   // Onboarding check on first login
@@ -212,6 +214,30 @@ export default function MainLayout() {
     const interval = setInterval(fetchNotifs, 30000);
     return () => clearInterval(interval);
   }, [setUnreadNotifications]);
+
+  // Fetch Watch Later playlist count
+  useEffect(() => {
+    const fetchWatchLater = async () => {
+      const token = localStorage.getItem('primex_token');
+      if (!token) return;
+      try {
+        const res = await fetch('/api/playlists', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          const playlists = data.data.playlists || [];
+          const watchLater = playlists.find((p: { name: string }) => p.name === 'Watch Later');
+          if (watchLater) {
+            setWatchLaterCount(watchLater.videos?.length || 0);
+          }
+        }
+      } catch {}
+    };
+    fetchWatchLater();
+    const interval = setInterval(fetchWatchLater, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -260,6 +286,8 @@ export default function MainLayout() {
     { icon: Bell, label: 'Notifications', view: 'notifications', badge: unreadNotifications },
     { icon: User, label: 'Profile', view: 'profile' },
   ];
+
+  const watchLaterItem = { icon: BookmarkPlus, label: 'Watch Later', view: 'playlists', badge: watchLaterCount };
 
   const renderView = () => {
     switch (currentView) {
@@ -523,6 +551,29 @@ export default function MainLayout() {
             </Button>
           ))}
 
+          {/* Watch Later Quick Access */}
+          <Button
+            variant="ghost"
+            className={`justify-start gap-3 h-10 rounded-xl transition-all relative ${
+              currentView === 'playlists' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+            }`}
+            onClick={() => setCurrentView('playlists')}
+          >
+            <watchLaterItem.icon className="w-5 h-5" />
+            <span className="text-sm">{watchLaterItem.label}</span>
+            {watchLaterItem.badge > 0 && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', damping: 12 }}
+              >
+                <Badge className="ml-auto bg-primex text-white text-[10px] h-5 min-w-5 rounded-full flex items-center justify-center badge-pulse">
+                  {watchLaterItem.badge > 99 ? '99+' : watchLaterItem.badge}
+                </Badge>
+              </motion.div>
+            )}
+          </Button>
+
           <div className="border-t border-border/50 my-2" />
 
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Tools</p>
@@ -706,6 +757,23 @@ export default function MainLayout() {
                       )}
                     </Button>
                   ))}
+
+                  {/* Watch Later Quick Access in Mobile Menu */}
+                  <Button
+                    variant="ghost"
+                    className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                      currentView === 'playlists' ? 'bg-primex/10 text-primex' : ''
+                    }`}
+                    onClick={() => { setCurrentView('playlists'); setShowMobileMenu(false); }}
+                  >
+                    <watchLaterItem.icon className="w-5 h-5" />
+                    <span>{watchLaterItem.label}</span>
+                    {watchLaterItem.badge > 0 && (
+                      <Badge className="ml-auto bg-primex text-white text-[10px] h-5 min-w-5 rounded-full">
+                        {watchLaterItem.badge > 99 ? '99+' : watchLaterItem.badge}
+                      </Badge>
+                    )}
+                  </Button>
                 </div>
 
                 <div className="border-t border-border/50 my-3" />

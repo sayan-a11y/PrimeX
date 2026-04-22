@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/store';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Eye, Heart, Clock, TrendingUp, Film, Play, Users, Zap, Globe } from 'lucide-react';
+import { BarChart3, Eye, Heart, Clock, TrendingUp, Film, Play, Users, Zap, Globe, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface AnalyticsData {
@@ -32,7 +30,6 @@ function useCountUp(target: number, duration: number = 1200) {
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCurrent(Math.round(start + diff * eased));
       if (progress < 1) {
@@ -55,6 +52,7 @@ function StatCard({
   color,
   bg,
   delay,
+  trend,
 }: {
   icon: React.ElementType;
   label: string;
@@ -63,6 +61,7 @@ function StatCard({
   color: string;
   bg: string;
   delay: number;
+  trend?: 'up' | 'down';
 }) {
   const animatedValue = useCountUp(value);
   return (
@@ -75,9 +74,17 @@ function StatCard({
       <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center mb-3`}>
         <Icon className={`w-5 h-5 ${color}`} />
       </div>
-      <p className="text-2xl font-bold count-up">
-        {animatedValue.toLocaleString()}{suffix || ''}
-      </p>
+      <div className="flex items-end gap-2">
+        <p className="text-2xl font-bold count-up primex-gradient-text">
+          {animatedValue.toLocaleString()}{suffix || ''}
+        </p>
+        {trend && (
+          <span className={`text-xs font-medium flex items-center gap-0.5 mb-1 ${trend === 'up' ? 'text-success' : 'text-danger'}`}>
+            {trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {trend === 'up' ? '+12%' : '-3%'}
+          </span>
+        )}
+      </div>
       <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
     </motion.div>
   );
@@ -91,29 +98,31 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     if (!token || !user) return;
+    let cancelled = false;
     const fetchAnalytics = async () => {
       try {
         const res = await fetch(`/api/analytics/${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        if (data.success) {
+        if (!cancelled && data.success) {
           setAnalytics(data.data.analytics || data.data);
         }
       } catch {}
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     };
     fetchAnalytics();
+    return () => { cancelled = true; };
   }, [token, user]);
 
   const statCards = [
-    { icon: Eye, label: 'Total Views', value: analytics?.totalViews || 0, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-    { icon: Heart, label: 'Total Likes', value: analytics?.totalLikes || 0, color: 'text-red-400', bg: 'bg-red-500/10' },
-    { icon: Clock, label: 'Avg Watch', value: analytics?.avgWatchTime || 0, suffix: 's', color: 'text-green-400', bg: 'bg-green-500/10' },
-    { icon: TrendingUp, label: 'Engagement', value: analytics?.engagementRate || 0, suffix: '%', color: 'text-primex', bg: 'bg-primex/10' },
+    { icon: Eye, label: 'Total Views', value: analytics?.totalViews || 0, color: 'text-blue-400', bg: 'bg-blue-500/10', trend: 'up' as const },
+    { icon: Heart, label: 'Total Likes', value: analytics?.totalLikes || 0, color: 'text-red-400', bg: 'bg-red-500/10', trend: 'up' as const },
+    { icon: Clock, label: 'Avg Watch', value: analytics?.avgWatchTime || 0, suffix: 's', color: 'text-green-400', bg: 'bg-green-500/10', trend: 'up' as const },
+    { icon: TrendingUp, label: 'Engagement', value: analytics?.engagementRate || 0, suffix: '%', color: 'text-primex', bg: 'bg-primex/10', trend: 'down' as const },
   ];
 
-  // Chart bar data (deterministic based on period to avoid re-render flicker)
+  // Chart bar data
   const chartBars = [35, 55, 42, 68, 78, 60, 85, 72, 90, 65, 80, 95];
   const chartBars30 = [20, 30, 25, 40, 35, 55, 50, 60, 45, 70, 65, 80];
   const chartBars90 = [15, 22, 18, 30, 28, 40, 35, 50, 42, 55, 48, 65];
@@ -138,15 +147,43 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+    <div className="max-w-4xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
-      <div className="orb-primex top-10 -right-20" />
-      <div className="orb-primex-sm bottom-20 -left-16" />
+      <div className="orb-primex top-10 -right-20 float-slow" />
+      <div className="orb-primex-sm bottom-20 -left-16 float-medium" />
+      <div className="orb-primex-sm top-1/3 right-10 opacity-30 float-slow" />
+      <div className="orb-primex-sm top-0 left-1/4 opacity-20 float-medium" />
+      <div className="orb-primex-sm bottom-0 right-1/4 opacity-20 float-slow" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6">
-        <h1 className="text-2xl font-bold text-shimmer">Analytics</h1>
-        <p className="text-muted-foreground text-sm mt-1">Track your content performance</p>
+      <div className="relative z-10 mb-6 page-header-premium">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            >
+              <BarChart3 className="w-5 h-5 text-primex" />
+            </motion.div>
+            <div>
+              <h1 className="text-2xl font-bold text-shimmer">Analytics</h1>
+              <p className="text-muted-foreground text-sm mt-0.5">Track your content performance</p>
+            </div>
+          </div>
+          {/* Period Selector */}
+          <div className="flex gap-2">
+            {['7d', '30d', '90d'].map(p => (
+              <button
+                key={p}
+                className={period === p ? 'btn-primex btn-sm' : 'btn-outline-primex btn-sm'}
+                onClick={() => setPeriod(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Stat Cards */}
@@ -161,6 +198,7 @@ export default function AnalyticsPage() {
             color={stat.color}
             bg={stat.bg}
             delay={i * 0.08}
+            trend={stat.trend}
           />
         ))}
       </div>
@@ -171,12 +209,13 @@ export default function AnalyticsPage() {
       {/* Content Summary */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* Video Content Card */}
-        <div className="glass-card-premium p-6 rounded-xl hover-lift card-shine">
+        <div className="glass-card-premium p-6 rounded-xl hover-lift card-shine gradient-border-primex">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-lg bg-primex/10 flex items-center justify-center">
               <Film className="w-5 h-5 text-primex" />
             </div>
             <h3 className="font-medium text-shimmer">Video Content</h3>
+            <span className="tag-primex text-[10px] ml-auto">Videos</span>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -201,12 +240,13 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Reels Content Card */}
-        <div className="glass-card-premium p-6 rounded-xl hover-lift card-shine">
+        <div className="glass-card-premium p-6 rounded-xl hover-lift card-shine gradient-border-primex">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
               <Play className="w-5 h-5 text-green-400" />
             </div>
             <h3 className="font-medium text-shimmer">Reels Content</h3>
+            <span className="tag-success text-[10px] ml-auto">Reels</span>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -235,7 +275,7 @@ export default function AnalyticsPage() {
       <div className="divider-primex mb-6 relative z-10" />
 
       {/* Performance Metrics */}
-      <div className="relative z-10 glass-card-premium p-6 rounded-xl hover-lift card-shine mb-6">
+      <div className="relative z-10 glass-card-premium p-6 rounded-xl hover-lift card-shine gradient-border-primex mb-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-lg bg-primex-secondary/10 flex items-center justify-center">
             <Zap className="w-5 h-5 text-primex-secondary" />
@@ -247,12 +287,12 @@ export default function AnalyticsPage() {
             { label: 'Viewer Retention', value: 72, color: 'bg-primex' },
             { label: 'Click-Through Rate', value: 45, color: 'bg-primex-secondary' },
             { label: 'Share Rate', value: 28, color: 'bg-primex-tertiary' },
-            { label: 'Comment Rate', value: 35, color: 'bg-green-500' },
+            { label: 'Comment Rate', value: 35, color: 'bg-success' },
           ].map((metric) => (
             <div key={metric.label}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-sm text-muted-foreground">{metric.label}</span>
-                <span className="text-sm font-medium">{metric.value}%</span>
+                <span className="text-sm font-medium primex-gradient-text">{metric.value}%</span>
               </div>
               <div className="progress-bar h-2">
                 <div
@@ -265,28 +305,14 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Period selector + Chart */}
-      <div className="relative z-10 glass-card-premium p-6 rounded-xl card-shine">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
-              <Globe className="w-5 h-5 text-info" />
-            </div>
-            <h3 className="font-medium text-shimmer">Performance Trend</h3>
+      {/* Chart */}
+      <div className="relative z-10 glass-card-premium p-6 rounded-xl card-shine gradient-border-primex">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
+            <Globe className="w-5 h-5 text-info" />
           </div>
-          <div className="flex gap-2">
-            {['7d', '30d', '90d'].map(p => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover-lift ${
-                  period === p ? 'primex-gradient text-white' : 'text-muted-foreground glass-card'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+          <h3 className="font-medium text-shimmer">Performance Trend</h3>
+          <span className="tag-info text-[10px] ml-auto">Past {period}</span>
         </div>
         <div className="h-48 flex items-end gap-1.5">
           {bars.map((height, i) => (
@@ -305,7 +331,7 @@ export default function AnalyticsPage() {
           ))}
         </div>
         <div className="flex justify-between mt-2">
-          <span className="text-xs text-muted-foreground">Past {period}</span>
+          <span className="text-xs text-muted-foreground">Start of period</span>
           <span className="text-xs text-muted-foreground">Today</span>
         </div>
       </div>

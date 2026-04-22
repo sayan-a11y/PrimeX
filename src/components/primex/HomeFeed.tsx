@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import {
   Play, Eye, Heart, Film, TrendingUp, Sparkles,
-  Compass, Zap, ArrowRight, Clock, Trophy, ChevronDown, ChevronUp
+  Compass, Zap, ArrowRight, Clock, Trophy, ChevronDown, ChevronUp, Loader2
 } from 'lucide-react';
 import StoriesBar from './StoriesBar';
 import CreatorLeaderboard from './CreatorLeaderboard';
@@ -51,11 +51,22 @@ export default function HomeFeed() {
   const [loadingMore, setLoadingMore] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef(1);
+  const loadingMoreRef = useRef(false);
+  const hasMoreRef = useRef(true);
+  const selectedCategoryRef = useRef('All');
 
-  const fetchVideos = async (pageNum: number, reset = false, category?: string) => {
+  // Keep refs in sync with state
+  useEffect(() => { pageRef.current = page; }, [page]);
+  useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
+  useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
+  useEffect(() => { selectedCategoryRef.current = selectedCategory; }, [selectedCategory]);
+
+  const fetchVideos = useCallback(async (pageNum: number, reset = false, category?: string) => {
+    if (!reset && loadingMoreRef.current) return; // Prevent duplicate requests
     if (!reset) setLoadingMore(true);
     try {
-      const cat = category || selectedCategory;
+      const cat = category || selectedCategoryRef.current;
       const tagParam = cat && cat !== 'All' ? `&tag=${encodeURIComponent(cat)}` : '';
       const res = await fetch(`/api/videos?page=${pageNum}&limit=12${tagParam}`);
       const data = await res.json();
@@ -64,38 +75,58 @@ export default function HomeFeed() {
         setVideos(prev => reset ? newVideos : [...prev, ...newVideos]);
         setHasMore(newVideos.length === 12);
       }
-    } catch {}
+    } catch {
+      // Silently fail
+    }
     setLoading(false);
     setLoadingMore(false);
-  };
+  }, []);
 
   useEffect(() => {
     fetchVideos(1, true);
-  }, []);
+  }, [fetchVideos]);
 
   // Refetch when category changes
+  const prevCategoryRef = useRef('All');
   useEffect(() => {
-    if (selectedCategory !== 'All' || videos.length > 0) {
+    if (selectedCategory !== prevCategoryRef.current) {
+      prevCategoryRef.current = selectedCategory;
       setPage(1);
+      pageRef.current = 1;
+      fetchVideos(1, true, selectedCategory);
+    } else if (selectedCategory !== 'All' && videos.length === 0) {
+      // Also fetch on initial mount for non-All categories
       fetchVideos(1, true, selectedCategory);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, fetchVideos, videos.length]);
 
   // Infinite scroll with Intersection Observer
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
-          setPage(p => p + 1);
-          fetchVideos(page + 1);
+        if (entries[0].isIntersecting && hasMoreRef.current && !loadingMoreRef.current) {
+          const nextPage = pageRef.current + 1;
+          setPage(nextPage);
+          pageRef.current = nextPage;
+          fetchVideos(nextPage);
         }
       },
       { rootMargin: '200px' }
     );
     if (sentinelRef.current) observerRef.current.observe(sentinelRef.current);
     return () => observerRef.current?.disconnect();
-  }, [hasMore, loading, loadingMore, page]);
+  }, [fetchVideos, videos.length]); // Re-observe when new videos are added
+
+  // Manual load more fallback
+  const handleLoadMore = useCallback(() => {
+    if (hasMoreRef.current && !loadingMoreRef.current) {
+      const nextPage = pageRef.current + 1;
+      setPage(nextPage);
+      pageRef.current = nextPage;
+      fetchVideos(nextPage);
+    }
+  }, [fetchVideos]);
 
   const formatViews = (views: number) => {
     if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
@@ -402,25 +433,45 @@ export default function HomeFeed() {
         </>
       )}
 
-      {/* Infinite Scroll Sentinel + End State */}
+      {/* Infinite Scroll Sentinel + Load More Fallback + End State */}
       {videos.length > 0 && (
         <div className="mt-8">
           {hasMore ? (
-            <div ref={sentinelRef} className="flex justify-center py-4">
-              {loadingMore ? (
-                <div className="loading-dots">
-                  <span /><span /><span />
+            <>
+              {/* Intersection Observer sentinel */}
+              <div ref={sentinelRef} className="flex flex-col items-center gap-3 py-4">
+                {loadingMore ? (
+                  <div className="flex items-center gap-2 text-primex">
+                    <div className="spinner-primex" />
+                    <span className="text-sm text-muted-foreground">Loading more videos...</span>
+                  </div>
+                ) : (
+                  <div className="spinner-primex-sm" />
+                )}
+              </div>
+              {/* Load More fallback button */}
+              {!loadingMore && (
+                <div className="flex justify-center pb-4">
+                  <Button
+                    variant="outline"
+                    className="btn-outline-primex rounded-xl gap-2 hover-lift"
+                    onClick={handleLoadMore}
+                  >
+                    <Loader2 className="w-4 h-4" />
+                    Load More Videos
+                  </Button>
                 </div>
-              ) : (
-                <div className="spinner-primex-sm" />
               )}
-            </div>
+            </>
           ) : (
             <>
               <div className="divider-primex my-4" />
               <div className="text-center py-4">
                 <Sparkles className="w-5 h-5 text-primex mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">You&apos;ve seen it all!</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  {videos.length} videos loaded
+                </p>
               </div>
             </>
           )}

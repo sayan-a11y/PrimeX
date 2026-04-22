@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock, Play, Trash2, CheckCircle2, Circle, Eye, Film, AlertTriangle,
+  Search, Filter,
 } from 'lucide-react';
-
-/* ────────────────────────────────────────────
-   Types
-   ──────────────────────────────────────────── */
 
 interface HistoryVideo {
   id: string;
@@ -39,10 +36,6 @@ interface HistoryEntry {
 }
 
 type FilterTab = 'all' | 'in_progress' | 'completed';
-
-/* ────────────────────────────────────────────
-   Helpers
-   ──────────────────────────────────────────── */
 
 function formatViews(views: number): string {
   if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
@@ -78,16 +71,11 @@ function getDateGroup(dateStr: string): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const days = Math.floor(diff / 86400000);
-
   if (days === 0) return 'Today';
   if (days === 1) return 'Yesterday';
   if (days < 7) return 'This Week';
   return 'Earlier';
 }
-
-/* ────────────────────────────────────────────
-   Main Component
-   ──────────────────────────────────────────── */
 
 export default function WatchHistoryPage() {
   const { user, token, setCurrentView } = useAppStore();
@@ -97,6 +85,7 @@ export default function WatchHistoryPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchHistory = useCallback(async (pageNum: number = 1) => {
     if (!token) return;
@@ -183,7 +172,14 @@ export default function WatchHistoryPage() {
 
   // Group history by date
   const groupedHistory: Record<string, HistoryEntry[]> = {};
-  history.forEach((entry) => {
+  const filteredHistory = searchQuery.trim()
+    ? history.filter((entry) =>
+        entry.video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        entry.video.user?.username?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : history;
+
+  filteredHistory.forEach((entry) => {
     const group = getDateGroup(entry.createdAt);
     if (!groupedHistory[group]) groupedHistory[group] = [];
     groupedHistory[group].push(entry);
@@ -191,35 +187,31 @@ export default function WatchHistoryPage() {
 
   const dateOrder = ['Today', 'Yesterday', 'This Week', 'Earlier'];
 
-  /* ──────────────────────────────────────────
-     Loading
-     ────────────────────────────────────────── */
   if (loading) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+        <div className="orb-primex-sm top-10 -right-16 opacity-40" />
+        <div className="relative z-10 flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="skeleton-circle w-10 h-10" />
-            <div className="skeleton-heading w-40 h-7" />
+            <div className="skeleton-circle w-10 h-10 skeleton-pulse" />
+            <div className="skeleton-heading w-40 h-7 skeleton-pulse" />
           </div>
-          <div className="skeleton-line w-24 h-9" />
+          <div className="skeleton-line w-24 h-9 skeleton-pulse rounded-lg" />
         </div>
-        {/* Tab skeleton */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 relative z-10">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="skeleton-line w-28 h-9 rounded-full" />
+            <div key={i} className="skeleton-line w-28 h-9 rounded-full skeleton-pulse" />
           ))}
         </div>
-        {/* Cards skeleton */}
-        <div className="space-y-4">
+        <div className="space-y-4 relative z-10">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex gap-4 glass-card p-4 rounded-xl">
+            <div key={i} className="flex gap-4 glass-card-premium p-4 rounded-xl">
               <div className="skeleton-pulse w-40 aspect-video rounded-lg shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="skeleton-heading w-3/4 h-5" />
-                <div className="skeleton-line w-1/2 h-4" />
-                <div className="skeleton-line w-1/3 h-3" />
+                <div className="skeleton-heading w-3/4 h-5 skeleton-pulse" />
+                <div className="skeleton-line w-1/2 h-4 skeleton-pulse" />
+                <div className="skeleton-line w-1/3 h-3 skeleton-pulse" />
+                <div className="skeleton-line w-2/3 h-1.5 skeleton-pulse rounded-full mt-3" />
               </div>
             </div>
           ))}
@@ -228,68 +220,98 @@ export default function WatchHistoryPage() {
     );
   }
 
-  /* ──────────────────────────────────────────
-     Empty State
-     ────────────────────────────────────────── */
   if (history.length === 0) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center">
-            <Clock className="w-5 h-5 text-primex" />
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+        <div className="orb-primex-sm top-20 -right-16 opacity-40" />
+        <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
+        <div className="relative z-10 mb-6 page-header-premium">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            >
+              <Clock className="w-5 h-5 text-primex" />
+            </motion.div>
+            <h1 className="text-2xl font-bold text-shimmer">Watch History</h1>
           </div>
-          <h1 className="text-2xl font-bold primex-gradient-text">Watch History</h1>
         </div>
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6">
+        <div className="empty-state-premium relative z-10">
+          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6 breathe">
             <Clock className="w-10 h-10 text-primex/50" />
           </div>
           <h2 className="text-xl font-semibold mb-2">No watch history yet</h2>
           <p className="text-muted-foreground mb-6 text-center max-w-sm">
             Videos you watch will appear here so you can easily find them again.
           </p>
-          <Button
-            className="btn-primex"
+          <button
+            className="btn-outline-primex"
             onClick={() => setCurrentView('home')}
           >
             <Play className="w-4 h-4 mr-2" />
-            Start Watching Videos
-          </Button>
+            Start Watching
+          </button>
         </div>
       </div>
     );
   }
 
-  /* ──────────────────────────────────────────
-     Main Render
-     ────────────────────────────────────────── */
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      {/* Decorative orbs */}
+      <div className="orb-primex-sm top-10 -right-16 opacity-40" />
+      <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center">
-            <Clock className="w-5 h-5 text-primex" />
+      <div className="relative z-10 mb-6 page-header-premium">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            >
+              <Clock className="w-5 h-5 text-primex" />
+            </motion.div>
+            <div>
+              <h1 className="text-2xl font-bold text-shimmer">Watch History</h1>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                {history.length} video{history.length !== 1 ? 's' : ''} watched
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold primex-gradient-text">Watch History</h1>
+          <button
+            className="btn-outline-primex border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+            onClick={handleClearAll}
+            disabled={clearing}
+          >
+            {clearing ? (
+              <div className="spinner-primex-sm w-4 h-4 mr-2" />
+            ) : (
+              <Trash2 className="w-4 h-4 mr-2" />
+            )}
+            Clear All
+          </button>
         </div>
-        <Button
-          variant="outline"
-          className="btn-outline-primex border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-          onClick={handleClearAll}
-          disabled={clearing}
-        >
-          {clearing ? (
-            <div className="spinner-primex-sm w-4 h-4 mr-2" />
-          ) : (
-            <Trash2 className="w-4 h-4 mr-2" />
-          )}
-          Clear All
-        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative z-10 mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search history..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="glass-input w-full h-10 pl-9 pr-4 text-sm rounded-xl"
+          />
+        </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="glass-card p-1 rounded-xl inline-flex gap-1 mb-6">
+      <div className="relative z-10 tab-bar-premium mb-4">
         {[
           { key: 'all' as FilterTab, label: 'All Videos', icon: Film },
           { key: 'in_progress' as FilterTab, label: 'In Progress', icon: Circle },
@@ -297,11 +319,7 @@ export default function WatchHistoryPage() {
         ].map((tab) => (
           <button
             key={tab.key}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              filter === tab.key
-                ? 'bg-primex text-white shadow-lg glow-effect'
-                : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-            }`}
+            className={`tab-item ${filter === tab.key ? 'active' : ''}`}
             onClick={() => setFilter(tab.key)}
           >
             <tab.icon className="w-4 h-4" />
@@ -310,8 +328,10 @@ export default function WatchHistoryPage() {
         ))}
       </div>
 
+      <div className="divider-primex relative z-10 mb-6" />
+
       {/* History Groups */}
-      <div className="space-y-8">
+      <div className="relative z-10 space-y-8">
         {dateOrder.map((group) => {
           const entries = groupedHistory[group];
           if (!entries || entries.length === 0) return null;
@@ -321,7 +341,7 @@ export default function WatchHistoryPage() {
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{group}</h2>
                 <div className="flex-1 divider-primex" />
-                <span className="text-xs text-muted-foreground">{entries.length} video{entries.length > 1 ? 's' : ''}</span>
+                <span className="text-xs text-muted-foreground tag-info">{entries.length} video{entries.length > 1 ? 's' : ''}</span>
               </div>
 
               <div className="space-y-3">
@@ -338,7 +358,7 @@ export default function WatchHistoryPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
-                        className="glass-card p-4 rounded-xl hover-lift card-shine group cursor-pointer"
+                        className="glass-card-premium p-4 rounded-xl hover-lift card-shine group cursor-pointer"
                         onClick={() => handlePlayVideo(entry.videoId)}
                       >
                         <div className="flex gap-4">
@@ -351,7 +371,7 @@ export default function WatchHistoryPage() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 to-primex-secondary/20">
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/20 to-primex-secondary/20 shimmer">
                                 <Film className="w-8 h-8 text-primex/40" />
                               </div>
                             )}
@@ -363,7 +383,7 @@ export default function WatchHistoryPage() {
                             )}
                             {/* Play overlay */}
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                              <div className="w-10 h-10 rounded-full bg-primex/90 flex items-center justify-center">
+                              <div className="play-button-hover w-10 h-10">
                                 <Play className="w-5 h-5 text-white ml-0.5" />
                               </div>
                             </div>
@@ -399,11 +419,11 @@ export default function WatchHistoryPage() {
                             <div className="mt-auto">
                               <div className="flex items-center gap-2 mb-1">
                                 {entry.completed ? (
-                                  <span className="flex items-center gap-1 text-[10px] text-success font-medium">
+                                  <span className="flex items-center gap-1 text-[10px] text-success font-medium tag-success text-[9px] py-0">
                                     <CheckCircle2 className="w-3 h-3" /> Watched
                                   </span>
                                 ) : (
-                                  <span className="flex items-center gap-1 text-[10px] text-primex font-medium">
+                                  <span className="flex items-center gap-1 text-[10px] text-primex font-medium tag-primex text-[9px] py-0">
                                     <Circle className="w-3 h-3" /> In Progress
                                   </span>
                                 )}
@@ -437,6 +457,11 @@ export default function WatchHistoryPage() {
                   })}
                 </AnimatePresence>
               </div>
+
+              {/* Divider between date groups */}
+              {group !== dateOrder[dateOrder.length - 1] && (
+                <div className="divider-primex mt-8" />
+              )}
             </div>
           );
         })}
@@ -444,14 +469,13 @@ export default function WatchHistoryPage() {
 
       {/* Load More */}
       {hasMore && (
-        <div className="flex justify-center mt-8">
-          <Button
-            variant="outline"
+        <div className="relative z-10 flex justify-center mt-8">
+          <button
             className="btn-outline-primex"
             onClick={() => fetchHistory(page + 1)}
           >
             Load More
-          </Button>
+          </button>
         </div>
       )}
     </div>
