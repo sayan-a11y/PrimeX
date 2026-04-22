@@ -19,6 +19,12 @@ interface Conversation {
   unread: number;
 }
 
+interface ApiConversation {
+  partner: { id: string; username: string; profilePic: string | null };
+  lastMessage: { message: string; createdAt: string };
+  unreadCount: number;
+}
+
 interface Message {
   id: string;
   senderId: string;
@@ -86,7 +92,16 @@ export default function ChatPage() {
         });
         const data = await res.json();
         if (data.success) {
-          setConversations(data.data.conversations || data.data || []);
+          const rawConversations = data.data.conversations || data.data || [];
+          const mapped: Conversation[] = (Array.isArray(rawConversations) ? rawConversations : []).map((c: ApiConversation) => ({
+            userId: c.partner.id,
+            username: c.partner.username,
+            profilePic: c.partner.profilePic,
+            lastMessage: c.lastMessage?.message || '',
+            lastTime: c.lastMessage?.createdAt || '',
+            unread: c.unreadCount || 0,
+          }));
+          setConversations(mapped);
         }
       } catch {}
       setLoading(false);

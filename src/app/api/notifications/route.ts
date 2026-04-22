@@ -58,14 +58,17 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      data: enriched,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+      success: true,
+      data: {
+        notifications: enriched,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+        unreadCount,
       },
-      unreadCount,
     });
   } catch (error) {
     console.error('Notifications GET error:', error);
@@ -90,7 +93,7 @@ export async function PUT(request: Request) {
         where: { userId: user.userId, read: false },
         data: { read: true },
       });
-      return NextResponse.json({ message: 'All notifications marked as read' });
+      return NextResponse.json({ success: true, message: 'All notifications marked as read' });
     }
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
@@ -106,7 +109,7 @@ export async function PUT(request: Request) {
       data: { read: true },
     });
 
-    return NextResponse.json({ message: `${ids.length} notification(s) marked as read` });
+    return NextResponse.json({ success: true, message: `${ids.length} notification(s) marked as read` });
   } catch (error) {
     console.error('Notifications PUT error:', error);
     return NextResponse.json({ error: 'Failed to update notifications' }, { status: 500 });

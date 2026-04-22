@@ -22,6 +22,23 @@ interface FriendItem {
   };
 }
 
+// API returns { friend: {...} } but we use { user: {...} } in UI
+function normalizeFriendItem(raw: any): FriendItem {
+  const friendData = raw.friend || raw.user || {};
+  return {
+    id: raw.id,
+    senderId: raw.senderId || '',
+    receiverId: raw.receiverId || '',
+    status: raw.status || 'accepted',
+    createdAt: raw.createdAt || '',
+    user: {
+      id: friendData.id || '',
+      username: friendData.username || 'Unknown',
+      profilePic: friendData.profilePic || null,
+    },
+  };
+}
+
 export default function FriendsPage() {
   const { user, token, setCurrentView } = useAppStore();
   const [activeTab, setActiveTab] = useState('pending');
@@ -41,9 +58,13 @@ export default function FriendsPage() {
       const [pendingData, sentData, friendsData] = await Promise.all([
         pendingRes.json(), sentRes.json(), friendsRes.json(),
       ]);
-      if (pendingData.success) setPendingRequests(pendingData.data.friends || pendingData.data || []);
-      if (sentData.success) setSentRequests(sentData.data.friends || sentData.data || []);
-      if (friendsData.success) setFriends(friendsData.data.friends || friendsData.data || []);
+      const parseList = (d: any) => {
+        const raw = d.success ? (d.data?.friends || d.data) : (d.data || d);
+        return (Array.isArray(raw) ? raw : []).map(normalizeFriendItem);
+      };
+      setPendingRequests(parseList(pendingData));
+      setSentRequests(parseList(sentData));
+      setFriends(parseList(friendsData));
     } catch {}
     setLoading(false);
   };

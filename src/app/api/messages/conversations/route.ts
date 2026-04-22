@@ -64,7 +64,7 @@ export async function GET(request: Request) {
       (a, b) => new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
     );
 
-    return NextResponse.json({ data: conversations });
+    return NextResponse.json({ success: true, data: conversations });
   } catch (error) {
     console.error('Conversations GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
