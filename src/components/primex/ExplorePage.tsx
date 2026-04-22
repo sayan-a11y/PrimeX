@@ -11,7 +11,7 @@ import {
   Compass, TrendingUp, Users, Film, Play, Heart, Eye,
   UserPlus, Star, Crown, Sparkles, Radio
 } from 'lucide-react';
-import { LiveIndicator, LiveStreamCard } from './LiveIndicator';
+import LiveIndicator, { LiveStreamCard } from './LiveIndicator';
 
 interface ExploreUser {
   id: string;

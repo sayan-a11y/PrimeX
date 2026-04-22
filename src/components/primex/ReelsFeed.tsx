@@ -236,7 +236,7 @@ export default function ReelsFeed() {
                 <span className="text-white text-[10px] font-bold">LIVE</span>
               </div>
             </div>
-          )
+          )}
         </div>
       ))}
     </div>
