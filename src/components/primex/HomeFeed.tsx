@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import {
   Play, Eye, Heart, Film, TrendingUp, Sparkles,
-  Compass, Zap, ArrowRight, Clock, Trophy, ChevronDown, ChevronUp, Loader2
+  Compass, Zap, ArrowRight, Clock, Trophy, ChevronDown, ChevronUp, Loader2,
+  Sparkle
 } from 'lucide-react';
 import StoriesBar from './StoriesBar';
 import CreatorLeaderboard from './CreatorLeaderboard';
@@ -40,8 +41,23 @@ const categories = [
   { name: 'Tech', emoji: '💻' },
 ];
 
+interface RecommendedVideo {
+  id: string;
+  title: string;
+  thumbnail: string | null;
+  views: number;
+  likes: number;
+  duration: number;
+  createdAt: string;
+  user: {
+    id: string;
+    username: string;
+    profilePic: string | null;
+  };
+}
+
 export default function HomeFeed() {
-  const { setCurrentView } = useAppStore();
+  const { setCurrentView, token } = useAppStore();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -49,6 +65,8 @@ export default function HomeFeed() {
   const [hasMore, setHasMore] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [recommendations, setRecommendations] = useState<RecommendedVideo[]>([]);
+  const [recLoading, setRecLoading] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
@@ -81,6 +99,25 @@ export default function HomeFeed() {
     setLoading(false);
     setLoadingMore(false);
   }, []);
+
+  // Fetch recommendations
+  useEffect(() => {
+    const fetchRecs = async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch('/api/recommendations?limit=6&type=video', { headers });
+        const data = await res.json();
+        if (data.success) {
+          setRecommendations(data.data.recommendations || []);
+        }
+      } catch {
+        // Silently fail
+      }
+      setRecLoading(false);
+    };
+    fetchRecs();
+  }, [token]);
 
   useEffect(() => {
     fetchVideos(1, true);
@@ -348,6 +385,88 @@ export default function HomeFeed() {
 
       {/* Divider */}
       <div className="divider-primex my-4" />
+
+      {/* Recommended For You Section */}
+      {recommendations.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-shimmer">
+                <Sparkle className="w-5 h-5 text-primex" />
+                Recommended For You
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Based on your watch history</p>
+            </div>
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            {recommendations.map((video) => (
+              <div
+                key={video.id}
+                className="shrink-0 w-56 interactive-card rounded-xl overflow-hidden cursor-pointer group hover-lift card-shine"
+                onClick={() => {
+                  useAppStore.setState({ currentVideoId: video.id });
+                  setCurrentView('video');
+                }}
+              >
+                <div className="relative aspect-video bg-muted">
+                  {video.thumbnail ? (
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full shimmer flex items-center justify-center">
+                      <Play className="w-6 h-6 text-primex/40" />
+                    </div>
+                  )}
+                  {video.duration > 0 && (
+                    <span className="video-duration-badge">{formatDuration(video.duration)}</span>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="play-button-hover">
+                      <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-xs font-medium line-clamp-2">{video.title}</p>
+                  <div className="flex items-center gap-1 mt-1.5">
+                    <Avatar className="w-5 h-5">
+                      <AvatarImage src={video.user?.profilePic || ''} />
+                      <AvatarFallback className="bg-primex/20 text-primex text-[8px] font-bold">
+                        {video.user?.username?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-[10px] text-muted-foreground truncate">{video.user?.username}</span>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
+                    <Eye className="w-3 h-3" /> {formatViews(video.views)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="divider-primex mt-6" />
+        </div>
+      )}
+
+      {/* Recommended Loading Skeleton */}
+      {recLoading && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="skeleton-pulse skeleton-line w-48 h-5" />
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="shrink-0 w-56">
+                <div className="aspect-video skeleton-pulse shimmer rounded-xl" />
+                <div className="p-2.5 space-y-1.5">
+                  <div className="skeleton-pulse skeleton-line w-3/4" />
+                  <div className="skeleton-pulse skeleton-line w-1/2 h-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="divider-primex mt-6" />
+        </div>
+      )}
 
       {/* Video Grid */}
       {videos.length === 0 ? (

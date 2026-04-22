@@ -5,13 +5,12 @@ import { useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Shield, Users, Film, Play, Lock, Flag, Ban, Trash2,
   Search, BarChart3, AlertTriangle, Eye, CheckCircle, XCircle,
-  Activity, TrendingUp, ChevronDown, ChevronUp, FilmIcon
+  Activity, TrendingUp, ChevronDown, ChevronUp, FilmIcon, Server, HardDrive, Wifi
 } from 'lucide-react';
 
 interface AdminStats {
@@ -60,6 +59,16 @@ const sparklineData = [
   [15, 25, 40, 55, 35, 50, 65],
   [10, 20, 15, 25, 35, 20, 30],
 ];
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 20, scale: 0.96 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } },
+};
 
 export default function AdminPanel() {
   const { user, token } = useAppStore();
@@ -170,7 +179,7 @@ export default function AdminPanel() {
   if (user?.role !== 'admin') {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4">
-        <Shield className="w-12 h-12 text-destructive mb-3" />
+        <Shield className="w-12 h-12 text-destructive mb-3 breathe" />
         <h2 className="text-xl font-bold mb-1">Access Denied</h2>
         <p className="text-muted-foreground text-sm">Admin access required</p>
       </div>
@@ -178,18 +187,23 @@ export default function AdminPanel() {
   }
 
   const statCards = [
-    { icon: Users, label: 'Total Users', value: stats?.totalUsers || 0, color: 'text-blue-400', sparkIdx: 0 },
-    { icon: Film, label: 'Total Videos', value: stats?.totalVideos || 0, color: 'text-primex', sparkIdx: 1 },
-    { icon: Play, label: 'Total Reels', value: stats?.totalReels || 0, color: 'text-green-400', sparkIdx: 2 },
-    { icon: Flag, label: 'Reports', value: stats?.totalReports || 0, color: 'text-yellow-400', sparkIdx: 3 },
+    { icon: Users, label: 'Total Users', value: stats?.totalUsers || 0, color: 'text-blue-400', sparkIdx: 0, accent: 'from-blue-500/20 to-blue-500/5' },
+    { icon: Film, label: 'Total Videos', value: stats?.totalVideos || 0, color: 'text-primex', sparkIdx: 1, accent: 'from-primex/20 to-primex/5' },
+    { icon: Play, label: 'Total Reels', value: stats?.totalReels || 0, color: 'text-green-400', sparkIdx: 2, accent: 'from-green-500/20 to-green-500/5' },
+    { icon: Flag, label: 'Reports', value: stats?.totalReports || 0, color: 'text-yellow-400', sparkIdx: 3, accent: 'from-yellow-500/20 to-yellow-500/5' },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-4 lg:p-6">
-      {/* Header with bg-mesh */}
+    <div className="max-w-6xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+      {/* Decorative orbs */}
+      <div className="orb-primex-sm absolute top-6 right-16 opacity-20 pointer-events-none" />
+      <div className="orb-primex-sm absolute bottom-10 left-8 opacity-15 pointer-events-none" />
+      <div className="orb-primex-sm absolute top-1/3 right-6 opacity-10 pointer-events-none float-slow" />
+
+      {/* Header */}
       <div className="bg-mesh rounded-2xl p-6 mb-6 relative overflow-hidden">
         <div className="orb-primex-sm absolute top-2 right-8 opacity-30" />
-        <div className="orb-primex-md absolute bottom-0 left-4 opacity-20" />
+        <div className="orb-primex-sm absolute bottom-0 left-4 opacity-20" />
         <div className="relative z-10 flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
             <Shield className="w-6 h-6 text-white" />
@@ -206,74 +220,99 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-6">
-          <TabsTrigger value="overview" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white gap-1.5">
-            <BarChart3 className="w-4 h-4" /> Overview
-          </TabsTrigger>
-          <TabsTrigger value="users" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white gap-1.5">
-            <Users className="w-4 h-4" /> Users
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white gap-1.5">
-            <Flag className="w-4 h-4" /> Reports
-            {stats?.totalReports && stats.totalReports > 0 && (
-              <span className="badge-pulse">{stats.totalReports}</span>
+      <div className="tab-bar-premium mb-6 relative z-10">
+        {[
+          { key: 'overview', label: 'Overview', icon: BarChart3 },
+          { key: 'users', label: 'Users', icon: Users },
+          { key: 'reports', label: 'Reports', icon: Flag, badge: stats?.totalReports },
+          { key: 'content', label: 'Content', icon: Film },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`tab-item ${activeTab === tab.key ? 'active' : ''}`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+            {tab.badge && tab.badge > 0 && (
+              <span className="badge-pulse text-[10px] ml-1">{tab.badge}</span>
             )}
-          </TabsTrigger>
-          <TabsTrigger value="content" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white gap-1.5">
-            <Film className="w-4 h-4" /> Content
-          </TabsTrigger>
-        </TabsList>
+          </button>
+        ))}
+      </div>
 
-        {/* Overview */}
-        <TabsContent value="overview">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {statCards.map((stat, idx) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="glass-card-premium card-shine hover-lift p-5 rounded-2xl"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className={`w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center`}>
+      {/* Overview */}
+      {activeTab === 'overview' && (
+        <div className="relative z-10">
+          {/* Loading state */}
+          {loading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="stat-card-premium p-5 rounded-2xl">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="skeleton-pulse w-9 h-9 rounded-lg" />
+                    <div className="skeleton-pulse h-4 w-20 rounded" />
+                  </div>
+                  <div className="skeleton-pulse h-8 w-24 rounded mb-3" />
+                  <div className="flex items-end gap-1 h-8">
+                    {Array.from({ length: 7 }).map((_, j) => (
+                      <div key={j} className="skeleton-pulse flex-1 rounded-t-sm" style={{ height: `${20 + Math.random() * 60}%` }} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
+              {statCards.map((stat) => (
+                <motion.div key={stat.label} variants={staggerItem} className="stat-card-premium p-5 rounded-2xl">
+                  <div className="stat-icon">
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
-                  <span className="text-sm text-muted-foreground">{stat.label}</span>
-                </div>
-                <p className="text-3xl font-bold primex-gradient-text count-up">{stat.value.toLocaleString()}</p>
-                {/* Mini sparkline chart */}
-                <div className="flex items-end gap-1 mt-3 h-8">
-                  {sparklineData[stat.sparkIdx].map((val, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 rounded-t-sm transition-all duration-300"
-                      style={{
-                        height: `${(val / 70) * 100}%`,
-                        background: i === sparklineData[stat.sparkIdx].length - 1
-                          ? 'linear-gradient(to top, oklch(0.75 0.18 330), oklch(0.75 0.18 330 / 40%))'
-                          : 'rgba(255, 255, 255, 0.08)',
-                        minHeight: '4px',
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-1 mt-2">
-                  <TrendingUp className="w-3 h-3 text-green-400" />
-                  <span className="text-xs text-green-400">+12%</span>
-                  <span className="text-xs text-muted-foreground">vs last week</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <span className="stat-label">{stat.label}</span>
+                  <p className="stat-value count-up">{stat.value.toLocaleString()}</p>
+                  {/* Mini sparkline chart */}
+                  <div className="flex items-end gap-1 mt-3 h-8">
+                    {sparklineData[stat.sparkIdx].map((val, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-t-sm transition-all duration-300"
+                        style={{
+                          height: `${(val / 70) * 100}%`,
+                          background: i === sparklineData[stat.sparkIdx].length - 1
+                            ? 'linear-gradient(to top, oklch(0.75 0.18 330), oklch(0.75 0.18 330 / 40%))'
+                            : 'rgba(255, 255, 255, 0.08)',
+                          minHeight: '4px',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1 mt-2">
+                    <TrendingUp className="w-3 h-3 text-green-400" />
+                    <span className="text-xs text-green-400">+12%</span>
+                    <span className="text-xs text-muted-foreground">vs last week</span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
 
           <div className="divider-primex mb-6" />
 
           {/* Activity overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="glass-card-premium p-5 rounded-2xl">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="glass-card-premium p-5 rounded-2xl"
+            >
+              <h3 className="font-semibold mb-4 flex items-center gap-2 text-shimmer">
                 <Activity className="w-4 h-4 text-primex" /> Recent Activity
               </h3>
               <div className="space-y-3">
@@ -284,47 +323,59 @@ export default function AdminPanel() {
                   { action: 'New reel by mikegaming', time: '2 hours ago', icon: Play, color: 'text-green-400' },
                   { action: 'User banned: spam_account', time: '5 hours ago', icon: Ban, color: 'text-red-400' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 hover-lift p-2 rounded-lg">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                      <item.icon className={`w-4 h-4 ${item.color}`} />
+                  <motion.div key={i} variants={staggerItem} className="interactive-card p-2 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm">{item.action}</p>
+                      </div>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{item.time}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm">{item.action}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{item.time}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="glass-card-premium p-5 rounded-2xl">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="glass-card-premium p-5 rounded-2xl"
+            >
+              <h3 className="font-semibold mb-4 flex items-center gap-2 text-shimmer">
                 <Eye className="w-4 h-4 text-primex" /> Platform Health
               </h3>
               <div className="space-y-4">
                 {[
-                  { label: 'Server Uptime', value: 99.9, color: 'bg-green-400' },
-                  { label: 'API Response Time', value: 85, color: 'bg-primex' },
-                  { label: 'Storage Used', value: 62, color: 'bg-blue-400' },
-                  { label: 'Active Streams', value: 34, color: 'bg-primex-secondary' },
+                  { label: 'Server Uptime', value: 99.9, color: 'bg-green-400', icon: Server },
+                  { label: 'API Response Time', value: 85, color: 'bg-primex', icon: Wifi },
+                  { label: 'Storage Used', value: 62, color: 'bg-blue-400', icon: HardDrive },
+                  { label: 'Active Streams', value: 34, color: 'bg-primex-secondary', icon: Play },
                 ].map((item) => (
-                  <div key={item.label}>
+                  <motion.div key={item.label} variants={staggerItem}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                        <item.icon className="w-3.5 h-3.5" />
+                        {item.label}
+                      </span>
                       <span className="text-sm font-medium primex-gradient-text count-up">{item.value}%</span>
                     </div>
                     <div className="progress-bar">
                       <div className="progress-bar-fill" style={{ width: `${item.value}%` }} />
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Users */}
-        <TabsContent value="users">
+      {/* Users */}
+      {activeTab === 'users' && (
+        <div className="relative z-10">
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -341,7 +392,7 @@ export default function AdminPanel() {
                   key={role}
                   size="sm"
                   variant={roleFilter === role ? 'default' : 'outline'}
-                  className={`rounded-lg text-xs capitalize ${roleFilter === role ? 'primex-gradient text-white' : 'btn-outline-primex'}`}
+                  className={`rounded-lg text-xs capitalize ${roleFilter === role ? 'btn-primex' : 'btn-outline-primex'}`}
                   onClick={() => setRoleFilter(role)}
                 >
                   {role}
@@ -350,106 +401,149 @@ export default function AdminPanel() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            {filteredUsers.map((u, idx) => (
-              <motion.div
-                key={u.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.03 }}
-              >
-                <div
-                  className="glass-card-premium hover-lift p-4 rounded-xl cursor-pointer"
-                  onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative group">
-                      <Avatar className="w-10 h-10 transition-all group-hover:gradient-border-primex">
-                        <AvatarFallback className="bg-primex/20 text-primex text-sm">
-                          {u.username[0]?.toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-medium text-sm">{u.username}</p>
-                        {u.role === 'admin' && <span className="tag-primex text-[10px]">Admin</span>}
-                        {u.isCreator && <span className="tag-primex text-[10px]">Creator</span>}
-                        {u.role === 'user' && !u.isCreator && <span className="tag-info text-[10px]">Member</span>}
-                        {u.isBanned && <span className="tag-danger text-[10px]">Banned</span>}
+          {/* Loading state */}
+          {loading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="glass-card-premium p-4 rounded-xl flex items-center gap-3">
+                  <div className="skeleton-pulse w-10 h-10 rounded-full" />
+                  <div className="flex-1 space-y-1">
+                    <div className="skeleton-pulse h-4 w-32 rounded" />
+                    <div className="skeleton-pulse h-3 w-48 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="space-y-2"
+            >
+              {filteredUsers.map((u) => (
+                <motion.div key={u.id} variants={staggerItem}>
+                  <div
+                    className="interactive-card p-4 rounded-xl cursor-pointer"
+                    onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Avatar className="w-10 h-10 gradient-border-primex">
+                          {u.profilePic && <AvatarImage src={u.profilePic} />}
+                          <AvatarFallback className="bg-primex/20 text-primex text-sm">
+                            {u.username[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                       </div>
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-sm">{u.username}</p>
+                          {u.role === 'admin' && <span className="tag-primex text-[10px]">Admin</span>}
+                          {u.isCreator && <span className="tag-primex text-[10px]">Creator</span>}
+                          {u.role === 'user' && !u.isCreator && <span className="tag-success text-[10px]">Member</span>}
+                          {u.isBanned && <span className="tag-danger text-[10px]">Banned</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{u.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          className={`btn-sm ${u.isBanned ? 'btn-outline-primex text-green-400' : 'btn-outline-primex text-red-400'}`}
+                          onClick={(e) => { e.stopPropagation(); handleBanUser(u.id, u.isBanned); }}
+                        >
+                          {u.isBanned ? <CheckCircle className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                          {u.isBanned ? 'Unban' : 'Ban'}
+                        </button>
+                        {expandedUser === u.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        className={`btn-sm ${u.isBanned ? 'btn-outline-primex text-green-400' : 'btn-outline-primex text-red-400'}`}
-                        onClick={(e) => { e.stopPropagation(); handleBanUser(u.id, u.isBanned); }}
+                  </div>
+
+                  <AnimatePresence>
+                    {expandedUser === u.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
                       >
-                        {u.isBanned ? <CheckCircle className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
-                        {u.isBanned ? 'Unban' : 'Ban'}
-                      </button>
-                      {expandedUser === u.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                        <div className="glass-card-premium p-4 rounded-xl mt-1 ml-6 border-l-2 border-primex/30">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Joined</p>
+                              <p className="text-sm font-medium">{new Date(u.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Role</p>
+                              <p className="text-sm font-medium capitalize flex items-center justify-center gap-1">
+                                {u.role}
+                                {u.role === 'admin' && <span className="tag-primex text-[9px]">Privileged</span>}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Status</p>
+                              <p className={`text-sm font-medium flex items-center justify-center gap-1 ${u.isBanned ? 'text-red-400' : 'text-green-400'}`}>
+                                {u.isBanned ? 'Banned' : 'Active'}
+                                {!u.isBanned && <span className="badge-pulse text-[8px]">Online</span>}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Creator</p>
+                              <p className={`text-sm font-medium ${u.isCreator ? 'text-primex' : ''}`}>
+                                {u.isCreator ? 'Yes' : 'No'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {/* Reports */}
+      {activeTab === 'reports' && (
+        <div className="relative z-10">
+          {/* Loading state */}
+          {loading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="glass-card-premium p-4 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="skeleton-pulse w-8 h-8 rounded-lg" />
+                    <div className="flex-1 space-y-1">
+                      <div className="skeleton-pulse h-4 w-48 rounded" />
+                      <div className="skeleton-pulse h-3 w-32 rounded" />
                     </div>
                   </div>
                 </div>
-
-                <AnimatePresence>
-                  {expandedUser === u.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="glass-card p-4 rounded-xl mt-1 ml-6 border-l-2 border-primex/30">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                          <div>
-                            <p className="text-xs text-muted-foreground">Joined</p>
-                            <p className="text-sm font-medium">{new Date(u.createdAt).toLocaleDateString()}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Role</p>
-                            <p className="text-sm font-medium capitalize">{u.role}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Status</p>
-                            <p className={`text-sm font-medium ${u.isBanned ? 'text-red-400' : 'text-green-400'}`}>
-                              {u.isBanned ? 'Banned' : 'Active'}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Creator</p>
-                            <p className={`text-sm font-medium ${u.isCreator ? 'text-primex' : ''}`}>
-                              {u.isCreator ? 'Yes' : 'No'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Reports */}
-        <TabsContent value="reports">
-          <div className="space-y-2">
-            {reports.length === 0 ? (
-              <div className="text-center py-12">
-                <Flag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">No reports</p>
+              ))}
+            </div>
+          ) : reports.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-3 breathe">
+                <Flag className="w-7 h-7 text-muted-foreground" />
               </div>
-            ) : (
-              reports.map((report, idx) => (
+              <p className="text-muted-foreground font-medium">No reports</p>
+              <p className="text-sm text-muted-foreground mt-1">All clear! No pending reports.</p>
+            </div>
+          ) : (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="space-y-2"
+            >
+              {reports.map((report) => (
                 <motion.div
                   key={report.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="glass-card hover-lift p-4 rounded-xl"
+                  variants={staggerItem}
+                  className="interactive-card p-4 rounded-xl"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -492,63 +586,85 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 </motion.div>
-              ))
-            )}
-          </div>
-        </TabsContent>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
 
-        {/* Content */}
-        <TabsContent value="content">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {content.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="glass-card-premium card-shine hover-lift rounded-2xl overflow-hidden"
-              >
-                {/* Thumbnail area */}
-                <div className="relative aspect-video bg-gradient-to-br from-primex/20 to-primex-secondary/20">
-                  <div className="video-overlay-gradient" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {item.type === 'reel' ? (
-                      <Play className="w-8 h-8 text-white/60" />
-                    ) : (
-                      <FilmIcon className="w-8 h-8 text-white/60" />
-                    )}
-                  </div>
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    {item.isPrivate && <span className="tag-warning text-[10px]"><Lock className="w-3 h-3" /> Private</span>}
-                    <span className="tag-primex text-[10px]">{item.type}</span>
-                  </div>
-                  <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                    <Eye className="w-3 h-3 text-white/70" />
-                    <span className="text-xs text-white/70">{item.views.toLocaleString()}</span>
+      {/* Content */}
+      {activeTab === 'content' && (
+        <div className="relative z-10">
+          <div className="divider-primex mb-6" />
+
+          {/* Loading state */}
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="glass-card-premium rounded-2xl overflow-hidden">
+                  <div className="skeleton-pulse aspect-video" />
+                  <div className="p-4 space-y-2">
+                    <div className="skeleton-pulse h-4 w-3/4 rounded" />
+                    <div className="skeleton-pulse h-3 w-1/2 rounded" />
                   </div>
                 </div>
-                <div className="p-4">
-                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">by {item.user.username}</p>
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(item.createdAt).toLocaleDateString()}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400"
-                      onClick={() => handleDeleteContent(item.id)}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+              {content.map((item) => (
+                <motion.div
+                  key={item.id}
+                  variants={staggerItem}
+                  className="interactive-card rounded-2xl overflow-hidden"
+                >
+                  {/* Thumbnail area */}
+                  <div className="relative aspect-video bg-gradient-to-br from-primex/20 to-primex-secondary/20">
+                    <div className="video-overlay-gradient" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {item.type === 'reel' ? (
+                        <Play className="w-8 h-8 text-white/60" />
+                      ) : (
+                        <FilmIcon className="w-8 h-8 text-white/60" />
+                      )}
+                    </div>
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {item.isPrivate && <span className="tag-warning text-[10px]"><Lock className="w-3 h-3" /> Private</span>}
+                      <span className="tag-primex text-[10px]">{item.type}</span>
+                    </div>
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-white/70" />
+                      <span className="text-xs text-white/70 count-up">{item.views.toLocaleString()}</span>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+                  <div className="p-4">
+                    <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">by {item.user.username}</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(item.createdAt).toLocaleDateString()}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400"
+                        onClick={() => handleDeleteContent(item.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

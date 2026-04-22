@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 import {
   Compass, TrendingUp, Users, Film, Play, Heart, Eye,
-  UserPlus, Star, Crown, Sparkles, Radio
+  UserPlus, Star, Crown, Sparkles, Radio, Search, Hash
 } from 'lucide-react';
-import LiveIndicator, { LiveStreamCard } from './LiveIndicator';
 
 interface ExploreUser {
   id: string;
@@ -33,12 +33,23 @@ interface ExploreVideo {
   createdAt: string;
 }
 
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 24, scale: 0.96 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } },
+};
+
 export default function ExplorePage() {
   const { token, setCurrentView, setViewingUser } = useAppStore();
   const [users, setUsers] = useState<ExploreUser[]>([]);
   const [videos, setVideos] = useState<ExploreVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'trending' | 'users' | 'videos'>('trending');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,14 +80,7 @@ export default function ExplorePage() {
     return n.toString();
   };
 
-  // Mock live streams
-  const liveStreams = [
-    { username: 'djmaria', title: '🎵 Live DJ Set - Chill Vibes', viewerCount: 1243 },
-    { username: 'gamerguru', title: '🎮 Ranked Grind - Road to Champion', viewerCount: 892 },
-    { username: 'chefkat', title: '🍳 Cooking Japanese Ramen Live', viewerCount: 567 },
-  ];
-
-  // Trending tags mock
+  // Trending tags
   const trendingTags = [
     { tag: 'Music', count: '2.1K', icon: '🎵' },
     { tag: 'Gaming', count: '1.8K', icon: '🎮' },
@@ -89,20 +93,35 @@ export default function ExplorePage() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 lg:p-6">
+    <div className="max-w-5xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+      {/* Decorative orbs */}
+      <div className="orb-primex-sm absolute top-4 right-12 opacity-20 pointer-events-none" />
+      <div className="orb-primex-sm absolute bottom-20 left-6 opacity-15 pointer-events-none" />
+      <div className="orb-primex-sm absolute top-1/2 right-4 opacity-10 pointer-events-none float-slow" />
+
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center">
-          <Compass className="w-5 h-5 text-white" />
+      <div className="relative z-10 flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
+          <Compass className="w-6 h-6 text-white" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-shimmer">Explore</h1>
           <p className="text-sm text-muted-foreground">Discover trending content and creators</p>
         </div>
+        {/* Search bar */}
+        <div className="ml-auto hidden sm:flex items-center relative w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search creators, tags..."
+            className="pl-9 glass-input h-9 rounded-xl text-sm"
+          />
+        </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 mb-6">
+      <div className="tab-bar-premium mb-6 relative z-10">
         {[
           { key: 'trending', label: 'Trending', icon: TrendingUp },
           { key: 'users', label: 'Creators', icon: Users },
@@ -111,11 +130,7 @@ export default function ExplorePage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as any)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-              activeTab === tab.key
-                ? 'primex-gradient text-white glow-effect'
-                : 'glass-card text-muted-foreground hover:text-foreground'
-            }`}
+            className={`tab-item ${activeTab === tab.key ? 'active' : ''}`}
           >
             <tab.icon className="w-4 h-4" />
             {tab.label}
@@ -125,7 +140,7 @@ export default function ExplorePage() {
 
       {/* Trending Tab */}
       {activeTab === 'trending' && (
-        <div className="space-y-6">
+        <div className="space-y-6 relative z-10">
           {/* Live Now Section */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -133,20 +148,13 @@ export default function ExplorePage() {
                 <Radio className="w-5 h-5 text-red-500" />
                 <span className="text-shimmer">Live Now</span>
               </h2>
-              <LiveIndicator size="sm" viewerCount={liveStreams.reduce((acc, s) => acc + s.viewerCount, 0)} />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {liveStreams.map((stream) => (
-                <LiveStreamCard
-                  key={stream.username}
-                  username={stream.username}
-                  title={stream.title}
-                  viewerCount={stream.viewerCount}
-                  onClick={() => {
-                    /* Would open live stream */
-                  }}
-                />
-              ))}
+            <div className="glass-card-premium p-8 rounded-xl text-center card-shine hover-lift">
+              <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-3 breathe">
+                <Radio className="w-7 h-7 text-red-400" />
+              </div>
+              <h3 className="font-medium mb-1">No one is live right now</h3>
+              <p className="text-sm text-muted-foreground">Check back later for live streams!</p>
             </div>
           </div>
 
@@ -154,52 +162,72 @@ export default function ExplorePage() {
 
           {/* Trending Tags */}
           <div>
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
               <TrendingUp className="w-5 h-5 text-primex" />
               Trending Tags
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {trendingTags.map((t, idx) => (
-                <div
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+            >
+              {trendingTags.map((t) => (
+                <motion.div
                   key={t.tag}
-                  className={`glass-card p-4 rounded-xl cursor-pointer hover:bg-white/5 transition-all group hover-scale hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
+                  variants={staggerItem}
+                  className="glass-card-premium p-4 rounded-xl cursor-pointer hover-lift card-shine group"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{t.icon}</span>
                     <div>
                       <p className="font-medium text-sm group-hover:text-primex transition-colors">#{t.tag}</p>
-                      <p className="text-xs text-muted-foreground">{t.count} videos</p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="tag-primex text-[10px] mr-1">Trending</span>
+                        {t.count} videos
+                      </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
+
+          <div className="divider-primex" />
 
           {/* Featured Creators */}
           <div>
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
-              <Crown className="w-5 h-5 text-yellow-400" />
-              Featured Creators
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-shimmer">
+                <Crown className="w-5 h-5 text-yellow-400" />
+                Featured Creators
+              </h2>
+              <span className="featured-badge">Featured</span>
+            </div>
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+            >
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="glass-card p-4 rounded-xl">
+                  <div key={i} className="glass-card-premium p-4 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div className="skeleton-pulse w-12 h-12 rounded-full" />
                       <div className="space-y-1 flex-1">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-16" />
+                        <div className="skeleton-pulse h-4 w-24 rounded" />
+                        <div className="skeleton-pulse h-3 w-16 rounded" />
                       </div>
                     </div>
                   </div>
                 ))
               ) : users.length > 0 ? (
-                users.slice(0, 6).map((u, idx) => (
-                  <div
+                users.slice(0, 6).map((u) => (
+                  <motion.div
                     key={u.id}
-                    className={`glass-card-premium p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
+                    variants={staggerItem}
+                    className="glass-card-premium p-4 rounded-xl hover-lift card-shine cursor-pointer group"
                     onClick={() => {
                       setViewingUser(u.id, u.username);
                       setCurrentView('profile');
@@ -207,7 +235,7 @@ export default function ExplorePage() {
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <Avatar className="w-12 h-12">
+                        <Avatar className="w-12 h-12 gradient-border-primex">
                           <AvatarImage src={u.profilePic || ''} />
                           <AvatarFallback className="bg-primex/20 text-primex font-bold">
                             {u.username?.[0]?.toUpperCase() || 'U'}
@@ -220,34 +248,39 @@ export default function ExplorePage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm group-hover:text-primex transition-colors truncate">
-                          {u.username}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm group-hover:text-primex transition-colors truncate">
+                            {u.username}
+                          </p>
+                          {u.isCreator && <span className="tag-primex text-[10px]">Creator</span>}
+                        </div>
                         <p className="text-xs text-muted-foreground truncate">
                           {u.bio || 'Creator on PrimeX'}
                         </p>
                       </div>
                       <Button
                         size="sm"
-                        className="primex-gradient text-white rounded-lg gap-1 shrink-0"
+                        className="btn-primex rounded-lg gap-1 shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <UserPlus className="w-3.5 h-3.5" />
                       </Button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               ) : (
                 <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-                  <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-3 breathe">
                     <Crown className="w-7 h-7 text-yellow-400" />
                   </div>
                   <h3 className="font-medium mb-1">No Creators Yet</h3>
                   <p className="text-sm text-muted-foreground">Check back soon!</p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
+
+          <div className="divider-primex" />
 
           {/* Popular Videos */}
           <div>
@@ -255,11 +288,17 @@ export default function ExplorePage() {
               <Sparkles className="w-5 h-5 text-primex" />
               Popular Videos
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {videos.length > 0 ? videos.slice(0, 6).map((v, idx) => (
-                <div
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="content-grid"
+            >
+              {videos.length > 0 ? videos.slice(0, 6).map((v) => (
+                <motion.div
                   key={v.id}
-                  className={`glass-card-premium rounded-xl overflow-hidden hover-lift card-shine cursor-pointer group stagger-${Math.min(idx + 1, 8)}`}
+                  variants={staggerItem}
+                  className="interactive-card rounded-xl overflow-hidden cursor-pointer group"
                   onClick={() => {
                     useAppStore.setState({ currentVideoId: v.id });
                     setCurrentView('video');
@@ -269,102 +308,132 @@ export default function ExplorePage() {
                     {v.thumbnail ? (
                       <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/10 to-primex/5">
+                      <div className="shimmer w-full h-full flex items-center justify-center">
                         <Play className="w-8 h-8 text-primex/40" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <div className="w-10 h-10 rounded-full primex-gradient flex items-center justify-center">
-                        <Play className="w-4 h-4 text-white fill-white" />
+                      <div className="play-button-hover">
+                        <Play className="w-5 h-5 text-white fill-white ml-0.5" />
                       </div>
+                    </div>
+                    <div className="video-overlay-gradient" />
+                    <div className="absolute bottom-2 left-2 flex items-center gap-2">
+                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px]">
+                        <Eye className="w-3 h-3" /> <span className="count-up">{formatCount(v.views)}</span>
+                      </span>
+                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px]">
+                        <Heart className="w-3 h-3" /> <span className="count-up">{formatCount(v.likes)}</span>
+                      </span>
                     </div>
                   </div>
                   <div className="p-3">
                     <h4 className="text-sm font-medium line-clamp-1">{v.title}</h4>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <Avatar className="w-5 h-5">
+                      <Avatar className="w-5 h-5 gradient-border-primex">
                         <AvatarFallback className="text-[8px] bg-primex/20 text-primex">
                           {v.user?.username?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-xs text-muted-foreground">{v.user?.username || 'Unknown'}</span>
-                      <span className="text-xs text-muted-foreground">•</span>
-                      <div className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                        <Eye className="w-3 h-3" />
-                        {formatCount(v.views)}
-                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )) : (
                 <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-                  <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3 breathe">
                     <Play className="w-7 h-7 text-primex" />
                   </div>
                   <h3 className="font-medium mb-1">No Videos Yet</h3>
                   <p className="text-sm text-muted-foreground">Be the first to upload!</p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       )}
 
       {/* Users Tab */}
       {activeTab === 'users' && (
-        <div className="space-y-3">
+        <div className="space-y-3 relative z-10">
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search creators..."
+              className="pl-9 glass-input h-10 rounded-xl"
+            />
+          </div>
+
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="glass-card p-4 rounded-xl flex items-center gap-3">
-                <Skeleton className="w-14 h-14 rounded-full" />
+              <div key={i} className="glass-card-premium p-4 rounded-xl flex items-center gap-3">
+                <div className="skeleton-pulse w-14 h-14 rounded-full" />
                 <div className="flex-1 space-y-1">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-48" />
+                  <div className="skeleton-pulse h-4 w-32 rounded" />
+                  <div className="skeleton-pulse h-3 w-48 rounded" />
                 </div>
               </div>
             ))
           ) : users.length > 0 ? (
-            users.map((u, idx) => (
-              <div key={u.id} className={`glass-card-premium p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
-                onClick={() => {
-                  setViewingUser(u.id, u.username);
-                  setCurrentView('profile');
-                }}
-              >
-                <div className="relative">
-                  <Avatar className="w-14 h-14">
-                    <AvatarImage src={u.profilePic || ''} />
-                    <AvatarFallback className="bg-primex/20 text-primex text-lg font-bold">
-                      {u.username?.[0]?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  {u.isCreator && (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-background">
-                      <Crown className="w-3 h-3 text-black" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold">{u.username}</p>
-                    {u.role === 'admin' && (
-                      <Badge className="bg-primex/20 text-primex text-[10px]">Admin</Badge>
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="show"
+              className="space-y-3"
+            >
+              {users.map((u) => (
+                <motion.div
+                  key={u.id}
+                  variants={staggerItem}
+                  className="glass-card-premium p-4 rounded-xl flex items-center gap-4 hover-lift card-shine cursor-pointer group"
+                  onClick={() => {
+                    setViewingUser(u.id, u.username);
+                    setCurrentView('profile');
+                  }}
+                >
+                  <div className="relative">
+                    <Avatar className="w-14 h-14 gradient-border-primex">
+                      <AvatarImage src={u.profilePic || ''} />
+                      <AvatarFallback className="bg-primex/20 text-primex text-lg font-bold">
+                        {u.username?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    {u.isCreator && (
+                      <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center border-2 border-background">
+                        <Crown className="w-3 h-3 text-black" />
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{u.bio || 'Creator on PrimeX'}</p>
-                </div>
-                <Button
-                  size="sm"
-                  className="btn-primex rounded-xl gap-1.5 shrink-0"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <UserPlus className="w-4 h-4" /> Add Friend
-                </Button>
-              </div>
-            ))
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold group-hover:text-primex transition-colors">{u.username}</p>
+                      {u.role === 'admin' && <span className="tag-primex text-[10px]">Admin</span>}
+                      {u.isCreator && <span className="featured-badge text-[9px]">Featured</span>}
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{u.bio || 'Creator on PrimeX'}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {u.isCreator && <span className="tag-primex text-[10px]">Creator</span>}
+                      {u._count && (
+                        <span className="text-xs text-muted-foreground">
+                          {u._count.videos} videos
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="btn-primex rounded-xl gap-1.5 shrink-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <UserPlus className="w-4 h-4" /> Add Friend
+                  </Button>
+                </motion.div>
+              ))}
+            </motion.div>
           ) : (
             <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-3 hover-lift">
+              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-3 breathe hover-lift">
                 <Crown className="w-7 h-7 text-yellow-400" />
               </div>
               <h3 className="font-medium mb-1">No Creators Found</h3>
@@ -376,11 +445,17 @@ export default function ExplorePage() {
 
       {/* Videos Tab */}
       {activeTab === 'videos' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="content-grid relative z-10"
+        >
           {videos.length > 0 ? videos.map((v) => (
-            <div
+            <motion.div
               key={v.id}
-              className="glass-card rounded-xl overflow-hidden video-card-hover cursor-pointer group"
+              variants={staggerItem}
+              className="interactive-card rounded-xl overflow-hidden cursor-pointer group"
               onClick={() => {
                 useAppStore.setState({ currentVideoId: v.id });
                 setCurrentView('video');
@@ -390,24 +465,25 @@ export default function ExplorePage() {
                 {v.thumbnail ? (
                   <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/10 to-primex/5">
+                  <div className="shimmer w-full h-full flex items-center justify-center">
                     <Play className="w-10 h-10 text-primex/30" />
                   </div>
                 )}
+                <div className="video-overlay-gradient" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                 <div className="absolute bottom-2 left-2 flex items-center gap-2">
-                  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-xs">
-                    <Eye className="w-3 h-3" /> {formatCount(v.views)}
-                  </div>
-                  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-xs">
-                    <Heart className="w-3 h-3" /> {formatCount(v.likes)}
-                  </div>
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px]">
+                    <Eye className="w-3 h-3" /> <span className="count-up">{formatCount(v.views)}</span>
+                  </span>
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px]">
+                    <Heart className="w-3 h-3" /> <span className="count-up">{formatCount(v.likes)}</span>
+                  </span>
                 </div>
               </div>
               <div className="p-3">
                 <h4 className="text-sm font-medium line-clamp-2">{v.title}</h4>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <Avatar className="w-5 h-5">
+                  <Avatar className="w-5 h-5 gradient-border-primex">
                     <AvatarFallback className="text-[8px] bg-primex/20 text-primex">
                       {v.user?.username?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
@@ -415,17 +491,17 @@ export default function ExplorePage() {
                   <span className="text-xs text-muted-foreground">{v.user?.username || 'Unknown'}</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )) : (
             <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-              <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3">
+              <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3 breathe">
                 <Play className="w-7 h-7 text-primex" />
               </div>
               <h3 className="font-medium mb-1">No Videos Yet</h3>
               <p className="text-sm text-muted-foreground">Be the first to upload!</p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );

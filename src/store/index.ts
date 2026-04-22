@@ -27,7 +27,8 @@ export type ViewType =
   | 'settings'
   | 'history'
   | 'playlists'
-  | 'creator-dashboard';
+  | 'creator-dashboard'
+  | 'live';
 
 interface AppState {
   // Auth

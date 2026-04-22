@@ -11,7 +11,7 @@ import {
   Home, Film, Upload, MessageCircle, User, Search, Bell, LogOut,
   Shield, BarChart3, Users, X, Menu, Compass, TrendingUp, Settings,
   Clock, ListVideo, DollarSign, Clock3, TrendingUp as TrendingIcon, XCircle,
-  BookmarkPlus,
+  BookmarkPlus, Radio,
 } from 'lucide-react';
 import HomeFeed from './HomeFeed';
 import ReelsFeed from './ReelsFeed';
@@ -30,6 +30,9 @@ import WatchHistoryPage from './WatchHistoryPage';
 import PlaylistsPage from './PlaylistsPage';
 import CreatorDashboard from './CreatorDashboard';
 import OnboardingModal from './OnboardingModal';
+import LiveStreamsPage from './LiveStreamsPage';
+import KeyboardShortcutsOverlay from './KeyboardShortcutsOverlay';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { playNotificationSound } from '@/lib/notification-sound';
 
 /* ── Trending Searches (mock) ────────────────────────────────── */
@@ -172,6 +175,7 @@ export default function MainLayout() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [watchLaterCount, setWatchLaterCount] = useState(0);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const prevUnreadRef = useRef(0);
 
   // Onboarding check on first login
@@ -263,6 +267,17 @@ export default function MainLayout() {
     removeRecentSearch(query);
   }, []);
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onShowShortcuts: () => setShowShortcuts(true),
+    onHideShortcuts: () => setShowShortcuts(false),
+    onCloseModal: () => setShowMobileMenu(false),
+    onFocusSearch: () => {
+      const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
+      searchInput?.focus();
+    },
+  });
+
   const handleLogout = () => {
     logout();
     setCurrentView('home');
@@ -280,6 +295,7 @@ export default function MainLayout() {
     { icon: Home, label: 'Home', view: 'home' },
     { icon: Compass, label: 'Explore', view: 'explore' },
     { icon: Film, label: 'Reels', view: 'reels' },
+    { icon: Radio, label: 'Live', view: 'live' },
     { icon: Upload, label: 'Upload', view: 'upload' },
     { icon: MessageCircle, label: 'Chat', view: 'chat' },
     { icon: Users, label: 'Friends', view: 'friends' },
@@ -307,6 +323,7 @@ export default function MainLayout() {
       case 'history': return <WatchHistoryPage />;
       case 'playlists': return <PlaylistsPage />;
       case 'creator-dashboard': return <CreatorDashboard />;
+      case 'live': return <LiveStreamsPage />;
       default: return <HomeFeed />;
     }
   };
@@ -515,7 +532,7 @@ export default function MainLayout() {
 
           {/* Main Nav */}
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Menu</p>
-          {sidebarItems.slice(0, 5).map((item) => (
+          {sidebarItems.slice(0, 6).map((item) => (
             <Button
               key={item.view}
               variant="ghost"
@@ -532,7 +549,7 @@ export default function MainLayout() {
           <div className="border-t border-border/50 my-2" />
 
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Social</p>
-          {sidebarItems.slice(5).map((item) => (
+          {sidebarItems.slice(6).map((item) => (
             <Button
               key={item.view}
               variant="ghost"
@@ -676,28 +693,34 @@ export default function MainLayout() {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden sticky bottom-0 z-40 glass-card rounded-none border-t border-border/50 safe-area-bottom">
-        <div className="flex items-center justify-around h-14 px-1">
-          {mainNavItems.map((item) => (
-            <button
-              key={item.view}
-              onClick={() => setCurrentView(item.view)}
-              className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-lg transition-colors relative ${
-                currentView === item.view ? 'text-primex' : 'text-muted-foreground'
-              }`}
-            >
-              {item.view === 'upload' ? (
-                <div className="w-9 h-9 primex-gradient rounded-xl flex items-center justify-center -mt-3 shadow-lg glow-effect">
-                  <item.icon className="w-5 h-5 text-white" />
-                </div>
-              ) : (
-                <item.icon className="w-5 h-5" />
-              )}
-              <span className={`text-[10px] ${item.view === 'upload' ? 'mt-0.5' : ''}`}>{item.label}</span>
-              {currentView === item.view && item.view !== 'upload' && (
-                <div className="absolute -bottom-0.5 w-4 h-0.5 rounded-full bg-primex" />
-              )}
-            </button>
-          ))}
+        <div className="flex items-center h-14 px-1 overflow-x-auto no-scrollbar">
+          <div className="flex items-center justify-around w-full min-w-0">
+            {[
+              ...mainNavItems.slice(0, 2),
+              { icon: Radio, label: 'Live', view: 'live' as const },
+              ...mainNavItems.slice(2),
+            ].map((item) => (
+              <button
+                key={item.view}
+                onClick={() => setCurrentView(item.view)}
+                className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition-colors relative shrink-0 ${
+                  currentView === item.view ? 'text-primex' : 'text-muted-foreground'
+                }`}
+              >
+                {item.view === 'upload' ? (
+                  <div className="w-9 h-9 primex-gradient rounded-xl flex items-center justify-center -mt-3 shadow-lg glow-effect">
+                    <item.icon className="w-5 h-5 text-white" />
+                  </div>
+                ) : (
+                  <item.icon className="w-5 h-5" />
+                )}
+                <span className={`text-[10px] ${item.view === 'upload' ? 'mt-0.5' : ''}`}>{item.label}</span>
+                {currentView === item.view && item.view !== 'upload' && (
+                  <div className="absolute -bottom-0.5 w-4 h-0.5 rounded-full bg-primex" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </nav>
 
@@ -867,6 +890,12 @@ export default function MainLayout() {
       <OnboardingModal
         isOpen={showOnboarding}
         onClose={() => setShowOnboarding(false)}
+      />
+
+      {/* Keyboard Shortcuts Overlay */}
+      <KeyboardShortcutsOverlay
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
       />
     </div>
   );

@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyAccessToken } from '@/lib/auth';
 
+// Force dynamic to ensure fresh Prisma client
+export const dynamic = 'force-dynamic';
+
 function getAuthUser(request: Request) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
