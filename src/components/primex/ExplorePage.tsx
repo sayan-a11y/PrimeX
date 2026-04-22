@@ -33,7 +33,7 @@ interface ExploreVideo {
 }
 
 export default function ExplorePage() {
-  const { token, setCurrentView } = useAppStore();
+  const { token, setCurrentView, setViewingUser } = useAppStore();
   const [users, setUsers] = useState<ExploreUser[]>([]);
   const [videos, setVideos] = useState<ExploreVideo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -165,8 +165,11 @@ export default function ExplorePage() {
                 users.slice(0, 6).map((u) => (
                   <div
                     key={u.id}
-                    className="glass-card p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group"
-                    onClick={() => setCurrentView('profile')}
+                    className="glass-card p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group hover-lift"
+                    onClick={() => {
+                      setViewingUser(u.id, u.username);
+                      setCurrentView('profile');
+                    }}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
@@ -201,9 +204,12 @@ export default function ExplorePage() {
                   </div>
                 ))
               ) : (
-                <div className="glass-card p-8 rounded-xl text-center col-span-full">
-                  <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-muted-foreground">No creators yet</p>
+                <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
+                  <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-3">
+                    <Crown className="w-7 h-7 text-yellow-400" />
+                  </div>
+                  <h3 className="font-medium mb-1">No Creators Yet</h3>
+                  <p className="text-sm text-muted-foreground">Check back soon!</p>
                 </div>
               )}
             </div>
@@ -257,10 +263,12 @@ export default function ExplorePage() {
                   </div>
                 </div>
               )) : (
-                <div className="glass-card p-8 rounded-xl text-center col-span-full">
-                  <Film className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-muted-foreground">No videos yet</p>
-                  <p className="text-xs text-muted-foreground mt-1">Be the first to upload!</p>
+                <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
+                  <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3">
+                    <Play className="w-7 h-7 text-primex" />
+                  </div>
+                  <h3 className="font-medium mb-1">No Videos Yet</h3>
+                  <p className="text-sm text-muted-foreground">Be the first to upload!</p>
                 </div>
               )}
             </div>
@@ -283,7 +291,12 @@ export default function ExplorePage() {
             ))
           ) : users.length > 0 ? (
             users.map((u) => (
-              <div key={u.id} className="glass-card p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all">
+              <div key={u.id} className="glass-card p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer hover-lift"
+                onClick={() => {
+                  setViewingUser(u.id, u.username);
+                  setCurrentView('profile');
+                }}
+              >
                 <div className="relative">
                   <Avatar className="w-14 h-14">
                     <AvatarImage src={u.profilePic || ''} />
@@ -309,6 +322,7 @@ export default function ExplorePage() {
                 <Button
                   size="sm"
                   className="primex-gradient text-white rounded-xl gap-1.5 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <UserPlus className="w-4 h-4" /> Add Friend
                 </Button>
@@ -316,7 +330,9 @@ export default function ExplorePage() {
             ))
           ) : (
             <div className="text-center py-12">
-              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-3 hover-lift">
+                <Crown className="w-7 h-7 text-yellow-400" />
+              </div>
               <h3 className="font-medium mb-1">No Creators Found</h3>
               <p className="text-sm text-muted-foreground">Check back soon for new creators!</p>
             </div>
@@ -367,8 +383,10 @@ export default function ExplorePage() {
               </div>
             </div>
           )) : (
-            <div className="glass-card p-8 rounded-xl text-center col-span-full">
-              <Film className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+            <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
+              <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3">
+                <Play className="w-7 h-7 text-primex" />
+              </div>
               <h3 className="font-medium mb-1">No Videos Yet</h3>
               <p className="text-sm text-muted-foreground">Be the first to upload!</p>
             </div>

@@ -35,18 +35,18 @@ async function seed() {
 
   // Create demo videos
   const videoData = [
-    { title: 'Cinematic Mountain Sunrise - 4K Drone Footage', description: 'Breathtaking sunrise over the Swiss Alps captured in stunning 4K resolution. Watch as golden light paints the peaks and valleys in this cinematic drone film.', tags: 'cinematic,nature,4k,drone,mountain' },
-    { title: 'How I Edit My YouTube Videos - Complete Guide', description: 'Step-by-step tutorial on my video editing workflow. From raw footage to polished content using DaVinci Resolve and Premiere Pro.', tags: 'tutorial,editing,youtube,video' },
-    { title: 'Best Budget Camera Gear 2025', description: 'Looking for the best camera gear without breaking the bank? Here are my top picks for budget-friendly filmmaking equipment.', tags: 'tech,camera,budget,gear,review' },
-    { title: 'Live Concert Highlights - Summer Music Fest', description: 'Amazing performances from this summer\'s biggest music festival. Featuring incredible light shows and crowd energy.', tags: 'music,concert,live,festival' },
-    { title: '24 Hours in Tokyo - Travel Vlog', description: 'Exploring the vibrant streets of Tokyo in just 24 hours. From sushi bars to neon-lit alleys, this city never sleeps.', tags: 'travel,tokyo,japan,vlog' },
-    { title: 'Advanced Gaming Setup Tour 2025', description: 'Check out my ultimate gaming setup with triple monitors, custom RGB, and the latest peripherals. Full specs inside!', tags: 'gaming,setup,tour,tech' },
-    { title: 'Cooking the Perfect Steak - Chef\'s Method', description: 'Learn the professional chef\'s technique for cooking the perfect medium-rare steak every time. Simple but effective.', tags: 'cooking,steak,chef,food,tutorial' },
-    { title: 'Digital Art Speed Paint - Fantasy Landscape', description: 'Watch me create a fantasy landscape from scratch in Photoshop. 3 hours compressed into 10 minutes of pure creativity.', tags: 'art,digital,painting,fantasy,creative' },
-    { title: 'Full Body Workout - No Equipment Needed', description: 'Get fit anywhere with this 30-minute full body workout. No gym, no equipment, just you and determination.', tags: 'fitness,workout,health,exercise' },
-    { title: 'Building a PC from Scratch - Beginner Guide', description: 'Complete PC build guide for beginners. I walk you through every step from parts selection to first boot.', tags: 'tech,pc,build,tutorial,beginner' },
-    { title: 'Street Food Tour - Bangkok Night Market', description: 'Exploring the incredible street food scene at Bangkok\'s famous night markets. Pad Thai, Mango Sticky Rice, and more!', tags: 'food,travel,bangkok,streetfood' },
-    { title: 'Lo-Fi Beats to Study and Relax', description: 'Chill lo-fi hip hop beats perfect for studying, working, or relaxing. 2 hours of continuous smooth vibes.', tags: 'music,lofi,study,chill,beats' },
+    { title: 'Cinematic Mountain Sunrise - 4K Drone Footage', description: 'Breathtaking sunrise over the Swiss Alps captured in stunning 4K resolution. Watch as golden light paints the peaks and valleys in this cinematic drone film.', tags: 'cinematic,nature,4k,drone,mountain', thumbnail: '/thumbnails/mountain-sunrise.png' },
+    { title: 'How I Edit My YouTube Videos - Complete Guide', description: 'Step-by-step tutorial on my video editing workflow. From raw footage to polished content using DaVinci Resolve and Premiere Pro.', tags: 'tutorial,editing,youtube,video', thumbnail: '/thumbnails/tech-review.png' },
+    { title: 'Best Budget Camera Gear 2025', description: 'Looking for the best camera gear without breaking the bank? Here are my top picks for budget-friendly filmmaking equipment.', tags: 'tech,camera,budget,gear,review', thumbnail: '/thumbnails/tech-review.png' },
+    { title: 'Live Concert Highlights - Summer Music Fest', description: 'Amazing performances from this summer\'s biggest music festival. Featuring incredible light shows and crowd energy.', tags: 'music,concert,live,festival', thumbnail: '/thumbnails/music-concert.png' },
+    { title: '24 Hours in Tokyo - Travel Vlog', description: 'Exploring the vibrant streets of Tokyo in just 24 hours. From sushi bars to neon-lit alleys, this city never sleeps.', tags: 'travel,tokyo,japan,vlog', thumbnail: '/thumbnails/travel-tokyo.png' },
+    { title: 'Advanced Gaming Setup Tour 2025', description: 'Check out my ultimate gaming setup with triple monitors, custom RGB, and the latest peripherals. Full specs inside!', tags: 'gaming,setup,tour,tech', thumbnail: '/thumbnails/gaming-setup.png' },
+    { title: 'Cooking the Perfect Steak - Chef\'s Method', description: 'Learn the professional chef\'s technique for cooking the perfect medium-rare steak every time. Simple but effective.', tags: 'cooking,steak,chef,food,tutorial', thumbnail: '/thumbnails/fitness-workout.png' },
+    { title: 'Digital Art Speed Paint - Fantasy Landscape', description: 'Watch me create a fantasy landscape from scratch in Photoshop. 3 hours compressed into 10 minutes of pure creativity.', tags: 'art,digital,painting,fantasy,creative', thumbnail: '/thumbnails/mountain-sunrise.png' },
+    { title: 'Full Body Workout - No Equipment Needed', description: 'Get fit anywhere with this 30-minute full body workout. No gym, no equipment, just you and determination.', tags: 'fitness,workout,health,exercise', thumbnail: '/thumbnails/fitness-workout.png' },
+    { title: 'Building a PC from Scratch - Beginner Guide', description: 'Complete PC build guide for beginners. I walk you through every step from parts selection to first boot.', tags: 'tech,pc,build,tutorial,beginner', thumbnail: '/thumbnails/tech-review.png' },
+    { title: 'Street Food Tour - Bangkok Night Market', description: 'Exploring the incredible street food scene at Bangkok\'s famous night markets. Pad Thai, Mango Sticky Rice, and more!', tags: 'food,travel,bangkok,streetfood', thumbnail: '/thumbnails/travel-tokyo.png' },
+    { title: 'Lo-Fi Beats to Study and Relax', description: 'Chill lo-fi hip hop beats perfect for studying, working, or relaxing. 2 hours of continuous smooth vibes.', tags: 'music,lofi,study,chill,beats', thumbnail: '/thumbnails/music-concert.png' },
   ];
 
   for (let i = 0; i < videoData.length; i++) {
@@ -57,6 +57,7 @@ async function seed() {
         title: videoData[i].title,
         description: videoData[i].description,
         videoUrl: `/download/long-videos/demo-${i + 1}.mp4`,
+        thumbnail: videoData[i].thumbnail,
         tags: videoData[i].tags,
         views: Math.floor(Math.random() * 50000) + 1000,
         likes: Math.floor(Math.random() * 5000) + 100,

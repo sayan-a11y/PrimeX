@@ -40,7 +40,7 @@ function normalizeFriendItem(raw: any): FriendItem {
 }
 
 export default function FriendsPage() {
-  const { user, token, setCurrentView } = useAppStore();
+  const { user, token, setCurrentView, setViewingUser } = useAppStore();
   const [activeTab, setActiveTab] = useState('pending');
   const [pendingRequests, setPendingRequests] = useState<FriendItem[]>([]);
   const [sentRequests, setSentRequests] = useState<FriendItem[]>([]);
@@ -141,13 +141,21 @@ export default function FriendsPage() {
   };
 
   const FriendCard = ({ item, type }: { item: FriendItem; type: 'pending' | 'sent' | 'friend' }) => (
-    <div className="glass-card p-4 rounded-xl flex items-center gap-3">
-      <Avatar className="w-12 h-12">
-        <AvatarImage src={item.user?.profilePic || ''} />
-        <AvatarFallback className="bg-primex/20 text-primex">
-          {item.user?.username?.[0]?.toUpperCase() || 'U'}
-        </AvatarFallback>
-      </Avatar>
+    <div
+      className="glass-card p-4 rounded-xl flex items-center gap-3 hover-lift cursor-pointer active-press group"
+      onClick={() => {
+        setViewingUser(item.user.id, item.user.username);
+        setCurrentView('profile');
+      }}
+    >
+      <div className="relative">
+        <Avatar className="w-12 h-12 group-hover:ring-2 group-hover:ring-primex/50 transition-all">
+          <AvatarImage src={item.user?.profilePic || ''} />
+          <AvatarFallback className="bg-primex/20 text-primex">
+            {item.user?.username?.[0]?.toUpperCase() || 'U'}
+          </AvatarFallback>
+        </Avatar>
+      </div>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-sm">{item.user?.username || 'Unknown'}</p>
         <p className="text-xs text-muted-foreground">
@@ -155,7 +163,7 @@ export default function FriendsPage() {
            type === 'sent' ? 'Request sent' : 'Friend'}
         </p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
         {type === 'pending' && (
           <>
             <Button

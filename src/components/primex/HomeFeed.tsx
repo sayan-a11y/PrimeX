@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -48,10 +48,16 @@ export default function HomeFeed() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const fetchVideos = async (pageNum: number, reset = false) => {
+  const fetchVideos = async (pageNum: number, reset = false, category?: string) => {
+    if (!reset) setLoadingMore(true);
     try {
-      const res = await fetch(`/api/videos?page=${pageNum}&limit=12`);
+      const cat = category || selectedCategory;
+      const tagParam = cat && cat !== 'All' ? `&tag=${encodeURIComponent(cat)}` : '';
+      const res = await fetch(`/api/videos?page=${pageNum}&limit=12${tagParam}`);
       const data = await res.json();
       if (data.success) {
         const newVideos = data.data.videos || [];
@@ -60,11 +66,36 @@ export default function HomeFeed() {
       }
     } catch {}
     setLoading(false);
+    setLoadingMore(false);
   };
 
   useEffect(() => {
     fetchVideos(1, true);
   }, []);
+
+  // Refetch when category changes
+  useEffect(() => {
+    if (selectedCategory !== 'All' || videos.length > 0) {
+      setPage(1);
+      fetchVideos(1, true, selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  // Infinite scroll with Intersection Observer
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+          setPage(p => p + 1);
+          fetchVideos(page + 1);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    if (sentinelRef.current) observerRef.current.observe(sentinelRef.current);
+    return () => observerRef.current?.disconnect();
+  }, [hasMore, loading, loadingMore, page]);
 
   const formatViews = (views: number) => {
     if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
@@ -370,15 +401,28 @@ export default function HomeFeed() {
         </>
       )}
 
-      {/* Load More with btn-outline-primex */}
-      {hasMore && videos.length > 0 && (
-        <div className="text-center mt-8">
-          <button
-            onClick={() => { setPage(p => p + 1); fetchVideos(page + 1); }}
-            className="btn-outline-primex px-8 gap-2"
-          >
-            Load More <ArrowRight className="w-4 h-4" />
-          </button>
+      {/* Infinite Scroll Sentinel + End State */}
+      {videos.length > 0 && (
+        <div className="mt-8">
+          {hasMore ? (
+            <div ref={sentinelRef} className="flex justify-center py-4">
+              {loadingMore ? (
+                <div className="loading-dots">
+                  <span /><span /><span />
+                </div>
+              ) : (
+                <div className="spinner-primex-sm" />
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="divider-primex my-4" />
+              <div className="text-center py-4">
+                <Sparkles className="w-5 h-5 text-primex mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">You&apos;ve seen it all!</p>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

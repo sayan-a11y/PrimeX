@@ -44,6 +44,22 @@ export default function Home() {
     checkAuth();
   }, [login, setUser, setToken]);
 
+  // Global 401 interceptor - auto-logout on expired tokens
+  useEffect(() => {
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      if (response.status === 401) {
+        // Token expired - clear session and redirect to login
+        localStorage.removeItem('primex_token');
+        localStorage.removeItem('primex_user');
+        useAppStore.getState().logout();
+      }
+      return response;
+    };
+    return () => { window.fetch = originalFetch; };
+  }, []);
+
   // Check for admin access via URL hash
   useEffect(() => {
     const checkAdminAccess = () => {

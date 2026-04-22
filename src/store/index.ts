@@ -58,6 +58,11 @@ interface AppState {
   unreadNotifications: number;
   setUnreadNotifications: (count: number) => void;
 
+  // Viewing other user's profile
+  viewingUserId: string | null;
+  viewingUsername: string | null;
+  setViewingUser: (userId: string | null, username: string | null) => void;
+
   // Search
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -109,6 +114,11 @@ export const useAppStore = create<AppState>((set) => ({
   // Notifications
   unreadNotifications: 0,
   setUnreadNotifications: (unreadNotifications) => set({ unreadNotifications }),
+
+  // Viewing other user's profile
+  viewingUserId: null,
+  viewingUsername: null,
+  setViewingUser: (viewingUserId, viewingUsername) => set({ viewingUserId, viewingUsername }),
 
   // Search
   searchQuery: '',

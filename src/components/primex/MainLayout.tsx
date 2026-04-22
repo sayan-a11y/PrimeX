@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -28,12 +28,14 @@ import SettingsPage from './SettingsPage';
 import WatchHistoryPage from './WatchHistoryPage';
 import PlaylistsPage from './PlaylistsPage';
 import CreatorDashboard from './CreatorDashboard';
+import { playNotificationSound } from '@/lib/notification-sound';
 
 export default function MainLayout() {
   const { user, logout, currentView, setCurrentView, unreadNotifications, setUnreadNotifications, setSearchQuery } = useAppStore();
   const [showSearch, setShowSearch] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const prevUnreadRef = useRef(0);
 
   // Fetch unread notifications count
   useEffect(() => {
@@ -49,6 +51,11 @@ export default function MainLayout() {
           const notifs = data.data.notifications || [];
           const unread = notifs.filter((n: { read: boolean }) => !n.read).length;
           setUnreadNotifications(unread);
+          // Play sound when notification count increases
+          if (unread > prevUnreadRef.current && prevUnreadRef.current > 0) {
+            playNotificationSound();
+          }
+          prevUnreadRef.current = unread;
         }
       } catch {}
     };
@@ -393,14 +400,15 @@ export default function MainLayout() {
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar">
+        <main className="flex-1 overflow-y-auto custom-scrollbar overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentView}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="page-enter overflow-hidden"
             >
               {renderView()}
             </motion.div>

@@ -28,7 +28,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
-  const { token } = useAppStore();
+  const { token, setCurrentView, setViewingUser } = useAppStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,6 +66,28 @@ export default function NotificationsPage() {
       setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, read: true } : n));
     } catch {
       // Error marking as read
+    }
+  };
+
+  const handleNotificationClick = (notif: Notification) => {
+    if (!notif.read) markAsRead([notif.id]);
+    switch (notif.type) {
+      case 'friend_request':
+        setCurrentView('friends');
+        break;
+      case 'like':
+      case 'comment':
+        // Could navigate to a specific video in the future
+        setCurrentView('home');
+        break;
+      case 'friend_accept':
+        if (notif.fromUser) {
+          setViewingUser(notif.fromUser.id, notif.fromUser.username);
+          setCurrentView('profile');
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -207,10 +229,10 @@ export default function NotificationsPage() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                      className={`notification-pop glass-card-premium hover-lift p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-colors ${
+                      className={`notification-pop glass-card-premium hover-lift active-press p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-colors ${
                         !notif.read ? 'bg-primex/5 border-primex/20' : ''
                       }`}
-                      onClick={() => { if (!notif.read) markAsRead([notif.id]); }}
+                      onClick={() => handleNotificationClick(notif)}
                     >
                       {/* Avatar or Icon */}
                       <div className="relative shrink-0">

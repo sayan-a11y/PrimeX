@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, Share2, MessageCircle, MoreVertical, X, Play, Eye } from 'lucide-react';
+import { Heart, Share2, MessageCircle, MoreVertical, X, Play, Eye, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Reel {
@@ -23,7 +23,7 @@ interface Reel {
 }
 
 export default function ReelsFeed() {
-  const { token } = useAppStore();
+  const { token, setCurrentView } = useAppStore();
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -106,11 +106,17 @@ export default function ReelsFeed() {
   if (reels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-4">
-        <div className="w-20 h-20 mb-4 rounded-2xl glass-card flex items-center justify-center">
-          <Play className="w-8 h-8 text-primex" />
+        <div className="w-20 h-20 mb-4 rounded-2xl glass-card-premium flex items-center justify-center hover-lift">
+          <Film className="w-8 h-8 text-primex" />
         </div>
         <h3 className="text-lg font-medium mb-2">No Reels Yet</h3>
-        <p className="text-muted-foreground text-sm">Be the first to create a reel!</p>
+        <p className="text-muted-foreground text-sm mb-4">Be the first to create a reel!</p>
+        <button
+          className="btn-primex rounded-xl gap-2 hover-lift px-6 py-2.5 text-sm font-medium"
+          onClick={() => setCurrentView('upload')}
+        >
+          <Film className="w-4 h-4" /> Create Reel
+        </button>
       </div>
     );
   }

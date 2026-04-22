@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Film, Play, Lock, X, CheckCircle, CloudUpload } from 'lucide-react';
+import { Upload, Film, Play, Lock, X, CheckCircle, CloudUpload, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function UploadPage() {
@@ -18,6 +18,10 @@ export default function UploadPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
+
+  // Animated progress for mock upload
+  const [mockProgress, setMockProgress] = useState(0);
+  const mockIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Long video fields
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -36,6 +40,25 @@ export default function UploadPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const thumbInputRef = useRef<HTMLInputElement>(null);
+
+  // Mock progress animation for upload
+  useEffect(() => {
+    if (uploading) {
+      setMockProgress(0);
+      mockIntervalRef.current = setInterval(() => {
+        setMockProgress((prev) => {
+          if (prev >= 95) return prev;
+          return prev + Math.random() * 8 + 2;
+        });
+      }, 300);
+    } else {
+      if (mockIntervalRef.current) clearInterval(mockIntervalRef.current);
+      setMockProgress(0);
+    }
+    return () => {
+      if (mockIntervalRef.current) clearInterval(mockIntervalRef.current);
+    };
+  }, [uploading]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'video' | 'reel' | 'private') => {
     const file = e.target.files?.[0];
@@ -202,8 +225,8 @@ export default function UploadPage() {
     accept: string = 'video/*'
   ) => (
     <div
-      className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer ${
-        dragOver ? 'border-primex bg-primex/5' : 'border-border/50 hover:border-primex/50'
+      className={`gradient-border-primex rounded-2xl bg-mesh card-shine transition-all cursor-pointer relative overflow-hidden ${
+        dragOver ? 'border-primex bg-primex/5 scale-[1.02]' : 'hover:border-primex/50'
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
@@ -217,204 +240,247 @@ export default function UploadPage() {
         className="hidden"
         onChange={(e) => handleFileSelect(e, type)}
       />
-      {file ? (
-        <div className="flex items-center gap-3 justify-center">
-          <div className="w-12 h-12 rounded-xl bg-primex/10 flex items-center justify-center">
-            <CheckCircle className="w-6 h-6 text-primex" />
+      <div className="relative z-10 p-8 text-center">
+        {file ? (
+          <div className="flex items-center gap-3 justify-center">
+            <div className="w-12 h-12 rounded-xl bg-primex/10 flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-primex" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-medium">{file.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {(file.size / (1024 * 1024)).toFixed(1)} MB
+              </p>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); setFile(null); }}
+              className="p-1 hover:bg-muted rounded-full"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <div className="text-left">
-            <p className="text-sm font-medium">{file.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {(file.size / (1024 * 1024)).toFixed(1)} MB
+        ) : (
+          <>
+            <div className="orb-primex-sm -top-10 -right-10" />
+            <CloudUpload className="w-12 h-12 mx-auto text-primex/60 mb-3 float-slow" />
+            <p className="text-sm font-medium mb-1">Drag & drop your file here</p>
+            <p className="text-xs text-muted-foreground">or click to browse</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              {type === 'video' ? 'MP4, WebM, MOV up to 500MB' : type === 'reel' ? 'MP4, WebM (9:16 vertical)' : 'MP4, WebM (Friends only)'}
             </p>
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); setFile(null); }}
-            className="p-1 hover:bg-muted rounded-full"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <>
-          <CloudUpload className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
-          <p className="text-sm font-medium mb-1">Drag & drop your file here</p>
-          <p className="text-xs text-muted-foreground">or click to browse</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            {type === 'video' ? 'MP4, WebM, MOV up to 500MB' : type === 'reel' ? 'MP4, WebM (9:16 vertical)' : 'MP4, WebM (Friends only)'}
-          </p>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 
+  const displayProgress = uploading ? Math.min(mockProgress, uploadProgress) : uploadProgress;
+
   return (
-    <div className="max-w-2xl mx-auto p-4 lg:p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold primex-gradient-text">Upload Content</h1>
+    <div className="max-w-2xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+      {/* Decorative orbs */}
+      <div className="orb-primex-sm top-20 -left-20" />
+      <div className="orb-primex-sm bottom-40 -right-16" />
+
+      {/* Header */}
+      <div className="relative z-10 mb-6">
+        <h1 className="text-2xl font-bold text-shimmer">Upload Content</h1>
         <p className="text-muted-foreground text-sm mt-1">Share your videos, reels, or private content</p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-6">
-          <TabsTrigger value="video" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white">
-            <Film className="w-4 h-4 mr-2" />Long Video
-          </TabsTrigger>
-          <TabsTrigger value="reel" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white">
-            <Play className="w-4 h-4 mr-2" />Reel
-          </TabsTrigger>
-          <TabsTrigger value="private" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white">
-            <Lock className="w-4 h-4 mr-2" />Private
-          </TabsTrigger>
-        </TabsList>
+      {/* Upload Card */}
+      <div className="glass-card-premium p-6 rounded-2xl card-shine relative z-10">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-6">
+            <TabsTrigger value="video" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
+              <Film className="w-4 h-4 mr-2" />Long Video
+            </TabsTrigger>
+            <TabsTrigger value="reel" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
+              <Play className="w-4 h-4 mr-2" />Reel
+            </TabsTrigger>
+            <TabsTrigger value="private" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white hover-lift">
+              <Lock className="w-4 h-4 mr-2" />Private
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Error */}
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-            {error}
-          </div>
-        )}
+          {/* Error */}
+          {error && (
+            <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              {error}
+            </div>
+          )}
 
-        {/* Success */}
-        <AnimatePresence>
-          {success && (
+          {/* Success */}
+          <AnimatePresence>
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4" />Upload successful!
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Animated Progress Bar */}
+          {uploading && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-center gap-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4"
             >
-              <CheckCircle className="w-4 h-4" />Upload successful!
+              <div className="progress-bar h-2">
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${displayProgress}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  Uploading... {Math.round(displayProgress)}%
+                </p>
+                <div className="loading-dots">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        {/* Progress Bar */}
-        {uploading && (
-          <div className="mb-4">
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full primex-gradient rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
+          <div className="divider-primex mb-4" />
+
+          {/* Long Video Tab */}
+          <TabsContent value="video" className="space-y-4">
+            {renderDropZone(videoFile, 'video', setVideoFile)}
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Thumbnail</Label>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="thumb-input"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setVideoThumbnail(f);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="glass-input border-border/50 rounded-xl w-full hover-lift"
+                onClick={() => document.getElementById('thumb-input')?.click()}
+              >
+                {videoThumbnail ? videoThumbnail.name : 'Choose Thumbnail'}
+              </Button>
+            </div>
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Title *</Label>
+              <Input
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+                placeholder="Give your video a title"
+                className="glass-input border-border/50 h-11 rounded-xl"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1 text-center">
-              Uploading... {uploadProgress}%
-            </p>
-          </div>
-        )}
-
-        {/* Long Video Tab */}
-        <TabsContent value="video" className="space-y-4">
-          {renderDropZone(videoFile, 'video', setVideoFile)}
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Thumbnail</Label>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="thumb-input"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) setVideoThumbnail(f);
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="glass-card border-border/50 rounded-xl w-full"
-              onClick={() => document.getElementById('thumb-input')?.click()}
-            >
-              {videoThumbnail ? videoThumbnail.name : 'Choose Thumbnail'}
-            </Button>
-          </div>
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Title *</Label>
-            <Input
-              value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
-              placeholder="Give your video a title"
-              className="bg-muted/50 border-border/50 h-11 rounded-xl"
-            />
-          </div>
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Description</Label>
-            <Textarea
-              value={videoDesc}
-              onChange={(e) => setVideoDesc(e.target.value)}
-              placeholder="Describe your video..."
-              className="bg-muted/50 border-border/50 rounded-xl min-h-[100px]"
-            />
-          </div>
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Tags (comma separated)</Label>
-            <Input
-              value={videoTags}
-              onChange={(e) => setVideoTags(e.target.value)}
-              placeholder="music, gaming, tutorial"
-              className="bg-muted/50 border-border/50 h-11 rounded-xl"
-            />
-          </div>
-          <Button
-            onClick={handleVideoUpload}
-            disabled={uploading || !videoFile}
-            className="w-full h-11 rounded-xl primex-gradient text-white font-medium hover:opacity-90 glow-effect"
-          >
-            {uploading ? 'Uploading...' : 'Upload Video'}
-          </Button>
-        </TabsContent>
-
-        {/* Reel Tab */}
-        <TabsContent value="reel" className="space-y-4">
-          {renderDropZone(reelFile, 'reel', setReelFile)}
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Caption</Label>
-            <Textarea
-              value={reelCaption}
-              onChange={(e) => setReelCaption(e.target.value)}
-              placeholder="Add a caption to your reel..."
-              className="bg-muted/50 border-border/50 rounded-xl min-h-[80px]"
-            />
-          </div>
-          <Button
-            onClick={handleReelUpload}
-            disabled={uploading || !reelFile}
-            className="w-full h-11 rounded-xl primex-gradient text-white font-medium hover:opacity-90 glow-effect"
-          >
-            {uploading ? 'Uploading...' : 'Upload Reel'}
-          </Button>
-        </TabsContent>
-
-        {/* Private Tab */}
-        <TabsContent value="private" className="space-y-4">
-          <div className="glass-card p-4 rounded-xl mb-2 border-primex/20">
-            <div className="flex items-center gap-2 text-primex mb-1">
-              <Lock className="w-4 h-4" />
-              <span className="text-sm font-medium">Friends Only</span>
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Description</Label>
+              <Textarea
+                value={videoDesc}
+                onChange={(e) => setVideoDesc(e.target.value)}
+                placeholder="Describe your video..."
+                className="glass-input border-border/50 rounded-xl min-h-[100px]"
+              />
             </div>
-            <p className="text-xs text-muted-foreground">
-              This content will only be visible to your accepted friends.
-            </p>
-          </div>
-          {renderDropZone(privateFile, 'private', setPrivateFile)}
-          <div>
-            <Label className="text-sm text-muted-foreground mb-1.5 block">Title</Label>
-            <Input
-              value={privateTitle}
-              onChange={(e) => setPrivateTitle(e.target.value)}
-              placeholder="Private content title"
-              className="bg-muted/50 border-border/50 h-11 rounded-xl"
-            />
-          </div>
-          <Button
-            onClick={handlePrivateUpload}
-            disabled={uploading || !privateFile}
-            className="w-full h-11 rounded-xl primex-gradient text-white font-medium hover:opacity-90 glow-effect"
-          >
-            {uploading ? 'Uploading...' : 'Upload Private Content'}
-          </Button>
-        </TabsContent>
-      </Tabs>
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Tags (comma separated)</Label>
+              <Input
+                value={videoTags}
+                onChange={(e) => setVideoTags(e.target.value)}
+                placeholder="music, gaming, tutorial"
+                className="glass-input border-border/50 h-11 rounded-xl"
+              />
+            </div>
+            <Button
+              onClick={handleVideoUpload}
+              disabled={uploading || !videoFile}
+              className="w-full h-11 rounded-xl btn-primex"
+            >
+              {uploading ? (
+                <><div className="spinner-primex-sm mr-2" />Uploading...</>
+              ) : (
+                <><Upload className="w-4 h-4 mr-2" />Upload Video</>
+              )}
+            </Button>
+          </TabsContent>
+
+          <div className="divider-primex" />
+
+          {/* Reel Tab */}
+          <TabsContent value="reel" className="space-y-4">
+            {renderDropZone(reelFile, 'reel', setReelFile)}
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Caption</Label>
+              <Textarea
+                value={reelCaption}
+                onChange={(e) => setReelCaption(e.target.value)}
+                placeholder="Add a caption to your reel..."
+                className="glass-input border-border/50 rounded-xl min-h-[80px]"
+              />
+            </div>
+            <Button
+              onClick={handleReelUpload}
+              disabled={uploading || !reelFile}
+              className="w-full h-11 rounded-xl btn-primex"
+            >
+              {uploading ? (
+                <><div className="spinner-primex-sm mr-2" />Uploading...</>
+              ) : (
+                <><Sparkles className="w-4 h-4 mr-2" />Upload Reel</>
+              )}
+            </Button>
+          </TabsContent>
+
+          <div className="divider-primex" />
+
+          {/* Private Tab */}
+          <TabsContent value="private" className="space-y-4">
+            <div className="glass-card-premium p-4 rounded-xl mb-2 gradient-border-primex">
+              <div className="flex items-center gap-2 text-primex mb-1">
+                <Lock className="w-4 h-4" />
+                <span className="text-sm font-medium">Friends Only</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This content will only be visible to your accepted friends.
+              </p>
+            </div>
+            {renderDropZone(privateFile, 'private', setPrivateFile)}
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Title</Label>
+              <Input
+                value={privateTitle}
+                onChange={(e) => setPrivateTitle(e.target.value)}
+                placeholder="Private content title"
+                className="glass-input border-border/50 h-11 rounded-xl"
+              />
+            </div>
+            <Button
+              onClick={handlePrivateUpload}
+              disabled={uploading || !privateFile}
+              className="w-full h-11 rounded-xl btn-primex"
+            >
+              {uploading ? (
+                <><div className="spinner-primex-sm mr-2" />Uploading...</>
+              ) : (
+                <><Lock className="w-4 h-4 mr-2" />Upload Private Content</>
+              )}
+            </Button>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

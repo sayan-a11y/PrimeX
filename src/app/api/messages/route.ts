@@ -78,7 +78,10 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      data: messages.reverse(),
+      success: true,
+      data: {
+        messages: messages.reverse(),
+      },
       pagination: {
         page,
         limit,
@@ -138,7 +141,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ data: newMessage }, { status: 201 });
+    return NextResponse.json({ success: true, data: { message: newMessage } }, { status: 201 });
   } catch (error) {
     console.error('Messages POST error:', error);
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });

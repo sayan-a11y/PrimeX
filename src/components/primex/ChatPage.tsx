@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ImageIcon, ArrowLeft, Search, Circle } from 'lucide-react';
+import { Send, ImageIcon, ArrowLeft, Search, Circle, Users } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
+import { playMessageSound } from '@/lib/notification-sound';
 
 interface Conversation {
   userId: string;
@@ -36,7 +37,7 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const { user, token, activeChatUser, setActiveChatUser } = useAppStore();
+  const { user, token, activeChatUser, setActiveChatUser, setCurrentView } = useAppStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -62,6 +63,7 @@ export default function ChatPage() {
 
     socket.on('message', (data: Message) => {
       setMessages(prev => [...prev, data]);
+      playMessageSound();
     });
 
     socket.on('typing', () => {
@@ -121,7 +123,12 @@ export default function ChatPage() {
         });
         const data = await res.json();
         if (data.success) {
-          setMessages(data.data.messages || data.data || []);
+          setMessages(data.data?.messages || data.data || []);
+        } else if (data.data && Array.isArray(data.data)) {
+          // API returns { data: [...messages] } without success field
+          setMessages(data.data);
+        } else if (Array.isArray(data)) {
+          setMessages(data);
         }
       } catch {
         // Error fetching messages
@@ -214,11 +221,17 @@ export default function ChatPage() {
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-            <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mb-3">
+            <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mb-3 hover-lift">
               <Send className="w-6 h-6 text-primex" />
             </div>
             <h3 className="font-medium mb-1">No Conversations</h3>
-            <p className="text-sm text-muted-foreground">Send a friend request to start chatting!</p>
+            <p className="text-sm text-muted-foreground mb-4">Send a friend request to start chatting!</p>
+            <button
+              className="btn-primex rounded-xl gap-2 hover-lift px-5 py-2 text-sm font-medium"
+              onClick={() => setCurrentView('friends')}
+            >
+              <Users className="w-4 h-4" /> Find Friends
+            </button>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto premium-scrollbar">

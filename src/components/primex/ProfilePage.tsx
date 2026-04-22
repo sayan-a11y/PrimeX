@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera, Edit3, Film, Play, Lock, Users, Heart, Eye,
   Save, X, Star, Crown, Calendar, MapPin, LinkIcon,
-  MessageCircle, BarChart3, Shield, Upload, Sparkles
+  MessageCircle, BarChart3, Shield, Upload, Sparkles, ArrowLeft
 } from 'lucide-react';
 
 interface ProfileData {
@@ -30,31 +30,40 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  const { user, token, setCurrentView } = useAppStore();
+  const { user, token, setCurrentView, viewingUserId, viewingUsername, setViewingUser } = useAppStore();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editBio, setEditBio] = useState('');
   const [activeTab, setActiveTab] = useState('videos');
 
+  // Determine if viewing own or other's profile
+  const isViewingOther = !!(viewingUserId && viewingUserId !== user?.id);
+  const profileUsername = isViewingOther ? viewingUsername : user?.username;
+
   useEffect(() => {
-    if (!user?.username || !token) return;
+    if (!profileUsername || !token) return;
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`/api/profile/${user.username}`, {
+        const res = await fetch(`/api/profile/${profileUsername}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         if (data.success || data.data) {
           const p = data.data;
-          setProfile({ ...p, isFriend: null, email: user.email });
+          const friendStatus = p.friendStatus || (p.isFriend ? 'accepted' : null);
+          setProfile({
+            ...p,
+            isFriend: isViewingOther ? friendStatus : null,
+            email: isViewingOther ? '' : (user?.email || ''),
+          });
           setEditBio(p.bio || '');
         }
       } catch {}
       setLoading(false);
     };
     fetchProfile();
-  }, [user, token]);
+  }, [user, token, viewingUserId, viewingUsername]);
 
   const handleSaveProfile = async () => {
     try {
@@ -134,6 +143,18 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Back button for viewing other's profile */}
+      {isViewingOther && (
+        <div className="px-4 lg:px-6 pt-3">
+          <Button
+            variant="ghost"
+            className="gap-2 rounded-xl hover-lift"
+            onClick={() => { setViewingUser(null, null); setCurrentView('profile'); }}
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to My Profile
+          </Button>
+        </div>
+      )}
       {/* Cover with bg-mesh */}
       <div className="h-36 sm:h-48 relative overflow-hidden bg-mesh">
         <div className="absolute inset-0 bg-gradient-to-br from-primex/30 via-purple-900/20 to-primex/30" />
@@ -159,7 +180,7 @@ export default function ProfilePage() {
                 {profile.username?.[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
-            {profile.isFriend === null && (
+            {!isViewingOther && (
               <button className="absolute bottom-1 right-1 w-9 h-9 rounded-full primex-gradient flex items-center justify-center border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity active-press">
                 <Camera className="w-4 h-4 text-white" />
               </button>
@@ -196,7 +217,43 @@ export default function ProfilePage() {
 
           {/* Action Buttons with hover-lift */}
           <div className="flex gap-2 shrink-0">
-            {profile.isFriend === null ? (
+            {isViewingOther ? (
+              profile?.isFriend === 'accepted' ? (
+                <>
+                  <Badge className="bg-green-500/20 text-green-400 px-4 py-2 rounded-xl text-sm gap-1">
+                    <Users className="w-4 h-4" /> Friends
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    className="gap-2 rounded-xl glass-card border-border/50 hover-lift active-press"
+                    onClick={() => setCurrentView('chat')}
+                  >
+                    <MessageCircle className="w-4 h-4" /> Message
+                  </Button>
+                </>
+              ) : profile?.isFriend === 'pending' ? (
+                <Badge className="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-xl text-sm">
+                  Request Pending
+                </Badge>
+              ) : (
+                <Button className="btn-primex rounded-xl gap-2 hover-lift" onClick={() => {
+                  if (token && profile) {
+                    fetch('/api/friends', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({ receiverId: profile.id }),
+                    }).then(() => {
+                      setProfile(prev => prev ? { ...prev, isFriend: 'pending' } : null);
+                    });
+                  }
+                }}>
+                  <Users className="w-4 h-4" /> Add Friend
+                </Button>
+              )
+            ) : (
               <>
                 <Button
                   onClick={() => setEditing(!editing)}
@@ -213,27 +270,6 @@ export default function ProfilePage() {
                   <BarChart3 className="w-4 h-4" /> Analytics
                 </Button>
               </>
-            ) : profile.isFriend === 'accepted' ? (
-              <>
-                <Badge className="bg-green-500/20 text-green-400 px-4 py-2 rounded-xl text-sm gap-1">
-                  <Users className="w-4 h-4" /> Friends
-                </Badge>
-                <Button
-                  variant="outline"
-                  className="gap-2 rounded-xl glass-card border-border/50 hover-lift active-press"
-                  onClick={() => setCurrentView('chat')}
-                >
-                  <MessageCircle className="w-4 h-4" /> Message
-                </Button>
-              </>
-            ) : profile.isFriend === 'pending' ? (
-              <Badge className="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-xl text-sm">
-                Request Pending
-              </Badge>
-            ) : (
-              <Button className="btn-primex rounded-xl gap-2 hover-lift">
-                <Users className="w-4 h-4" /> Add Friend
-              </Button>
             )}
           </div>
         </div>
@@ -286,6 +322,7 @@ export default function ProfilePage() {
         </AnimatePresence>
 
         {/* Content Tabs */}
+        {!isViewingOther && (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-4">
             <TabsTrigger value="videos" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white data-[state=active]:glow-effect gap-1.5">
@@ -365,6 +402,14 @@ export default function ProfilePage() {
             )}
           </TabsContent>
         </Tabs>
+        )}
+
+        {/* For other user profile: show simple info */}
+        {isViewingOther && (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            <p>Content tabs are available for your own profile.</p>
+          </div>
+        )}
       </div>
     </div>
   );

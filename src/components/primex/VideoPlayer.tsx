@@ -37,6 +37,7 @@ import {
   ArrowLeft,
   X,
 } from 'lucide-react';
+import ShareModal from './ShareModal';
 
 /* ────────────────────────────────────────────
    Types
@@ -182,6 +183,9 @@ export default function VideoPlayer() {
 
   // Friend status for creator
   const [friendStatus, setFriendStatus] = useState<FriendStatus>('none');
+
+  // Share modal
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Share toast
   const [shareToast, setShareToast] = useState(false);
@@ -1021,7 +1025,7 @@ export default function VideoPlayer() {
                 {/* Share */}
                 <button
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium glass-card border border-border/50 hover:bg-white/10 transition-all active-press"
-                  onClick={handleShare}
+                  onClick={() => setShareOpen(true)}
                 >
                   <Share2 className="w-4 h-4" />
                   <span className="hidden sm:inline">Share</span>
@@ -1481,6 +1485,14 @@ export default function VideoPlayer() {
           ))}
         </div>
       </div>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        videoId={currentVideoId || ''}
+        videoTitle={video?.title || ''}
+      />
     </div>
   );
 }
