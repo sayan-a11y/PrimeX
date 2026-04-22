@@ -50,8 +50,8 @@ export default function ExplorePage() {
           usersRes.json(),
           videosRes.json(),
         ]);
-        if (usersData.success || usersData.data) {
-          setUsers(usersData.data?.users || usersData.data || []);
+        if (usersData.success && usersData.data) {
+          setUsers(usersData.data.users || []);
         }
         if (videosData.success) {
           setVideos(videosData.data?.videos || []);

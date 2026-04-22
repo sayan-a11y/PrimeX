@@ -24,7 +24,10 @@ export type ViewType =
   | 'admin'
   | 'search'
   | 'video'
-  | 'settings';
+  | 'settings'
+  | 'history'
+  | 'playlists'
+  | 'creator-dashboard';
 
 interface AppState {
   // Auth

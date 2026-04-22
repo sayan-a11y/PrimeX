@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, Film, Upload, MessageCircle, User, Search, Bell, LogOut,
-  Shield, BarChart3, Users, Heart, X, Menu, Compass, TrendingUp, Settings
+  Shield, BarChart3, Users, Heart, X, Menu, Compass, TrendingUp, Settings,
+  Clock, ListVideo, DollarSign
 } from 'lucide-react';
 import HomeFeed from './HomeFeed';
 import ReelsFeed from './ReelsFeed';
@@ -24,6 +25,9 @@ import SearchResults from './SearchResults';
 import VideoPlayer from './VideoPlayer';
 import ExplorePage from './ExplorePage';
 import SettingsPage from './SettingsPage';
+import WatchHistoryPage from './WatchHistoryPage';
+import PlaylistsPage from './PlaylistsPage';
+import CreatorDashboard from './CreatorDashboard';
 
 export default function MainLayout() {
   const { user, logout, currentView, setCurrentView, unreadNotifications, setUnreadNotifications, setSearchQuery } = useAppStore();
@@ -101,6 +105,9 @@ export default function MainLayout() {
       case 'search': return <SearchResults />;
       case 'video': return <VideoPlayer />;
       case 'settings': return <SettingsPage />;
+      case 'history': return <WatchHistoryPage />;
+      case 'playlists': return <PlaylistsPage />;
+      case 'creator-dashboard': return <CreatorDashboard />;
       default: return <HomeFeed />;
     }
   };
@@ -325,7 +332,39 @@ export default function MainLayout() {
             <Settings className="w-5 h-5" />
             <span className="text-sm">Settings</span>
           </Button>
+          <Button
+            variant="ghost"
+            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              currentView === 'history' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+            }`}
+            onClick={() => setCurrentView('history')}
+          >
+            <Clock className="w-5 h-5" />
+            <span className="text-sm">History</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              currentView === 'playlists' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+            }`}
+            onClick={() => setCurrentView('playlists')}
+          >
+            <ListVideo className="w-5 h-5" />
+            <span className="text-sm">Playlists</span>
+          </Button>
 
+          {user?.isCreator && (
+            <Button
+              variant="ghost"
+              className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+                currentView === 'creator-dashboard' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+              }`}
+              onClick={() => setCurrentView('creator-dashboard')}
+            >
+              <DollarSign className="w-5 h-5" />
+              <span className="text-sm">Creator Dashboard</span>
+            </Button>
+          )}
           {user?.role === 'admin' && (
             <Button
               variant="ghost"
@@ -478,6 +517,40 @@ export default function MainLayout() {
                   <span>Settings</span>
                 </Button>
 
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    currentView === 'history' ? 'bg-primex/10 text-primex' : ''
+                  }`}
+                  onClick={() => { setCurrentView('history'); setShowMobileMenu(false); }}
+                >
+                  <Clock className="w-5 h-5" />
+                  <span>History</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    currentView === 'playlists' ? 'bg-primex/10 text-primex' : ''
+                  }`}
+                  onClick={() => { setCurrentView('playlists'); setShowMobileMenu(false); }}
+                >
+                  <ListVideo className="w-5 h-5" />
+                  <span>Playlists</span>
+                </Button>
+
+                {user?.isCreator && (
+                  <Button
+                    variant="ghost"
+                    className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                      currentView === 'creator-dashboard' ? 'bg-primex/10 text-primex' : ''
+                    }`}
+                    onClick={() => { setCurrentView('creator-dashboard'); setShowMobileMenu(false); }}
+                  >
+                    <DollarSign className="w-5 h-5" />
+                    <span>Creator Dashboard</span>
+                  </Button>
+                )}
                 {user?.role === 'admin' && (
                   <Button
                     variant="ghost"

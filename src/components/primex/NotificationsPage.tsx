@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell, UserPlus, Heart, MessageCircle, Flag, CheckCheck,
-  Users, Trash2, Circle
+  Users, Circle
 } from 'lucide-react';
 
 interface Notification {
@@ -45,7 +45,9 @@ export default function NotificationsPage() {
         } else if (data.data) {
           setNotifications(Array.isArray(data.data) ? data.data : data.data.notifications || []);
         }
-      } catch {}
+      } catch {
+        // Error fetching notifications
+      }
       setLoading(false);
     };
     fetchNotifications();
@@ -62,7 +64,9 @@ export default function NotificationsPage() {
         body: JSON.stringify({ ids }),
       });
       setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, read: true } : n));
-    } catch {}
+    } catch {
+      // Error marking as read
+    }
   };
 
   const markAllRead = async () => {
@@ -108,8 +112,33 @@ export default function NotificationsPage() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Group notifications by time period
+  const groupedNotifications = () => {
+    const now = Date.now();
+    const groups: { label: string; items: Notification[] }[] = [
+      { label: 'Today', items: [] },
+      { label: 'Yesterday', items: [] },
+      { label: 'Earlier', items: [] },
+    ];
+
+    notifications.forEach(n => {
+      const diff = now - new Date(n.createdAt).getTime();
+      const hours = diff / 3600000;
+      if (hours < 24) {
+        groups[0].items.push(n);
+      } else if (hours < 48) {
+        groups[1].items.push(n);
+      } else {
+        groups[2].items.push(n);
+      }
+    });
+
+    return groups.filter(g => g.items.length > 0);
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4 lg:p-6">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center">
@@ -117,8 +146,15 @@ export default function NotificationsPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold primex-gradient-text">Notifications</h1>
-            <p className="text-sm text-muted-foreground">
-              {unreadCount > 0 ? `${unreadCount} unread` : 'Stay updated with your activity'}
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              {unreadCount > 0 ? (
+                <>
+                  <span className="badge-pulse">{unreadCount}</span>
+                  <span>unread</span>
+                </>
+              ) : (
+                'Stay updated with your activity'
+              )}
             </p>
           </div>
         </div>
@@ -126,7 +162,7 @@ export default function NotificationsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 rounded-xl glass-card border-border/50"
+            className="gap-2 rounded-xl glass-card border-border/50 hover-lift"
             onClick={markAllRead}
           >
             <CheckCheck className="w-4 h-4" /> Mark all read
@@ -137,7 +173,7 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="glass-card p-4 rounded-xl animate-pulse">
+            <div key={i} className="glass-card-premium p-4 rounded-xl">
               <div className="flex items-center gap-3">
                 <Skeleton className="w-10 h-10 rounded-full" />
                 <div className="flex-1 space-y-1">
@@ -150,60 +186,67 @@ export default function NotificationsPage() {
         </div>
       ) : notifications.length === 0 ? (
         <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-4">
             <Bell className="w-7 h-7 text-primex" />
           </div>
           <h3 className="font-medium mb-1">No Notifications</h3>
           <p className="text-sm text-muted-foreground">You&apos;re all caught up!</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          <AnimatePresence>
-            {notifications.map((notif, i) => (
-              <motion.div
-                key={notif.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className={`glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-colors hover:bg-white/5 ${
-                  !notif.read ? 'bg-primex/5 border-primex/20' : ''
-                }`}
-                onClick={() => { if (!notif.read) markAsRead([notif.id]); }}
-              >
-                {/* Avatar or Icon */}
-                <div className="relative shrink-0">
-                  {notif.fromUser ? (
-                    <Avatar className="w-11 h-11">
-                      <AvatarImage src={notif.fromUser.profilePic || ''} />
-                      <AvatarFallback className="bg-primex/20 text-primex font-bold">
-                        {notif.fromUser.username?.[0]?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  ) : (
-                    <div className={`w-11 h-11 rounded-full ${getIconBg(notif.type)} flex items-center justify-center`}>
-                      {getIcon(notif.type)}
-                    </div>
-                  )}
-                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${getIconBg(notif.type)} flex items-center justify-center border-2 border-background`}>
-                    {getIcon(notif.type)}
-                  </div>
-                </div>
+        <div className="space-y-4">
+          {groupedNotifications().map((group, gi) => (
+            <div key={group.label}>
+              {gi > 0 && <div className="divider-primex my-4" />}
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">{group.label}</p>
+              <div className="space-y-2">
+                <AnimatePresence>
+                  {group.items.map((notif) => (
+                    <motion.div
+                      key={notif.id}
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      className={`notification-pop glass-card-premium hover-lift p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-colors ${
+                        !notif.read ? 'bg-primex/5 border-primex/20' : ''
+                      }`}
+                      onClick={() => { if (!notif.read) markAsRead([notif.id]); }}
+                    >
+                      {/* Avatar or Icon */}
+                      <div className="relative shrink-0">
+                        {notif.fromUser ? (
+                          <Avatar className="w-11 h-11">
+                            <AvatarImage src={notif.fromUser.profilePic || ''} />
+                            <AvatarFallback className="bg-primex/20 text-primex font-bold">
+                              {notif.fromUser.username?.[0]?.toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <div className={`w-11 h-11 rounded-full ${getIconBg(notif.type)} flex items-center justify-center`}>
+                            {getIcon(notif.type)}
+                          </div>
+                        )}
+                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${getIconBg(notif.type)} flex items-center justify-center border-2 border-background`}>
+                          {getIcon(notif.type)}
+                        </div>
+                      </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm">
-                    {notif.message}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{timeAgo(notif.createdAt)}</p>
-                </div>
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm">{notif.message}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{timeAgo(notif.createdAt)}</p>
+                      </div>
 
-                {/* Unread dot */}
-                {!notif.read && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-primex shrink-0 pulse-glow" />
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                      {/* Unread dot with pulse */}
+                      {!notif.read && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-primex shrink-0 badge-dot-pulse" />
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

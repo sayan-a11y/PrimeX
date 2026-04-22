@@ -316,7 +316,7 @@ export default function SettingsPage() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="sticky top-0 z-30 glass-header border-b border-border/50">
+      <div className="relative z-30 glass-header border-b border-border/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center">

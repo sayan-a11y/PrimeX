@@ -52,12 +52,12 @@ function formatDuration(seconds: number): string {
 
 export default function VideoCard({ video, index = 0 }: VideoCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
   const setCurrentView = useAppStore((s) => s.setCurrentView);
-  const setSelectedVideoId = useAppStore((s) => s.setSelectedVideoId);
 
   const handleClick = () => {
-    setSelectedVideoId(video.id);
-    setCurrentView('videoPlayer');
+    useAppStore.setState({ currentVideoId: video.id });
+    setCurrentView('video');
   };
 
   return (
@@ -65,7 +65,7 @@ export default function VideoCard({ video, index = 0 }: VideoCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="video-card-hover cursor-pointer group"
+      className="card-shine hover-lift cursor-pointer group rounded-xl"
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -73,33 +73,41 @@ export default function VideoCard({ video, index = 0 }: VideoCardProps) {
       {/* Thumbnail */}
       <div className="relative aspect-video rounded-xl overflow-hidden bg-secondary">
         {video.thumbnail ? (
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          <>
+            {!thumbnailLoaded && (
+              <div className="absolute inset-0 shimmer" />
+            )}
+            <img
+              src={video.thumbnail}
+              alt={video.title}
+              className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+                thumbnailLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setThumbnailLoaded(true)}
+            />
+          </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted shimmer">
             <Play className="w-12 h-12 text-muted-foreground/30" />
           </div>
         )}
 
-        {/* Play overlay on hover */}
+        {/* Play overlay on hover with play-button-hover class */}
         {hovered && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="absolute inset-0 bg-black/30 flex items-center justify-center"
           >
-            <div className="w-14 h-14 rounded-full primex-gradient flex items-center justify-center glow-effect">
-              <Play className="w-6 h-6 text-white fill-white ml-1" />
+            <div className="play-button-hover">
+              <Play className="w-5 h-5 text-white fill-white ml-0.5" />
             </div>
           </motion.div>
         )}
 
         {/* Duration badge */}
         {video.duration > 0 && (
-          <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
+          <div className="absolute bottom-2 right-2 video-duration-badge flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {formatDuration(video.duration)}
           </div>
@@ -113,20 +121,22 @@ export default function VideoCard({ video, index = 0 }: VideoCardProps) {
             <img
               src={video.user.profilePic}
               alt={video.user.username}
-              className="w-9 h-9 rounded-full object-cover ring-1 ring-border"
+              className="w-9 h-9 rounded-full object-cover ring-2 ring-transparent group-hover:gradient-border-primex transition-all duration-300"
             />
           ) : (
-            <UserCircle className="w-9 h-9 text-muted-foreground" />
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-primex/10 group-hover:ring-2 group-hover:ring-primex/40 transition-all duration-300">
+              <UserCircle className="w-9 h-9 text-muted-foreground" />
+            </div>
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium text-foreground line-clamp-2 leading-snug">
+          <h3 className="text-sm font-medium text-foreground line-clamp-2 leading-snug group-hover:text-shimmer transition-all duration-300">
             {video.title}
           </h3>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
             {video.user.username}
             {video.user.isCreator && (
-              <span className="inline-block w-3 h-3 primex-gradient rounded-full ml-0.5" />
+              <span className="tag-primex text-[10px] px-1.5 py-0">Creator</span>
             )}
           </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">

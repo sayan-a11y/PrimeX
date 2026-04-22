@@ -82,7 +82,7 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
   };
 
   return (
-    <div className="relative w-full h-full snap-start shrink-0 flex items-center justify-center bg-black">
+    <div className="relative w-full h-full snap-start shrink-0 flex items-center justify-center bg-black card-shine">
       {/* Video */}
       <video
         ref={videoRef}
@@ -101,34 +101,29 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
         </div>
       )}
 
-      {/* Double-tap heart animation */}
+      {/* Double-tap heart animation with like-heart-burst */}
       <AnimatePresence>
         {showHeart && (
-          <motion.div
-            initial={{ scale: 0, opacity: 1 }}
-            animate={{ scale: 1.5, opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          >
-            <Heart className="w-24 h-24 text-red-500 fill-red-500" />
-          </motion.div>
+          <div className="like-heart-burst absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Heart className="w-24 h-24 text-red-500 fill-red-500 drop-shadow-lg" />
+          </div>
         )}
       </AnimatePresence>
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+      {/* Gradient overlays with video-overlay-gradient */}
+      <div className="video-overlay-gradient" />
 
-      {/* Right sidebar actions */}
-      <div className="absolute right-3 bottom-24 flex flex-col items-center gap-5">
+      {/* Right sidebar actions with reel-actions-float */}
+      <div className="reel-actions-float">
         <button onClick={handleLike} className="flex flex-col items-center gap-1">
           <Heart
-            className={`w-7 h-7 transition-colors ${
-              liked ? 'text-red-500 fill-red-500' : 'text-white'
+            className={`w-7 h-7 transition-all duration-200 ${
+              liked ? 'text-red-500 fill-red-500 scale-110' : 'text-white'
             }`}
           />
-          <span className="text-white text-xs font-medium">{likeCount}</span>
+          <span className={`text-white text-xs font-medium ${liked ? 'badge-pulse' : ''}`}>
+            {likeCount}
+          </span>
         </button>
 
         <button onClick={handleShare} className="flex flex-col items-center gap-1">
@@ -142,26 +137,36 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
         </button>
       </div>
 
-      {/* Bottom caption */}
+      {/* Bottom caption with glass-card creator info */}
       <div className="absolute bottom-16 left-3 right-16">
-        <div className="flex items-center gap-2 mb-2">
-          <button onClick={goToProfile} className="flex items-center gap-2">
-            {reel.user.profilePic ? (
-              <img
-                src={reel.user.profilePic}
-                alt={reel.user.username}
-                className="w-9 h-9 rounded-full object-cover ring-2 ring-white/30"
-              />
-            ) : (
-              <UserCircle className="w-9 h-9 text-white" />
+        <div className="glass-card p-3 rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <button onClick={goToProfile} className="flex items-center gap-2">
+              {reel.user.profilePic ? (
+                <img
+                  src={reel.user.profilePic}
+                  alt={reel.user.username}
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-white/30 group-hover:gradient-border-glow transition-all duration-300"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:ring-2 hover:ring-primex/40 transition-all duration-300">
+                  <UserCircle className="w-9 h-9 text-white" />
+                </div>
+              )}
+              <span className="text-white font-semibold text-sm">@{reel.user.username}</span>
+            </button>
+            {reel.user.isCreator && (
+              <span className="tag-primex text-[10px] px-1.5 py-0">Creator</span>
             )}
-            <span className="text-white font-semibold text-sm">@{reel.user.username}</span>
-          </button>
+          </div>
+          {reel.caption && (
+            <p className="text-white/90 text-sm line-clamp-2">{reel.caption}</p>
+          )}
         </div>
-        {reel.caption && (
-          <p className="text-white text-sm line-clamp-2">{reel.caption}</p>
-        )}
       </div>
+
+      {/* Hover gradient-border-glow ring effect */}
+      <div className="absolute inset-0 rounded-none pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-300 gradient-border-glow" />
     </div>
   );
 }

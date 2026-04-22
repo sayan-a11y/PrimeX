@@ -34,6 +34,8 @@ model User {
   sessions        Session[]
   comments        Comment[]
   commentLikes    CommentLike[]
+  watchHistory    WatchHistory[]
+  playlists       Playlist[]
 }
 
 model Session {
@@ -61,9 +63,11 @@ model Video {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  analytics   Analytics[]
-  reports     Report[]
-  comments    Comment[]
+  analytics     Analytics[]
+  reports       Report[]
+  comments      Comment[]
+  watchHistory  WatchHistory[]
+  playlistVideos PlaylistVideo[]
 }
 
 model Reel {
@@ -193,4 +197,46 @@ model Report {
   reportedVideo   Video?   @relation(fields: [reportedVideoId], references: [id], onDelete: Cascade)
   reportedReel    Reel?    @relation(fields: [reportedReelId], references: [id], onDelete: Cascade)
   reportedPrivate PrivateContent? @relation(fields: [reportedPrivateId], references: [id], onDelete: Cascade)
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  watchTime Int      @default(0) // seconds watched
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, videoId])
+  @@index([userId, createdAt])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isPublic    Boolean  @default(false)
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videos  PlaylistVideo[]
+  
+  @@index([userId])
+}
+
+model PlaylistVideo {
+  id         String   @id @default(cuid())
+  playlistId String
+  videoId    String
+  addedAt    DateTime @default(now())
+  
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([playlistId, videoId])
 }

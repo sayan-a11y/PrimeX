@@ -9,9 +9,46 @@ export async function GET(request: Request) {
     const type = searchParams.get('type') || 'all'; // users | videos | all
 
     if (!q.trim()) {
+      // For empty query, return featured creators if type is users/all
+      const results: { users: unknown[]; videos: unknown[] } = {
+        users: [],
+        videos: [],
+      };
+      if (type === 'users' || type === 'all') {
+        results.users = await db.user.findMany({
+          where: { isCreator: true },
+          select: {
+            id: true,
+            username: true,
+            profilePic: true,
+            bio: true,
+            isCreator: true,
+            role: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+        });
+      }
+      if (type === 'videos' || type === 'all') {
+        results.videos = await db.video.findMany({
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                profilePic: true,
+                isCreator: true,
+              },
+            },
+          },
+          orderBy: { views: 'desc' },
+          take: 20,
+        });
+      }
       return NextResponse.json({
         success: true,
-        data: { users: [], videos: [] },
+        data: results,
       });
     }
 
@@ -35,6 +72,7 @@ export async function GET(request: Request) {
           profilePic: true,
           bio: true,
           isCreator: true,
+          role: true,
           createdAt: true,
         },
         take: 20,

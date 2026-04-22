@@ -92,12 +92,14 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/3 -left-1/3 w-2/3 h-2/3 bg-primex/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-1/3 -right-1/3 w-2/3 h-2/3 bg-primex/3 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/2 w-64 h-64 bg-primex/5 rounded-full blur-3xl animate-pulse" />
+    <div className="min-h-screen flex bg-primex-hero relative overflow-hidden">
+      {/* Background effects with bg-mesh */}
+      <div className="absolute inset-0 bg-mesh overflow-hidden">
+        {/* Decorative orbs */}
+        <div className="orb-primex absolute top-1/4 left-1/4 float-slow" />
+        <div className="orb-primex-sm absolute bottom-1/3 right-1/4 float-medium" />
+        <div className="orb-primex-md absolute top-1/2 right-1/3 float-slow" />
+        <div className="orb-primex-lg absolute bottom-1/4 left-1/3 float-medium" />
       </div>
 
       {/* Left panel - Features (desktop only) */}
@@ -113,10 +115,10 @@ export default function AuthPage() {
                 <path d="M8 5v14l11-7z" />
               </svg>
             </div>
-            <h1 className="text-5xl font-bold primex-gradient-text">PrimeX</h1>
+            <h1 className="text-5xl font-bold text-shimmer">PrimeX</h1>
           </div>
           <h2 className="text-2xl font-bold mb-2">
-            The Future of <span className="primex-gradient-text">Video & Social</span>
+            The Future of <span className="text-gradient-animated">Video & Social</span>
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md">
             Watch long videos, scroll reels, connect with friends, and share exclusive content. 
@@ -130,7 +132,7 @@ export default function AuthPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.1 }}
-                className="glass-card p-4 rounded-xl hover:bg-white/5 transition-colors"
+                className="glass-card-premium p-4 rounded-xl hover-lift card-shine"
               >
                 <div className="w-9 h-9 rounded-lg bg-primex/10 flex items-center justify-center mb-2">
                   <f.icon className="w-4 h-4 text-primex" />
@@ -161,15 +163,15 @@ export default function AuthPage() {
               <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
                 <Play className="w-6 h-6 text-white fill-white" />
               </div>
-              <h1 className="text-4xl font-bold primex-gradient-text">PrimeX</h1>
+              <h1 className="text-4xl font-bold text-shimmer">PrimeX</h1>
             </motion.div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-gradient-animated text-sm font-medium">
               The ultimate video & social platform
             </p>
           </div>
 
-          {/* Auth Card */}
-          <div className="glass-card p-6 lg:p-8">
+          {/* Auth Card with glass-card-premium and gradient-border-primex */}
+          <div className="glass-card-premium gradient-border-primex p-6 lg:p-8">
             <h2 className="text-xl font-bold mb-1 hidden lg:block">
               {isLogin ? 'Welcome back' : 'Join PrimeX'}
             </h2>
@@ -182,7 +184,7 @@ export default function AuthPage() {
               <button
                 onClick={() => { setIsLogin(true); setError(''); }}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isLogin ? 'primex-gradient text-white shadow-lg' : 'text-muted-foreground hover:text-foreground'
+                  isLogin ? 'primex-gradient text-white shadow-lg glow-effect' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Sign In
@@ -190,7 +192,7 @@ export default function AuthPage() {
               <button
                 onClick={() => { setIsLogin(false); setError(''); }}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  !isLogin ? 'primex-gradient text-white shadow-lg' : 'text-muted-foreground hover:text-foreground'
+                  !isLogin ? 'primex-gradient text-white shadow-lg glow-effect' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Create Account
@@ -204,7 +206,7 @@ export default function AuthPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+                  className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm notification-pop"
                 >
                   {error}
                 </motion.div>
@@ -228,7 +230,7 @@ export default function AuthPage() {
                       value={emailOrUsername}
                       onChange={(e) => setEmailOrUsername(e.target.value)}
                       placeholder="Enter email or username"
-                      className="bg-muted/50 border-border/50 h-11 rounded-xl focus:ring-primex"
+                      className="glass-input h-11 rounded-xl"
                       required
                     />
                   </div>
@@ -240,13 +242,13 @@ export default function AuthPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter password"
-                        className="bg-muted/50 border-border/50 h-11 rounded-xl pr-10 focus:ring-primex"
+                        className="glass-input h-11 rounded-xl pr-10"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primex transition-colors"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -255,10 +257,10 @@ export default function AuthPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 rounded-xl primex-gradient text-white font-medium hover:opacity-90 transition-opacity glow-effect"
+                    className="w-full h-11 rounded-xl btn-primex hover-lift"
                   >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="spinner-primex-sm" style={{ borderTopColor: 'white', border: '2px solid rgba(255,255,255,0.3)' }} />
                     ) : 'Sign In'}
                   </Button>
                 </motion.form>
@@ -277,7 +279,7 @@ export default function AuthPage() {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Choose a username"
-                      className="bg-muted/50 border-border/50 h-11 rounded-xl focus:ring-primex"
+                      className="glass-input h-11 rounded-xl"
                       required
                     />
                   </div>
@@ -288,7 +290,7 @@ export default function AuthPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
-                      className="bg-muted/50 border-border/50 h-11 rounded-xl focus:ring-primex"
+                      className="glass-input h-11 rounded-xl"
                       required
                     />
                   </div>
@@ -300,13 +302,13 @@ export default function AuthPage() {
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
                         placeholder="Min. 6 characters"
-                        className="bg-muted/50 border-border/50 h-11 rounded-xl pr-10 focus:ring-primex"
+                        className="glass-input h-11 rounded-xl pr-10"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primex transition-colors"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -319,17 +321,17 @@ export default function AuthPage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Confirm your password"
-                      className="bg-muted/50 border-border/50 h-11 rounded-xl focus:ring-primex"
+                      className="glass-input h-11 rounded-xl"
                       required
                     />
                   </div>
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 rounded-xl primex-gradient text-white font-medium hover:opacity-90 transition-opacity glow-effect"
+                    className="w-full h-11 rounded-xl btn-primex hover-lift"
                   >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="spinner-primex-sm" style={{ borderTopColor: 'white', border: '2px solid rgba(255,255,255,0.3)' }} />
                     ) : 'Create Account'}
                   </Button>
                 </motion.form>
@@ -339,15 +341,15 @@ export default function AuthPage() {
 
           {/* Bottom badges */}
           <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
-            <div className="glass-card p-2.5 text-center rounded-xl">
+            <div className="glass-card-premium p-2.5 text-center rounded-xl hover-lift">
               <Shield className="w-4 h-4 mx-auto mb-1 text-primex" />
               <span className="text-[10px] text-muted-foreground">Secure</span>
             </div>
-            <div className="glass-card p-2.5 text-center rounded-xl">
+            <div className="glass-card-premium p-2.5 text-center rounded-xl hover-lift">
               <Zap className="w-4 h-4 mx-auto mb-1 text-primex" />
               <span className="text-[10px] text-muted-foreground">Fast</span>
             </div>
-            <div className="glass-card p-2.5 text-center rounded-xl">
+            <div className="glass-card-premium p-2.5 text-center rounded-xl hover-lift">
               <Users className="w-4 h-4 mx-auto mb-1 text-primex" />
               <span className="text-[10px] text-muted-foreground">Social</span>
             </div>

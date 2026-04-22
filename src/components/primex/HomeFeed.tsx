@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import {
   Play, Eye, Heart, Film, TrendingUp, Sparkles,
@@ -93,20 +92,22 @@ export default function HomeFeed() {
   if (loading) {
     return (
       <div className="p-4 lg:p-6">
+        {/* Category skeleton */}
         <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-9 w-20 rounded-full shrink-0" />
+            <div key={i} className="skeleton-pulse h-9 w-20 rounded-full shrink-0" />
           ))}
         </div>
+        {/* Video grid skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-2">
-              <Skeleton className="aspect-video rounded-xl" />
+              <div className="aspect-video shimmer rounded-xl" />
               <div className="flex gap-2">
-                <Skeleton className="w-9 h-9 rounded-full" />
+                <div className="w-9 h-9 skeleton-pulse skeleton-circle shrink-0" />
                 <div className="space-y-1 flex-1">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
+                  <div className="skeleton-pulse skeleton-line w-3/4" />
+                  <div className="skeleton-pulse skeleton-line w-1/2 h-3" />
                 </div>
               </div>
             </div>
@@ -122,7 +123,7 @@ export default function HomeFeed() {
       <StoriesBar />
 
       {/* Divider */}
-      <div className="divider-primex my-2" />
+      <div className="divider-primex my-4" />
 
       {/* Leaderboard Toggle */}
       <div className="mb-4">
@@ -150,12 +151,15 @@ export default function HomeFeed() {
         )}
       </div>
 
+      {/* Divider */}
+      <div className="divider-primex my-4" />
+
       {/* Welcome Banner (only when no videos) */}
       {videos.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl p-6 lg:p-8 mb-6 glow-border overflow-hidden relative"
+          className="glass-card-premium rounded-2xl p-6 lg:p-8 mb-6 gradient-border-primex overflow-hidden relative card-shine"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-primex/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           <div className="relative z-10">
@@ -164,21 +168,21 @@ export default function HomeFeed() {
               <span className="text-xs font-medium text-primex uppercase tracking-wider">Welcome to PrimeX</span>
             </div>
             <h2 className="text-2xl lg:text-3xl font-bold mb-2">
-              Your Premium <span className="primex-gradient-text">Video Platform</span>
+              Your Premium <span className="text-shimmer">Video Platform</span>
             </h2>
             <p className="text-muted-foreground text-sm max-w-lg mb-4">
               Watch long videos, scroll through reels, connect with creators, and share your own content. No subscriptions — just pure entertainment.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button
-                className="primex-gradient text-white rounded-xl gap-2 shadow-lg glow-effect"
+                className="btn-primex rounded-xl gap-2 hover-lift"
                 onClick={() => setCurrentView('upload')}
               >
                 <Film className="w-4 h-4" /> Upload Your First Video
               </Button>
               <Button
                 variant="outline"
-                className="rounded-xl glass-card border-border/50 gap-2"
+                className="btn-outline-primex rounded-xl gap-2"
                 onClick={() => setCurrentView('explore')}
               >
                 <Compass className="w-4 h-4" /> Explore Content
@@ -207,20 +211,23 @@ export default function HomeFeed() {
         </motion.div>
       )}
 
-      {/* Category Tabs */}
+      {/* Category Tabs with tag-primex style */}
       <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2">
         {categories.map((cat) => (
           <button
             key={cat.name}
             onClick={() => setSelectedCategory(cat.name)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press ${
               selectedCategory === cat.name
-                ? 'primex-gradient text-white glow-effect shadow-lg'
+                ? 'tag-primex bg-primex/20 text-primex border-primex/40 shadow-lg'
                 : 'glass-card text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
           >
             <span className="text-base">{cat.emoji}</span>
             {cat.name}
+            {cat.name === 'All' && videos.length > 0 && (
+              <span className="badge-pulse text-[9px] ml-1">New</span>
+            )}
           </button>
         ))}
       </div>
@@ -229,14 +236,14 @@ export default function HomeFeed() {
       {videos.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-shimmer">
               <TrendingUp className="w-5 h-5 text-primex" />
               Trending Now
             </h2>
             <Button
               variant="ghost"
               size="sm"
-              className="text-primex gap-1 text-xs"
+              className="btn-ghost-primex text-xs"
               onClick={() => setCurrentView('explore')}
             >
               See all <ArrowRight className="w-3 h-3" />
@@ -246,7 +253,7 @@ export default function HomeFeed() {
             {videos.slice(0, 5).map((video, i) => (
               <div
                 key={video.id}
-                className="shrink-0 w-56 glass-card rounded-xl overflow-hidden cursor-pointer group"
+                className="shrink-0 w-56 glass-card-premium rounded-xl overflow-hidden cursor-pointer group hover-lift card-shine"
                 onClick={() => {
                   useAppStore.setState({ currentVideoId: video.id });
                   setCurrentView('video');
@@ -254,13 +261,13 @@ export default function HomeFeed() {
               >
                 <div className="relative aspect-video bg-muted">
                   {video.thumbnail ? (
-                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/10 to-primex/5">
+                    <div className="w-full h-full shimmer flex items-center justify-center">
                       <Play className="w-6 h-6 text-primex/40" />
                     </div>
                   )}
-                  <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-primex text-white text-[10px] font-bold flex items-center gap-1">
+                  <div className="absolute top-2 left-2 tag-primex text-[10px] px-1.5 py-0.5 gap-0.5">
                     <Zap className="w-2.5 h-2.5" /> #{i + 1}
                   </div>
                 </div>
@@ -276,10 +283,13 @@ export default function HomeFeed() {
         </div>
       )}
 
+      {/* Divider */}
+      <div className="divider-primex my-4" />
+
       {/* Video Grid */}
       {videos.length === 0 ? (
         <div className="text-center py-8">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl glass-card flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl glass-card-premium flex items-center justify-center hover-lift">
             <Film className="w-7 h-7 text-primex" />
           </div>
           <h3 className="font-medium mb-1">No Videos Yet</h3>
@@ -287,7 +297,7 @@ export default function HomeFeed() {
         </div>
       ) : (
         <>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
             <Clock className="w-5 h-5 text-muted-foreground" />
             Latest Videos
           </h2>
@@ -298,7 +308,7 @@ export default function HomeFeed() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="glass-card overflow-hidden video-card-hover cursor-pointer group"
+                className="glass-card-premium overflow-hidden cursor-pointer group hover-lift card-shine rounded-xl"
                 onClick={() => {
                   useAppStore.setState({ currentVideoId: video.id });
                   setCurrentView('video');
@@ -310,21 +320,21 @@ export default function HomeFeed() {
                     <img
                       src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primex/10 to-primex/5">
+                    <div className="w-full h-full shimmer flex items-center justify-center">
                       <Play className="w-10 h-10 text-primex/30" />
                     </div>
                   )}
                   {video.duration > 0 && (
-                    <span className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-md bg-black/80 text-white text-xs font-medium">
+                    <span className="absolute bottom-2 right-2 video-duration-badge">
                       {formatDuration(video.duration)}
                     </span>
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="w-12 h-12 rounded-full primex-gradient flex items-center justify-center glow-effect">
-                      <Play className="w-5 h-5 text-white fill-white" />
+                    <div className="play-button-hover">
+                      <Play className="w-5 h-5 text-white fill-white ml-0.5" />
                     </div>
                   </div>
                 </div>
@@ -339,7 +349,7 @@ export default function HomeFeed() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-medium line-clamp-2 leading-snug">
+                      <h3 className="text-sm font-medium line-clamp-2 leading-snug group-hover:text-shimmer transition-all duration-300">
                         {video.title}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -348,7 +358,7 @@ export default function HomeFeed() {
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                         <Eye className="w-3 h-3" />
                         <span>{formatViews(video.views)} views</span>
-                        <span>•</span>
+                        <span>·</span>
                         <span>{timeAgo(video.createdAt)}</span>
                       </div>
                     </div>
@@ -360,16 +370,15 @@ export default function HomeFeed() {
         </>
       )}
 
-      {/* Load More */}
+      {/* Load More with btn-outline-primex */}
       {hasMore && videos.length > 0 && (
         <div className="text-center mt-8">
-          <Button
+          <button
             onClick={() => { setPage(p => p + 1); fetchVideos(page + 1); }}
-            variant="outline"
-            className="glass-card border-border/50 rounded-xl px-8 gap-2"
+            className="btn-outline-primex px-8 gap-2"
           >
             Load More <ArrowRight className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       )}
     </div>

@@ -5,8 +5,8 @@ import { useAppStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ImageIcon, ArrowLeft, Search, Circle } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
@@ -36,7 +36,7 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const { user, token, activeChatUser, setActiveChatUser, setCurrentView } = useAppStore();
+  const { user, token, activeChatUser, setActiveChatUser } = useAppStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -103,7 +103,9 @@ export default function ChatPage() {
           }));
           setConversations(mapped);
         }
-      } catch {}
+      } catch {
+        // Error fetching conversations
+      }
       setLoading(false);
     };
     if (token) fetchConversations();
@@ -121,7 +123,9 @@ export default function ChatPage() {
         if (data.success) {
           setMessages(data.data.messages || data.data || []);
         }
-      } catch {}
+      } catch {
+        // Error fetching messages
+      }
     };
     fetchMessages();
   }, [activeChatUser, token]);
@@ -159,18 +163,20 @@ export default function ChatPage() {
         });
         setNewMessage('');
       }
-    } catch {}
+    } catch {
+      // Error sending message
+    }
     setSending(false);
   };
 
-  const handleTyping = () => {
+  const handleTyping = useCallback(() => {
     if (activeChatUser && socketRef.current) {
       socketRef.current.emit('typing', {
         senderId: user?.id,
         receiverId: activeChatUser.id,
       });
     }
-  };
+  }, [activeChatUser, user?.id]);
 
   const formatTime = (dateStr: string) => {
     const d = new Date(dateStr);
@@ -189,7 +195,7 @@ export default function ChatPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search conversations..."
-              className="pl-9 bg-muted/50 border-border/50 h-9 rounded-xl"
+              className="pl-9 glass-input h-9 rounded-xl"
             />
           </div>
         </div>
@@ -198,64 +204,69 @@ export default function ChatPage() {
           <div className="p-4 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-muted animate-pulse" />
+                <div className="w-12 h-12 rounded-full skeleton-pulse skeleton-circle" />
                 <div className="flex-1 space-y-1">
-                  <div className="h-4 bg-muted rounded animate-pulse w-1/3" />
-                  <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+                  <div className="h-4 skeleton-pulse skeleton-line w-1/3" />
+                  <div className="h-3 skeleton-pulse skeleton-line w-2/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-            <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center mb-3">
+            <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mb-3">
               <Send className="w-6 h-6 text-primex" />
             </div>
             <h3 className="font-medium mb-1">No Conversations</h3>
             <p className="text-sm text-muted-foreground">Send a friend request to start chatting!</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {conversations.map((conv) => (
-              <button
-                key={conv.userId}
-                className="w-full flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors"
-                onClick={() => setActiveChatUser({
-                  id: conv.userId,
-                  username: conv.username,
-                  email: '',
-                  profilePic: conv.profilePic,
-                  bio: null,
-                  role: 'user',
-                  isCreator: false,
-                  createdAt: '',
-                })}
-              >
-                <div className="relative">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src={conv.profilePic || ''} />
-                    <AvatarFallback className="bg-primex/20 text-primex">
-                      {conv.username?.[0]?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Circle className="absolute bottom-0 right-0 w-3 h-3 fill-green-500 text-green-500" />
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-sm">{conv.username}</p>
-                    <span className="text-xs text-muted-foreground">
-                      {conv.lastTime ? formatTime(conv.lastTime) : ''}
-                    </span>
+          <div className="flex-1 overflow-y-auto premium-scrollbar">
+            <AnimatePresence>
+              {conversations.map((conv, idx) => (
+                <motion.button
+                  key={conv.userId}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="w-full glass-card-premium hover-lift p-3 rounded-xl mb-1 mx-1 flex items-center gap-3 transition-all gradient-border-primex"
+                  onClick={() => setActiveChatUser({
+                    id: conv.userId,
+                    username: conv.username,
+                    email: '',
+                    profilePic: conv.profilePic,
+                    bio: null,
+                    role: 'user',
+                    isCreator: false,
+                    createdAt: '',
+                  })}
+                >
+                  <div className="relative">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={conv.profilePic || ''} />
+                      <AvatarFallback className="bg-primex/20 text-primex">
+                        {conv.username?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="badge-dot-pulse">
+                      <Circle className="absolute bottom-0 right-0 w-3 h-3 fill-green-500 text-green-500" />
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{conv.lastMessage}</p>
-                </div>
-                {conv.unread > 0 && (
-                  <Badge className="bg-primex text-white text-xs h-5 min-w-5 flex items-center justify-center rounded-full">
-                    {conv.unread}
-                  </Badge>
-                )}
-              </button>
-            ))}
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm">{conv.username}</p>
+                      <span className="text-xs text-muted-foreground">
+                        {conv.lastTime ? formatTime(conv.lastTime) : ''}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{conv.lastMessage}</p>
+                  </div>
+                  {conv.unread > 0 && (
+                    <Badge className="badge-pulse text-white text-xs">{conv.unread}</Badge>
+                  )}
+                </motion.button>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>
@@ -266,7 +277,7 @@ export default function ChatPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Chat header */}
-      <div className="flex items-center gap-3 p-3 border-b border-border/50 glass-card">
+      <div className="flex items-center gap-3 p-3 border-b border-border/50 glass-card-premium">
         <Button
           variant="ghost"
           size="icon"
@@ -283,36 +294,53 @@ export default function ChatPage() {
         </Avatar>
         <div>
           <p className="font-medium text-sm">{activeChatUser.username}</p>
-          {isTyping && (
-            <p className="text-xs text-primex animate-pulse">typing...</p>
+          {isTyping ? (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-primex">typing</span>
+              <div className="loading-dots">
+                <span /><span /><span />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Circle className="w-2 h-2 fill-green-500 text-green-500" />
+              <span className="text-xs text-muted-foreground">Online</span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
-        {messages.map((msg) => {
-          const isMine = msg.senderId === user?.id;
-          return (
-            <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
-                isMine
-                  ? 'primex-gradient text-white rounded-br-md'
-                  : 'glass-card rounded-bl-md'
-              }`}>
-                <p className="text-sm">{msg.message}</p>
-                <div className={`flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : ''}`}>
-                  <span className={`text-[10px] ${isMine ? 'text-white/70' : 'text-muted-foreground'}`}>
-                    {formatTime(msg.createdAt)}
-                  </span>
-                  {isMine && msg.seen && (
-                    <span className="text-[10px] text-white/70">✓✓</span>
-                  )}
+      <div className="flex-1 overflow-y-auto premium-scrollbar p-4 space-y-3">
+        <AnimatePresence>
+          {messages.map((msg) => {
+            const isMine = msg.senderId === user?.id;
+            return (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
+                  isMine
+                    ? 'primex-gradient text-white rounded-br-md'
+                    : 'glass-card-premium rounded-bl-md'
+                }`}>
+                  <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
+                  <div className={`flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : ''}`}>
+                    <span className={`text-[10px] ${isMine ? 'text-white/70' : 'text-muted-foreground'}`}>
+                      {formatTime(msg.createdAt)}
+                    </span>
+                    {isMine && msg.seen && (
+                      <span className="text-[10px] text-white/70">✓✓</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>
 
@@ -327,15 +355,15 @@ export default function ChatPage() {
             onChange={(e) => { setNewMessage(e.target.value); handleTyping(); }}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
             placeholder="Type a message..."
-            className="flex-1 bg-muted/50 border-border/50 h-10 rounded-xl"
+            className="flex-1 glass-input h-10 rounded-xl"
           />
-          <Button
+          <button
             onClick={handleSend}
             disabled={!newMessage.trim() || sending}
-            className="shrink-0 h-10 w-10 rounded-xl primex-gradient text-white p-0"
+            className="btn-primex h-10 w-10 rounded-xl p-0 flex items-center justify-center disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       </div>
     </div>

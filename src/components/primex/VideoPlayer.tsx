@@ -186,6 +186,14 @@ export default function VideoPlayer() {
   // Share toast
   const [shareToast, setShareToast] = useState(false);
 
+  // Playlist picker
+  const [showPlaylistPicker, setShowPlaylistPicker] = useState(false);
+  const [playlists, setPlaylists] = useState<{ id: string; name: string; videos: { videoId: string }[] }[]>([]);
+  const [playlistToast, setPlaylistToast] = useState('');
+
+  // Watch history recording
+  const historyRecordedRef = useRef(false);
+
   /* ── Check friend status ─────────────────── */
   const checkFriendStatus = useCallback(
     async (userId: string) => {
@@ -218,6 +226,54 @@ export default function VideoPlayer() {
     [token]
   );
 
+  /* ── Record watch history ─────────────────── */
+  useEffect(() => {
+    if (!token || !currentVideoId || !isPlaying) return;
+    if (historyRecordedRef.current === true) return;
+    historyRecordedRef.current = true;
+    const recordHistory = async () => {
+      try {
+        await fetch('/api/history', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            videoId: currentVideoId,
+            watchTime: 0,
+            completed: false,
+          }),
+        });
+      } catch {}
+    };
+    recordHistory();
+  }, [token, currentVideoId, isPlaying]);
+
+  // Update watch progress periodically
+  useEffect(() => {
+    if (!token || !currentVideoId) return;
+    const interval = setInterval(() => {
+      const vid = videoRef.current;
+      if (!vid || vid.paused) return;
+      const watchTime = Math.floor(vid.currentTime);
+      const isCompleted = vid.duration > 0 && (vid.currentTime / vid.duration) > 0.9;
+      fetch('/api/history', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          videoId: currentVideoId,
+          watchTime,
+          completed: isCompleted,
+        }),
+      }).catch(() => {});
+    }, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [token, currentVideoId]);
+
   /* ── Fetch video data ────────────────────── */
   useEffect(() => {
     if (!currentVideoId) return;
@@ -245,6 +301,7 @@ export default function VideoPlayer() {
       setLoading(false);
     };
     fetchVideo();
+    historyRecordedRef.current = false; // Reset for new video
   }, [currentVideoId, token, user?.id, checkFriendStatus]);
 
   /* ── Fetch comments ──────────────────────── */
@@ -970,14 +1027,28 @@ export default function VideoPlayer() {
                   <span className="hidden sm:inline">Share</span>
                 </button>
 
-                {/* Bookmark */}
+                {/* Bookmark / Save to Playlist */}
                 <button
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all active-press ${
                     bookmarked
                       ? 'bg-primex-secondary/15 text-primex-secondary border border-primex-secondary/30'
                       : 'glass-card border border-border/50 hover:bg-white/10'
                   }`}
-                  onClick={() => setBookmarked(!bookmarked)}
+                  onClick={async () => {
+                    if (!token) return;
+                    setBookmarked(!bookmarked);
+                    // Fetch playlists for picker
+                    try {
+                      const res = await fetch('/api/playlists', {
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setPlaylists(data.data.playlists);
+                        setShowPlaylistPicker(true);
+                      }
+                    } catch {}
+                  }}
                 >
                   <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-primex-secondary' : ''}`} />
                   <span className="hidden sm:inline">Save</span>
@@ -1013,6 +1084,90 @@ export default function VideoPlayer() {
             {shareToast && (
               <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 glass-card px-4 py-2 rounded-xl text-sm text-primex notification-pop">
                 Link copied to clipboard!
+              </div>
+            )}
+
+            {/* Playlist toast */}
+            {playlistToast && (
+              <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 glass-card px-4 py-2 rounded-xl text-sm text-primex-secondary notification-pop">
+                {playlistToast}
+              </div>
+            )}
+
+            {/* Playlist Picker Modal */}
+            {showPlaylistPicker && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPlaylistPicker(false)} />
+                <div className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold">Save to Playlist</h3>
+                    <button onClick={() => setShowPlaylistPicker(false)} className="p-1 rounded hover:bg-white/10">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="space-y-2 max-h-80 overflow-y-auto premium-scrollbar">
+                    {playlists.length === 0 ? (
+                      <div className="text-center py-6">
+                        <p className="text-sm text-muted-foreground mb-3">No playlists yet</p>
+                        <Button
+                          className="btn-primex btn-sm"
+                          onClick={() => {
+                            setShowPlaylistPicker(false);
+                            setCurrentView('playlists');
+                          }}
+                        >
+                          Create a Playlist
+                        </Button>
+                      </div>
+                    ) : (
+                      playlists.map((pl) => {
+                        const alreadyAdded = pl.videos?.some((v) => v.videoId === currentVideoId);
+                        return (
+                          <button
+                            key={pl.id}
+                            className={`w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors text-left ${alreadyAdded ? 'opacity-60' : ''}`}
+                            onClick={async () => {
+                              if (alreadyAdded || !token || !currentVideoId) return;
+                              try {
+                                const res = await fetch(`/api/playlists/${pl.id}/videos`, {
+                                  method: 'POST',
+                                  headers: {
+                                    Authorization: `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                  },
+                                  body: JSON.stringify({ videoId: currentVideoId }),
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                  setPlaylistToast(`Added to "${pl.name}"`);
+                                  setTimeout(() => setPlaylistToast(''), 2000);
+                                } else {
+                                  setPlaylistToast(data.message || 'Failed to add');
+                                  setTimeout(() => setPlaylistToast(''), 2000);
+                                }
+                              } catch {
+                                setPlaylistToast('Failed to add');
+                                setTimeout(() => setPlaylistToast(''), 2000);
+                              }
+                              setShowPlaylistPicker(false);
+                            }}
+                          >
+                            <div className="w-10 h-10 rounded-lg bg-primex/10 flex items-center justify-center shrink-0">
+                              <Bookmark className="w-5 h-5 text-primex" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{pl.name}</p>
+                              <p className="text-xs text-muted-foreground">{pl.videos?.length || 0} video{(pl.videos?.length || 0) !== 1 ? 's' : ''}</p>
+                            </div>
+                            {alreadyAdded && (
+                              <span className="text-[10px] text-primex-secondary font-medium">Already added</span>
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
