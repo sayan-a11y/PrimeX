@@ -13,6 +13,7 @@ export interface User {
 
 export type ViewType =
   | 'home'
+  | 'explore'
   | 'reels'
   | 'upload'
   | 'chat'
