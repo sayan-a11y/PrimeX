@@ -70,10 +70,34 @@ export default function FriendsPage() {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchFriends();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!token) return;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [pendingRes, sentRes, friendsRes] = await Promise.all([
+          fetch('/api/friends?type=pending', { headers: { Authorization: `Bearer ${token}` } }),
+          fetch('/api/friends?type=sent', { headers: { Authorization: `Bearer ${token}` } }),
+          fetch('/api/friends?type=friends', { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        const [pendingData, sentData, friendsData] = await Promise.all([
+          pendingRes.json(), sentRes.json(), friendsRes.json(),
+        ]);
+        const parseList = (d: any) => {
+          const raw = d.success ? (d.data?.friends || d.data) : (d.data || d);
+          return (Array.isArray(raw) ? raw : []).map(normalizeFriendItem);
+        };
+        if (!cancelled) {
+          setPendingRequests(parseList(pendingData));
+          setSentRequests(parseList(sentData));
+          setFriends(parseList(friendsData));
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
   }, [token]);
 
   const handleAccept = async (friendId: string) => {

@@ -23,7 +23,8 @@ export type ViewType =
   | 'analytics'
   | 'admin'
   | 'search'
-  | 'video';
+  | 'video'
+  | 'settings';
 
 interface AppState {
   // Auth

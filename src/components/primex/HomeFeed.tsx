@@ -8,8 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import {
   Play, Eye, Heart, Film, TrendingUp, Sparkles,
-  Compass, Zap, ArrowRight, Clock
+  Compass, Zap, ArrowRight, Clock, Trophy, ChevronDown, ChevronUp
 } from 'lucide-react';
+import StoriesBar from './StoriesBar';
+import CreatorLeaderboard from './CreatorLeaderboard';
 
 interface Video {
   id: string;
@@ -46,6 +48,7 @@ export default function HomeFeed() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const fetchVideos = async (pageNum: number, reset = false) => {
     try {
@@ -115,6 +118,38 @@ export default function HomeFeed() {
 
   return (
     <div className="p-4 lg:p-6">
+      {/* Stories Bar */}
+      <StoriesBar />
+
+      {/* Divider */}
+      <div className="divider-primex my-2" />
+
+      {/* Leaderboard Toggle */}
+      <div className="mb-4">
+        <button
+          onClick={() => setShowLeaderboard(!showLeaderboard)}
+          className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primex transition-colors group w-full"
+        >
+          <Trophy className="w-4 h-4 text-primex" />
+          <span>Creator Leaderboard</span>
+          {showLeaderboard ? (
+            <ChevronUp className="w-4 h-4 ml-auto group-hover:text-primex transition-colors" />
+          ) : (
+            <ChevronDown className="w-4 h-4 ml-auto group-hover:text-primex transition-colors" />
+          )}
+        </button>
+        {showLeaderboard && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-4"
+          >
+            <CreatorLeaderboard />
+          </motion.div>
+        )}
+      </div>
+
       {/* Welcome Banner (only when no videos) */}
       {videos.length === 0 && (
         <motion.div

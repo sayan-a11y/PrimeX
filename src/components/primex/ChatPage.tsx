@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, Image, ArrowLeft, Search, Circle } from 'lucide-react';
+import { Send, ImageIcon, ArrowLeft, Search, Circle } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
 interface Conversation {
@@ -320,7 +320,7 @@ export default function ChatPage() {
       <div className="p-3 border-t border-border/50">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground">
-            <Image className="w-5 h-5" />
+            <ImageIcon className="w-5 h-5" />
           </Button>
           <Input
             value={newMessage}

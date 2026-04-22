@@ -32,6 +32,8 @@ model User {
   reports         Report[]        @relation("Reporter")
   reportedContent Report[]        @relation("ReportedContent")
   sessions        Session[]
+  comments        Comment[]
+  commentLikes    CommentLike[]
 }
 
 model Session {
@@ -61,6 +63,7 @@ model Video {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   analytics   Analytics[]
   reports     Report[]
+  comments    Comment[]
 }
 
 model Reel {
@@ -75,6 +78,7 @@ model Reel {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   analytics   Analytics[]
   reports     Report[]
+  comments    Comment[]
 }
 
 model PrivateContent {
@@ -136,6 +140,42 @@ model Notification {
   fromUserId String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  videoId   String?
+  reelId    String?
+  parentId  String?  // for replies
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video    Video?    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  reel     Reel?     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+  likes_rel CommentLike[]
+
+  @@index([videoId])
+  @@index([reelId])
+  @@index([parentId])
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  userId    String
+  commentId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@index([commentId])
 }
 
 model Report {

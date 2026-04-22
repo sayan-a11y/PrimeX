@@ -23,6 +23,7 @@ import AnalyticsPage from './AnalyticsPage';
 import SearchResults from './SearchResults';
 import VideoPlayer from './VideoPlayer';
 import ExplorePage from './ExplorePage';
+import SettingsPage from './SettingsPage';
 
 export default function MainLayout() {
   const { user, logout, currentView, setCurrentView, unreadNotifications, setUnreadNotifications, setSearchQuery } = useAppStore();
@@ -99,6 +100,7 @@ export default function MainLayout() {
       case 'admin': return <AdminPanel />;
       case 'search': return <SearchResults />;
       case 'video': return <VideoPlayer />;
+      case 'settings': return <SettingsPage />;
       default: return <HomeFeed />;
     }
   };
@@ -313,6 +315,16 @@ export default function MainLayout() {
             <BarChart3 className="w-5 h-5" />
             <span className="text-sm">Analytics</span>
           </Button>
+          <Button
+            variant="ghost"
+            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              currentView === 'settings' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+            }`}
+            onClick={() => setCurrentView('settings')}
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-sm">Settings</span>
+          </Button>
 
           {user?.role === 'admin' && (
             <Button
@@ -453,6 +465,17 @@ export default function MainLayout() {
                 >
                   <BarChart3 className="w-5 h-5" />
                   <span>Analytics</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    currentView === 'settings' ? 'bg-primex/10 text-primex' : ''
+                  }`}
+                  onClick={() => { setCurrentView('settings'); setShowMobileMenu(false); }}
+                >
+                  <Settings className="w-5 h-5" />
+                  <span>Settings</span>
                 </Button>
 
                 {user?.role === 'admin' && (
