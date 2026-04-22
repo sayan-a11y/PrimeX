@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import LiveIndicator from './LiveIndicator';
 
 /* ── Types ────────────────────────────────────────────────── */
 interface StoryItem {
@@ -28,6 +29,13 @@ const storyGradients = [
   'from-amber-400 via-orange-500 to-red-400',
   'from-teal-400 via-emerald-500 to-lime-400',
   'from-indigo-500 via-violet-500 to-purple-500',
+];
+
+/* ── Live Story Items ─────────────────────────────────────── */
+const liveStories: StoryItem[] = [
+  { id: 'live-0', userId: 'live-user-0', username: 'djmaria', avatar: null, gradient: 'from-red-600 via-red-500 to-orange-500', viewed: false, timestamp: 'LIVE' },
+  { id: 'live-1', userId: 'live-user-1', username: 'gamerguru', avatar: null, gradient: 'from-red-500 via-pink-500 to-purple-600', viewed: false, timestamp: 'LIVE' },
+  { id: 'live-2', userId: 'live-user-2', username: 'chefkat', avatar: null, gradient: 'from-orange-500 via-red-600 to-rose-500', viewed: false, timestamp: 'LIVE' },
 ];
 
 /* ── Mock Data ────────────────────────────────────────────── */
@@ -310,6 +318,39 @@ export default function StoriesBar() {
               Add
             </span>
           </motion.button>
+
+          {/* Live Stories */}
+          {liveStories.map((story) => (
+            <motion.button
+              key={story.id}
+              whileTap={{ scale: 0.95 }}
+              className="flex flex-col items-center gap-1.5 shrink-0 group"
+              onClick={() => {
+                /* Would open live stream */
+              }}
+            >
+              <div className="relative">
+                {/* Live gradient ring with red glow */}
+                <div
+                  className="rounded-full p-[2.5px] bg-gradient-to-tr from-red-500 via-red-400 to-orange-500 shadow-lg shadow-red-500/30"
+                >
+                  <Avatar className="w-[58px] h-[58px] border-2 border-background group-hover:scale-105 transition-transform">
+                    <AvatarImage src={story.avatar || ''} />
+                    <AvatarFallback className="bg-red-500/20 text-red-400 text-lg font-bold">
+                      {story.username[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                {/* LIVE indicator at bottom */}
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
+                  <LiveIndicator size="sm" showViewers={false} />
+                </div>
+              </div>
+              <span className="text-[11px] max-w-[64px] truncate text-red-400 font-semibold mt-0.5">
+                {story.username}
+              </span>
+            </motion.button>
+          ))}
 
           {/* Story Items */}
           {stories.map((story, i) => (

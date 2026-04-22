@@ -98,7 +98,7 @@ export default function ReelsFeed() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-2 border-primex/30 border-t-primex rounded-full animate-spin" />
+        <div className="spinner-primex-lg" />
       </div>
     );
   }
@@ -157,11 +157,12 @@ export default function ReelsFeed() {
             )}
           </AnimatePresence>
 
-          {/* Gradient overlay bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+          {/* Gradient overlay top + bottom */}
+          <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-black/50 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-1/3 video-overlay-gradient pointer-events-none" />
 
           {/* Right side actions */}
-          <div className="absolute right-3 bottom-24 flex flex-col items-center gap-5">
+          <div className="absolute right-3 bottom-24 flex flex-col items-center gap-5 reel-actions-float">
             {/* Avatar */}
             <div className="relative">
               <Avatar className="w-11 h-11 border-2 border-white">
@@ -174,43 +175,68 @@ export default function ReelsFeed() {
 
             {/* Like */}
             <button
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 group"
               onClick={(e) => { e.stopPropagation(); handleLike(reel.id); }}
             >
-              <Heart className={`w-7 h-7 ${reel.liked ? 'text-red-500 fill-red-500' : 'text-white'} drop-shadow-lg`} />
-              <span className="text-white text-xs font-medium drop-shadow">{reel.likes}</span>
+              <div className={`p-2 rounded-full transition-all ${reel.liked ? 'bg-red-500/20' : 'bg-black/20 group-hover:bg-black/40'}`}>
+                <Heart className={`w-6 h-6 transition-transform group-hover:scale-110 ${reel.liked ? 'text-red-500 fill-red-500 like-heart-burst' : 'text-white'} drop-shadow-lg`} />
+              </div>
+              <span className="text-white text-xs font-medium drop-shadow badge-pulse">{reel.likes}</span>
+            </button>
+
+            {/* Comment */}
+            <button className="flex flex-col items-center gap-1 group" onClick={(e) => e.stopPropagation()}>
+              <div className="p-2 rounded-full bg-black/20 group-hover:bg-black/40 transition-all">
+                <MessageCircle className="w-6 h-6 text-white drop-shadow-lg" />
+              </div>
+              <span className="text-white text-xs font-medium drop-shadow">0</span>
             </button>
 
             {/* Share */}
-            <button className="flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-              <Share2 className="w-7 h-7 text-white drop-shadow-lg" />
+            <button className="flex flex-col items-center gap-1 group" onClick={(e) => e.stopPropagation()}>
+              <div className="p-2 rounded-full bg-black/20 group-hover:bg-black/40 transition-all">
+                <Share2 className="w-6 h-6 text-white drop-shadow-lg" />
+              </div>
               <span className="text-white text-xs font-medium drop-shadow">{reel.shares}</span>
             </button>
 
             {/* More */}
-            <button className="flex flex-col items-center gap-1" onClick={(e) => e.stopPropagation()}>
-              <MoreVertical className="w-7 h-7 text-white drop-shadow-lg" />
+            <button className="flex flex-col items-center gap-1 group" onClick={(e) => e.stopPropagation()}>
+              <div className="p-2 rounded-full bg-black/20 group-hover:bg-black/40 transition-all">
+                <MoreVertical className="w-6 h-6 text-white drop-shadow-lg" />
+              </div>
             </button>
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-16 left-4 right-16 pointer-events-none">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-white font-medium text-sm drop-shadow">
-                @{reel.user?.username || 'unknown'}
-              </span>
+          <div className="absolute bottom-16 left-4 right-16">
+            <div className="glass-card-premium p-3 rounded-xl backdrop-blur-md">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Avatar className="w-7 h-7 border border-white/30">
+                  <AvatarImage src={reel.user?.profilePic || ''} />
+                  <AvatarFallback className="bg-primex/30 text-white text-[10px]">
+                    {reel.user?.username?.[0]?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-white font-semibold text-sm drop-shadow">
+                  @{reel.user?.username || 'unknown'}
+                </span>
+              </div>
+              {reel.caption && (
+                <p className="text-white/90 text-sm line-clamp-2 drop-shadow">{reel.caption}</p>
+              )}
             </div>
-            {reel.caption && (
-              <p className="text-white/90 text-sm line-clamp-2 drop-shadow">{reel.caption}</p>
-            )}
           </div>
 
-          {/* Play/Pause indicator */}
+          {/* Live indicator */}
           {index === currentIndex && (
-            <div className="absolute top-4 right-4">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <div className="absolute top-4 right-4 flex items-center gap-1.5">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/80 backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="text-white text-[10px] font-bold">LIVE</span>
+              </div>
             </div>
-          )}
+          )
         </div>
       ))}
     </div>

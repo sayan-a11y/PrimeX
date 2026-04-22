@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Copy, Code2, Twitter, Facebook, Mail, Link2, QrCode, Check,
+  Share2, MessageCircle, Send, ExternalLink, BarChart3,
 } from 'lucide-react';
 
 interface ShareModalProps {
@@ -21,6 +22,9 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
   const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/?v=${videoId}`;
   const embedCode = `<iframe src="${typeof window !== 'undefined' ? window.location.origin : ''}/embed/${videoId}" width="560" height="315" frameborder="0" allowfullscreen title="${videoTitle}"></iframe>`;
 
+  // Mock share analytics
+  const shareCount = 24;
+
   const copyToClipboard = async (text: string, type: 'link' | 'embed') => {
     try {
       await navigator.clipboard.writeText(text);
@@ -32,7 +36,6 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
         setTimeout(() => setCopiedEmbed(false), 2000);
       }
     } catch {
-      // Fallback
       const textarea = document.createElement('textarea');
       textarea.value = text;
       document.body.appendChild(textarea);
@@ -59,11 +62,66 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
     window.open(url, '_blank', 'width=600,height=400');
   };
 
+  const shareToWhatsApp = () => {
+    const url = `https://wa.me/?text=${encodeURIComponent(`${videoTitle} ${shareUrl}`)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  };
+
+  const shareToTelegram = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(videoTitle)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  };
+
+  const shareToReddit = () => {
+    const url = `https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(videoTitle)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  };
+
   const shareViaEmail = () => {
     const subject = encodeURIComponent(`Check out: ${videoTitle}`);
     const body = encodeURIComponent(`Watch this video on PrimeX: ${shareUrl}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
+
+  const socialButtons = [
+    { icon: Twitter, label: 'Twitter/X', color: 'bg-sky-500/15', hoverColor: 'group-hover:bg-sky-500/25', textColor: 'text-sky-400', onClick: shareToTwitter },
+    { icon: Facebook, label: 'Facebook', color: 'bg-blue-600/15', hoverColor: 'group-hover:bg-blue-600/25', textColor: 'text-blue-400', onClick: shareToFacebook },
+    { icon: MessageCircle, label: 'WhatsApp', color: 'bg-green-500/15', hoverColor: 'group-hover:bg-green-500/25', textColor: 'text-green-400', onClick: shareToWhatsApp },
+    { icon: Send, label: 'Telegram', color: 'bg-cyan-500/15', hoverColor: 'group-hover:bg-cyan-500/25', textColor: 'text-cyan-400', onClick: shareToTelegram },
+    { icon: ExternalLink, label: 'Reddit', color: 'bg-orange-500/15', hoverColor: 'group-hover:bg-orange-500/25', textColor: 'text-orange-400', onClick: shareToReddit },
+    { icon: Mail, label: 'Email', color: 'bg-primex/15', hoverColor: 'group-hover:bg-primex/25', textColor: 'text-primex', onClick: shareViaEmail },
+  ];
+
+  // QR code pattern generation based on videoId
+  const generateQRPattern = () => {
+    const seed = videoId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const pattern: number[][] = [];
+    // Corner patterns (finder patterns)
+    for (let row = 0; row < 15; row++) {
+      pattern[row] = [];
+      for (let col = 0; col < 15; col++) {
+        // Finder patterns in corners
+        const inTopLeft = row < 5 && col < 5;
+        const inTopRight = row < 5 && col >= 10;
+        const inBottomLeft = row >= 10 && col < 5;
+        
+        if (inTopLeft || inTopRight || inBottomLeft) {
+          const r = inTopLeft ? row : inTopRight ? row : row - 10;
+          const c = inTopLeft ? col : inTopRight ? col - 10 : col;
+          if (r === 0 || r === 4 || c === 0 || c === 4) pattern[row][col] = 1;
+          else if (r >= 1 && r <= 3 && c >= 1 && c <= 3) pattern[row][col] = 1;
+          else pattern[row][col] = 0;
+        } else {
+          // Pseudo-random data based on seed
+          const idx = row * 15 + col;
+          pattern[row][col] = ((seed * (idx + 1) * 7 + idx * 13) % 3 === 0) ? 1 : 0;
+        }
+      }
+    }
+    return pattern;
+  };
+
+  const qrPattern = generateQRPattern();
 
   return (
     <AnimatePresence>
@@ -88,10 +146,15 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="gradient-border-primex px-6 py-4 flex items-center justify-between border-b border-border/50">
-              <div>
-                <h2 className="text-lg font-bold text-shimmer">Share Video</h2>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[300px]">{videoTitle}</p>
+            <div className="px-6 py-4 flex items-center justify-between border-b border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center">
+                  <Share2 className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-shimmer">Share Video</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[280px]">{videoTitle}</p>
+                </div>
               </div>
               <button
                 onClick={onClose}
@@ -100,6 +163,14 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
               >
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>
+            </div>
+
+            {/* Share Analytics */}
+            <div className="px-6 py-3 flex items-center gap-2 bg-primex/5 border-b border-border/30">
+              <BarChart3 className="w-4 h-4 text-primex" />
+              <span className="text-xs text-muted-foreground">
+                Shared <span className="text-primex font-semibold count-up">{shareCount}</span> times
+              </span>
             </div>
 
             {/* Tabs */}
@@ -137,9 +208,9 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-4"
+                    className="space-y-5"
                   >
-                    {/* Share Link */}
+                    {/* Copy Link */}
                     <div>
                       <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Shareable Link</label>
                       <div className="flex items-center gap-2">
@@ -148,14 +219,13 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                         </div>
                         <button
                           onClick={() => copyToClipboard(shareUrl, 'link')}
-                          className={`p-2.5 rounded-xl transition-all active-press shrink-0 ${
-                            copiedLink
-                              ? 'bg-green-500/15 text-green-400 border border-green-500/30'
-                              : 'bg-primex/10 text-primex border border-primex/20 hover:bg-primex/20'
+                          className={`btn-primex btn-sm flex items-center gap-1.5 shrink-0 ${
+                            copiedLink ? '!bg-green-500/80' : ''
                           }`}
                           aria-label="Copy link"
                         >
                           {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                          <span>{copiedLink ? 'Copied!' : 'Copy'}</span>
                         </button>
                       </div>
                       {copiedLink && (
@@ -163,69 +233,41 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                       )}
                     </div>
 
-                    {/* Share Options */}
+                    <div className="divider-primex" />
+
+                    {/* Social Media Share Buttons */}
                     <div>
-                      <label className="text-xs text-muted-foreground mb-2 block font-medium">Share to</label>
-                      <div className="grid grid-cols-4 gap-3">
-                        <button
-                          onClick={shareToTwitter}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-sky-500/15 flex items-center justify-center group-hover:bg-sky-500/25 transition-colors">
-                            <Twitter className="w-5 h-5 text-sky-400" />
-                          </div>
-                          <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Twitter</span>
-                        </button>
-
-                        <button
-                          onClick={shareToFacebook}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-blue-600/15 flex items-center justify-center group-hover:bg-blue-600/25 transition-colors">
-                            <Facebook className="w-5 h-5 text-blue-400" />
-                          </div>
-                          <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Facebook</span>
-                        </button>
-
-                        <button
-                          onClick={shareViaEmail}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-primex/15 flex items-center justify-center group-hover:bg-primex/25 transition-colors">
-                            <Mail className="w-5 h-5 text-primex" />
-                          </div>
-                          <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
-                        </button>
-
-                        <button
-                          onClick={() => copyToClipboard(shareUrl, 'link')}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-primex-secondary/15 flex items-center justify-center group-hover:bg-primex-secondary/25 transition-colors">
-                            {copiedLink ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-primex-secondary" />}
-                          </div>
-                          <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Copy</span>
-                        </button>
+                      <label className="text-xs text-muted-foreground mb-2.5 block font-medium">Share to</label>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {socialButtons.map((btn) => (
+                          <button
+                            key={btn.label}
+                            onClick={btn.onClick}
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl glass-card hover:bg-white/10 transition-all hover-lift group"
+                          >
+                            <div className={`w-10 h-10 rounded-full ${btn.color} ${btn.hoverColor} flex items-center justify-center transition-colors`}>
+                              <btn.icon className={`w-5 h-5 ${btn.textColor}`} />
+                            </div>
+                            <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
 
-                    {/* QR Code Placeholder */}
+                    <div className="divider-primex" />
+
+                    {/* QR Code */}
                     <div>
                       <label className="text-xs text-muted-foreground mb-2 block font-medium">QR Code</label>
-                      <div className="flex items-center gap-4 glass-card p-4 rounded-xl">
+                      <div className="flex items-center gap-4 glass-card p-4 rounded-xl hover-lift">
                         <div className="w-24 h-24 rounded-xl bg-white p-2 shrink-0">
-                          {/* CSS-based QR code placeholder */}
-                          <div className="w-full h-full grid grid-cols-5 grid-rows-5 gap-[2px]">
-                            {[
-                              1,1,1,0,1,
-                              1,0,1,1,0,
-                              1,1,1,0,1,
-                              0,1,0,1,1,
-                              1,0,1,1,1,
-                            ].map((cell, i) => (
+                          {/* CSS-based QR code pattern */}
+                          <div className="w-full h-full grid grid-cols-15 gap-0" style={{ gridTemplateColumns: 'repeat(15, 1fr)' }}>
+                            {qrPattern.flat().map((cell, i) => (
                               <div
                                 key={i}
-                                className={`rounded-[1px] ${cell ? 'bg-foreground' : 'bg-white'}`}
+                                className={`aspect-square ${cell ? 'bg-foreground' : 'bg-white'}`}
+                                style={{ borderRadius: cell ? '1px' : '0' }}
                               />
                             ))}
                           </div>
@@ -235,9 +277,25 @@ export default function ShareModal({ isOpen, onClose, videoId, videoTitle }: Sha
                             <QrCode className="w-4 h-4 text-primex" />
                             Scan to Share
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
                             Point your camera at this QR code to open the video link on any device.
                           </p>
+                          <button
+                            onClick={() => {
+                              // Create a simple SVG QR code for download
+                              const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300"><rect fill="white" width="300" height="300"/>${qrPattern.map((row, r) => row.map((cell, c) => cell ? `<rect x="${c*20}" y="${r*20}" width="20" height="20" fill="black"/>` : '').join('')).join('')}</svg>`;
+                              const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = `primex-${videoId}-qr.svg`;
+                              a.click();
+                              URL.revokeObjectURL(url);
+                            }}
+                            className="text-xs text-primex hover:underline mt-1.5 inline-flex items-center gap-1"
+                          >
+                            <Copy className="w-3 h-3" /> Download QR
+                          </button>
                         </div>
                       </div>
                     </div>

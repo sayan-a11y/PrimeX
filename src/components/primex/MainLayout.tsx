@@ -9,8 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, Film, Upload, MessageCircle, User, Search, Bell, LogOut,
-  Shield, BarChart3, Users, Heart, X, Menu, Compass, TrendingUp, Settings,
-  Clock, ListVideo, DollarSign
+  Shield, BarChart3, Users, X, Menu, Compass, TrendingUp, Settings,
+  Clock, ListVideo, DollarSign, Clock3, TrendingUp as TrendingIcon, XCircle,
 } from 'lucide-react';
 import HomeFeed from './HomeFeed';
 import ReelsFeed from './ReelsFeed';
@@ -28,14 +28,163 @@ import SettingsPage from './SettingsPage';
 import WatchHistoryPage from './WatchHistoryPage';
 import PlaylistsPage from './PlaylistsPage';
 import CreatorDashboard from './CreatorDashboard';
+import OnboardingModal from './OnboardingModal';
 import { playNotificationSound } from '@/lib/notification-sound';
 
+/* ── Trending Searches (mock) ────────────────────────────────── */
+const TRENDING_SEARCHES = [
+  'music videos',
+  'gaming highlights',
+  'cooking tips',
+  'tech reviews',
+  'fitness',
+];
+
+/* ── Recent Searches Helper ─────────────────────────────────── */
+function getRecentSearches(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem('primex_recent_searches');
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearch(query: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    const recent = getRecentSearches().filter((s) => s !== query);
+    recent.unshift(query);
+    const trimmed = recent.slice(0, 5);
+    localStorage.setItem('primex_recent_searches', JSON.stringify(trimmed));
+  } catch {
+    // Silently fail
+  }
+}
+
+function removeRecentSearch(query: string): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const recent = getRecentSearches().filter((s) => s !== query);
+    localStorage.setItem('primex_recent_searches', JSON.stringify(recent));
+    return recent;
+  } catch {
+    return [];
+  }
+}
+
+/* ── Search Dropdown Component ──────────────────────────────── */
+function SearchDropdown({
+  show,
+  onSelect,
+  onRemoveRecent,
+}: {
+  show: boolean;
+  onSelect: (query: string) => void;
+  onRemoveRecent: (query: string) => void;
+}) {
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
+
+  // Refresh recent searches when shown
+  const refreshRecent = () => {
+    setRecentSearches(getRecentSearches());
+  };
+
+  if (!show) return null;
+
+  const hasRecent = recentSearches.length > 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.15 }}
+      className="absolute top-full left-0 right-0 mt-2 glass-card-premium rounded-xl overflow-hidden z-50 shadow-2xl shadow-black/40"
+    >
+      <div className="max-h-80 overflow-y-auto premium-scrollbar p-2">
+        {/* Recent Searches */}
+        {hasRecent && (
+          <div className="mb-3">
+            <div className="flex items-center justify-between px-2 mb-1.5">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Clock3 className="w-3 h-3" />
+                Recent Searches
+              </p>
+            </div>
+            {recentSearches.map((query) => (
+              <button
+                key={`recent-${query}`}
+                onClick={() => onSelect(query)}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-white/5 transition-colors group text-left"
+              >
+                <Clock3 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <span className="flex-1 truncate">{query}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveRecent(query);
+                    refreshRecent();
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-white/10"
+                  aria-label={`Remove ${query} from recent searches`}
+                >
+                  <X className="w-3 h-3 text-muted-foreground" />
+                </button>
+              </button>
+            ))}
+            <div className="divider-primex my-2" />
+          </div>
+        )}
+
+        {/* Trending Searches */}
+        <div>
+          <div className="px-2 mb-1.5">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <TrendingUp className="w-3 h-3 text-primex" />
+              Trending Searches
+            </p>
+          </div>
+          {TRENDING_SEARCHES.map((query) => (
+            <button
+              key={`trending-${query}`}
+              onClick={() => onSelect(query)}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-white/5 transition-colors group text-left hover-lift"
+            >
+              <TrendingIcon className="w-3.5 h-3.5 text-primex shrink-0" />
+              <span className="flex-1 truncate">{query}</span>
+              <span className="tag-primex text-[9px] opacity-0 group-hover:opacity-100 transition-opacity">Trending</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Main Layout Component ─────────────────────────────────── */
 export default function MainLayout() {
-  const { user, logout, currentView, setCurrentView, unreadNotifications, setUnreadNotifications, setSearchQuery } = useAppStore();
+  const { user, logout, currentView, setCurrentView, unreadNotifications, setUnreadNotifications, setSearchQuery, showOnboarding, setShowOnboarding } = useAppStore();
   const [showSearch, setShowSearch] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const prevUnreadRef = useRef(0);
+
+  // Onboarding check on first login
+  useEffect(() => {
+    if (user) {
+      const completed = localStorage.getItem('primex_onboarding_completed');
+      if (!completed) {
+        // Short delay to let the UI render first
+        const timer = setTimeout(() => {
+          setShowOnboarding(true);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, setShowOnboarding]);
 
   // Fetch unread notifications count
   useEffect(() => {
@@ -68,10 +217,25 @@ export default function MainLayout() {
     e.preventDefault();
     if (localSearchQuery.trim()) {
       setSearchQuery(localSearchQuery.trim());
+      saveRecentSearch(localSearchQuery.trim());
       setCurrentView('search');
       setShowSearch(false);
+      setSearchFocused(false);
     }
   }, [localSearchQuery, setCurrentView, setSearchQuery]);
+
+  const handleSearchSelect = useCallback((query: string) => {
+    setLocalSearchQuery(query);
+    setSearchQuery(query);
+    saveRecentSearch(query);
+    setCurrentView('search');
+    setShowSearch(false);
+    setSearchFocused(false);
+  }, [setCurrentView, setSearchQuery]);
+
+  const handleRemoveRecentSearch = useCallback((query: string) => {
+    removeRecentSearch(query);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -143,21 +307,45 @@ export default function MainLayout() {
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
-              <span className="text-xl font-bold primex-gradient-text hidden sm:block">PrimeX</span>
+              <span className="text-xl font-bold primex-gradient-text hidden sm:block text-shimmer">PrimeX</span>
             </div>
           </div>
 
-          {/* Center: Search */}
-          <div className="flex-1 max-w-lg mx-4 hidden md:block">
+          {/* Center: Search with dropdown */}
+          <div className="flex-1 max-w-lg mx-4 hidden md:block relative">
             <form onSubmit={handleSearch} className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 value={localSearchQuery}
                 onChange={(e) => setLocalSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => {
+                  // Delay to allow click on dropdown items
+                  setTimeout(() => setSearchFocused(false), 200);
+                }}
                 placeholder="Search videos, users, tags..."
                 className="pl-10 bg-muted/50 border-border/50 h-10 rounded-xl focus:ring-primex/50 transition-all"
               />
+              {localSearchQuery && (
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setLocalSearchQuery('')}
+                >
+                  <XCircle className="w-4 h-4" />
+                </button>
+              )}
             </form>
+            {/* Search Dropdown */}
+            <AnimatePresence>
+              {searchFocused && !localSearchQuery && (
+                <SearchDropdown
+                  show={searchFocused && !localSearchQuery}
+                  onSelect={handleSearchSelect}
+                  onRemoveRecent={handleRemoveRecentSearch}
+                />
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Right: Actions */}
@@ -224,12 +412,16 @@ export default function MainLayout() {
               exit={{ height: 0, opacity: 0 }}
               className="md:hidden overflow-hidden"
             >
-              <div className="px-3 pb-3">
+              <div className="px-3 pb-3 relative">
                 <form onSubmit={handleSearch} className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     value={localSearchQuery}
                     onChange={(e) => setLocalSearchQuery(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => {
+                      setTimeout(() => setSearchFocused(false), 200);
+                    }}
                     placeholder="Search videos, users, tags..."
                     className="pl-10 bg-muted/50 border-border/50 h-10 rounded-xl"
                     autoFocus
@@ -244,6 +436,21 @@ export default function MainLayout() {
                     <X className="w-3 h-3" />
                   </Button>
                 </form>
+                {/* Mobile search dropdown */}
+                <AnimatePresence>
+                  {searchFocused && !localSearchQuery && (
+                    <div className="mt-2">
+                      <SearchDropdown
+                        show={searchFocused && !localSearchQuery}
+                        onSelect={(query) => {
+                          handleSearchSelect(query);
+                          setShowSearch(false);
+                        }}
+                        onRemoveRecent={handleRemoveRecentSearch}
+                      />
+                    </div>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
@@ -253,9 +460,9 @@ export default function MainLayout() {
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-60 border-r border-border/50 p-3 gap-0.5 overflow-y-auto custom-scrollbar">
+        <aside className="hidden lg:flex flex-col w-60 border-r border-border/50 p-3 gap-0.5 overflow-y-auto premium-scrollbar glass-sidebar">
           {/* User Card */}
-          <div className="glass-card p-3 rounded-xl mb-3 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-colors"
+          <div className="glass-card-premium p-3 rounded-xl mb-3 flex items-center gap-3 cursor-pointer hover-lift card-shine gradient-border-primex transition-all"
             onClick={() => setCurrentView('profile')}
           >
             <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center shrink-0">
@@ -587,6 +794,12 @@ export default function MainLayout() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+      />
     </div>
   );
 }

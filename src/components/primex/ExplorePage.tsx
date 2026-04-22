@@ -9,8 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Compass, TrendingUp, Users, Film, Play, Heart, Eye,
-  UserPlus, Search, Star, Zap, Crown, Sparkles
+  UserPlus, Star, Crown, Sparkles, Radio
 } from 'lucide-react';
+import { LiveIndicator, LiveStreamCard } from './LiveIndicator';
 
 interface ExploreUser {
   id: string;
@@ -68,6 +69,13 @@ export default function ExplorePage() {
     return n.toString();
   };
 
+  // Mock live streams
+  const liveStreams = [
+    { username: 'djmaria', title: '🎵 Live DJ Set - Chill Vibes', viewerCount: 1243 },
+    { username: 'gamerguru', title: '🎮 Ranked Grind - Road to Champion', viewerCount: 892 },
+    { username: 'chefkat', title: '🍳 Cooking Japanese Ramen Live', viewerCount: 567 },
+  ];
+
   // Trending tags mock
   const trendingTags = [
     { tag: 'Music', count: '2.1K', icon: '🎵' },
@@ -88,7 +96,7 @@ export default function ExplorePage() {
           <Compass className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold primex-gradient-text">Explore</h1>
+          <h1 className="text-2xl font-bold text-shimmer">Explore</h1>
           <p className="text-sm text-muted-foreground">Discover trending content and creators</p>
         </div>
       </div>
@@ -118,6 +126,32 @@ export default function ExplorePage() {
       {/* Trending Tab */}
       {activeTab === 'trending' && (
         <div className="space-y-6">
+          {/* Live Now Section */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Radio className="w-5 h-5 text-red-500" />
+                <span className="text-shimmer">Live Now</span>
+              </h2>
+              <LiveIndicator size="sm" viewerCount={liveStreams.reduce((acc, s) => acc + s.viewerCount, 0)} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {liveStreams.map((stream) => (
+                <LiveStreamCard
+                  key={stream.username}
+                  username={stream.username}
+                  title={stream.title}
+                  viewerCount={stream.viewerCount}
+                  onClick={() => {
+                    /* Would open live stream */
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="divider-primex" />
+
           {/* Trending Tags */}
           <div>
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -125,10 +159,10 @@ export default function ExplorePage() {
               Trending Tags
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {trendingTags.map((t) => (
+              {trendingTags.map((t, idx) => (
                 <div
                   key={t.tag}
-                  className="glass-card p-4 rounded-xl cursor-pointer hover:bg-white/5 transition-all group"
+                  className={`glass-card p-4 rounded-xl cursor-pointer hover:bg-white/5 transition-all group hover-scale hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{t.icon}</span>
@@ -144,7 +178,7 @@ export default function ExplorePage() {
 
           {/* Featured Creators */}
           <div>
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
               <Crown className="w-5 h-5 text-yellow-400" />
               Featured Creators
             </h2>
@@ -162,10 +196,10 @@ export default function ExplorePage() {
                   </div>
                 ))
               ) : users.length > 0 ? (
-                users.slice(0, 6).map((u) => (
+                users.slice(0, 6).map((u, idx) => (
                   <div
                     key={u.id}
-                    className="glass-card p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group hover-lift"
+                    className={`glass-card-premium p-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer group hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
                     onClick={() => {
                       setViewingUser(u.id, u.username);
                       setCurrentView('profile');
@@ -217,15 +251,15 @@ export default function ExplorePage() {
 
           {/* Popular Videos */}
           <div>
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
               <Sparkles className="w-5 h-5 text-primex" />
               Popular Videos
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {videos.length > 0 ? videos.slice(0, 6).map((v) => (
+              {videos.length > 0 ? videos.slice(0, 6).map((v, idx) => (
                 <div
                   key={v.id}
-                  className="glass-card rounded-xl overflow-hidden video-card-hover cursor-pointer group"
+                  className={`glass-card-premium rounded-xl overflow-hidden hover-lift card-shine cursor-pointer group stagger-${Math.min(idx + 1, 8)}`}
                   onClick={() => {
                     useAppStore.setState({ currentVideoId: v.id });
                     setCurrentView('video');
@@ -290,8 +324,8 @@ export default function ExplorePage() {
               </div>
             ))
           ) : users.length > 0 ? (
-            users.map((u) => (
-              <div key={u.id} className="glass-card p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer hover-lift"
+            users.map((u, idx) => (
+              <div key={u.id} className={`glass-card-premium p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all cursor-pointer hover-lift card-shine stagger-${Math.min(idx + 1, 8)}`}
                 onClick={() => {
                   setViewingUser(u.id, u.username);
                   setCurrentView('profile');
@@ -321,7 +355,7 @@ export default function ExplorePage() {
                 </div>
                 <Button
                   size="sm"
-                  className="primex-gradient text-white rounded-xl gap-1.5 shrink-0"
+                  className="btn-primex rounded-xl gap-1.5 shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <UserPlus className="w-4 h-4" /> Add Friend

@@ -66,6 +66,10 @@ interface AppState {
   // Search
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+
+  // Onboarding
+  showOnboarding: boolean;
+  setShowOnboarding: (show: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -123,4 +127,8 @@ export const useAppStore = create<AppState>((set) => ({
   // Search
   searchQuery: '',
   setSearchQuery: (searchQuery) => set({ searchQuery }),
+
+  // Onboarding
+  showOnboarding: false,
+  setShowOnboarding: (showOnboarding) => set({ showOnboarding }),
 }));

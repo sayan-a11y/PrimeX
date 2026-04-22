@@ -190,9 +190,10 @@ export default function HomeFeed() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card-premium rounded-2xl p-6 lg:p-8 mb-6 gradient-border-primex overflow-hidden relative card-shine"
+          className="glass-card-premium rounded-2xl p-6 lg:p-8 mb-6 gradient-border-primex overflow-hidden relative card-shine bg-mesh"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-primex/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-primex-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-primex" />
@@ -248,9 +249,9 @@ export default function HomeFeed() {
           <button
             key={cat.name}
             onClick={() => setSelectedCategory(cat.name)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press hover-lift ${
               selectedCategory === cat.name
-                ? 'tag-primex bg-primex/20 text-primex border-primex/40 shadow-lg'
+                ? 'tag-primex bg-primex/20 text-primex border-primex/40 shadow-lg glow-effect'
                 : 'glass-card text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
           >
@@ -336,10 +337,10 @@ export default function HomeFeed() {
             {videos.map((video, i) => (
               <motion.div
                 key={video.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="glass-card-premium overflow-hidden cursor-pointer group hover-lift card-shine rounded-xl"
+                transition={{ delay: Math.min(i * 0.06, 0.5), duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="glass-card-premium overflow-hidden cursor-pointer group hover-lift card-shine rounded-xl reveal-up"
                 onClick={() => {
                   useAppStore.setState({ currentVideoId: video.id });
                   setCurrentView('video');
