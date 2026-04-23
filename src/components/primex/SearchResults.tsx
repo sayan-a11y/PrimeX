@@ -154,17 +154,17 @@ export default function SearchResults() {
   // Empty query state
   if (!query) {
     return (
-      <div className="max-w-4xl mx-auto p-4 lg:p-6 relative">
+      <div className="max-w-4xl mx-auto p-4 relative">
         <div className="bg-mesh absolute inset-0 pointer-events-none" />
         <div className="orb-primex-sm absolute top-20 -right-10 pointer-events-none" />
         <div className="orb-primex-sm absolute bottom-40 -left-10 pointer-events-none" />
 
-        <div className="relative z-10 text-center py-16 empty-state-premium">
+        <div className="relative z-10 text-center py-8 empty-state-premium">
           <div className="breathe w-20 h-20 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-4">
             <Search className="w-9 h-9 text-primex" />
           </div>
           <h2 className="text-2xl font-bold mb-2 text-shimmer">Search PrimeX</h2>
-          <p className="text-muted-foreground text-sm mb-6">Type something in the search bar to find videos, creators, and reels</p>
+          <p className="text-muted-foreground text-sm mb-4">Type something in the search bar to find videos, creators, and reels</p>
           <Button
             variant="outline"
             className="btn-outline-primex rounded-xl gap-2 hover-lift"
@@ -174,7 +174,7 @@ export default function SearchResults() {
           </Button>
 
           {/* Trending Searches */}
-          <div className="mt-8">
+          <div className="mt-4">
             <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center justify-center gap-2">
               <TrendingUp className="w-4 h-4 text-primex" /> Trending Searches
             </h3>
@@ -196,7 +196,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 lg:p-6 relative">
+    <div className="max-w-5xl mx-auto p-4 relative">
       {/* Background mesh + orbs */}
       <div className="bg-mesh absolute inset-0 pointer-events-none" />
       <div className="orb-primex-sm absolute top-10 -right-10 pointer-events-none" />
@@ -204,7 +204,7 @@ export default function SearchResults() {
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-4">
           <h1 className="text-3xl font-bold text-shimmer mb-2">Search Results</h1>
           <p className="text-muted-foreground text-sm">
             Showing results for &quot;<span className="gradient-text-primex font-semibold text-base">{query}</span>&quot;
@@ -212,12 +212,12 @@ export default function SearchResults() {
         </div>
 
         {/* Search Refinement Input */}
-        <div className="mb-6 relative">
+        <div className="mb-4 relative">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              className="glass-input w-full pl-10 pr-20 py-3 rounded-xl text-sm"
+              className="glass-input w-full pl-10 pr-20 py-2 rounded-xl text-sm"
               placeholder="Refine your search..."
               value={refinementQuery}
               onChange={(e) => setRefinementQuery(e.target.value)}
@@ -242,11 +242,11 @@ export default function SearchResults() {
         </div>
 
         {/* Tab Filters */}
-        <div className="tab-bar-premium mb-6">
+        <div className="tab-bar-premium mb-4">
           {tabs.map(tab => (
             <button
               key={tab.key}
-              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press ${
                 activeTab === tab.key
                   ? 'tag-primex bg-primex/20 text-primex border-primex/40 shadow-lg glow-effect'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -264,7 +264,7 @@ export default function SearchResults() {
 
         {/* Loading State */}
         {loading ? (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 content-grid">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="interactive-card rounded-xl overflow-hidden">
@@ -291,7 +291,7 @@ export default function SearchResults() {
                 {totalResults === 0 ? (
                   <EmptyState query={query} onExplore={() => setCurrentView('explore')} onSearchTag={setSearchQuery} />
                 ) : (
-                  <div className="space-y-8">
+                  <div className="space-y-4">
                     {/* Top Users */}
                     {users.length > 0 && (
                       <div>
@@ -460,8 +460,8 @@ export default function SearchResults() {
 
         {/* Trending Searches at bottom when no results or few results */}
         {!loading && totalResults <= 3 && (
-          <div className="mt-8">
-            <div className="divider-primex mb-6" />
+          <div className="mt-4">
+            <div className="divider-primex mb-3" />
             <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primex" /> Trending Searches
             </h3>
@@ -525,7 +525,7 @@ function VideoCard({
       </div>
       <div className="p-3">
         <h4 className="text-sm font-medium line-clamp-2 group-hover:text-shimmer transition-all duration-300">{video.title}</h4>
-        <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-center gap-2 mt-1.5">
           <Avatar className="w-6 h-6">
             <AvatarImage src={video.user?.profilePic || ''} />
             <AvatarFallback className="bg-primex/20 text-primex text-[10px] font-bold">
@@ -556,7 +556,7 @@ function UserCard({
   token: string | null;
 }) {
   return (
-    <div className="glass-card-premium hover-lift card-shine rounded-xl p-4 flex flex-col items-center text-center">
+    <div className="glass-card-premium hover-lift card-shine rounded-xl p-3 flex flex-col items-center text-center">
       <div className="gradient-border-primex rounded-full p-0.5 mb-3">
         <Avatar className="w-16 h-16">
           <AvatarImage src={user.profilePic || ''} />
@@ -653,7 +653,7 @@ function EmptyState({
   type?: string;
 }) {
   return (
-    <div className="empty-state-premium text-center py-16">
+    <div className="empty-state-premium text-center py-8">
       <div className="breathe w-20 h-20 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-4">
         <Search className="w-9 h-9 text-muted-foreground" />
       </div>
@@ -661,14 +661,14 @@ function EmptyState({
       <p className="text-muted-foreground text-sm mb-1">
         No matches for &quot;<span className="gradient-text-primex font-medium">{query}</span>&quot;
       </p>
-      <p className="text-muted-foreground text-xs mb-6">Try different keywords or browse Explore</p>
+      <p className="text-muted-foreground text-xs mb-4">Try different keywords or browse Explore</p>
       <div className="flex items-center justify-center gap-3">
         <Button variant="outline" className="btn-outline-primex rounded-xl gap-2 hover-lift" onClick={onExplore}>
           <Compass className="w-4 h-4" /> Explore
         </Button>
       </div>
       {/* Trending suggestions */}
-      <div className="mt-8">
+      <div className="mt-4">
         <h4 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Try searching</h4>
         <div className="flex flex-wrap justify-center gap-2">
           {trendingSearches.slice(0, 5).map(tag => (

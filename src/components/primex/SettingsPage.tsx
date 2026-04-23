@@ -185,9 +185,9 @@ export default function SettingsPage() {
     showToast('Email updated! Verification sent.');
   };
 
-  const sectionGap = compactMode ? 'gap-3' : 'gap-5';
-  const cardPadding = compactMode ? 'p-4' : 'p-6';
-  const itemGap = compactMode ? 'gap-2' : 'gap-3';
+  const sectionGap = compactMode ? 'gap-2' : 'gap-4';
+  const cardPadding = compactMode ? 'p-3' : 'p-4';
+  const itemGap = compactMode ? 'gap-1.5' : 'gap-3';
 
   return (
     <div className="min-h-screen bg-background">
@@ -224,9 +224,9 @@ export default function SettingsPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative glass-card-premium p-6 max-w-md w-full"
+              className="relative glass-card-premium p-4 max-w-md w-full"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
                   <AlertTriangle className="w-6 h-6 text-red-500" />
                 </div>
@@ -235,14 +235,14 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground">This action cannot be undone</p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-3">
                 All your data, videos, messages, and content will be permanently deleted. Type <span className="text-red-400 font-bold">DELETE</span> to confirm.
               </p>
               <Input
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder='Type "DELETE" to confirm'
-                className="glass-input mb-4"
+                className="glass-input mb-3"
               />
               <div className="flex gap-3">
                 <Button
@@ -280,9 +280,9 @@ export default function SettingsPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative glass-card-premium p-6 max-w-md w-full"
+              className="relative glass-card-premium p-4 max-w-md w-full"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
                   <Shield className="w-6 h-6 text-amber-500" />
                 </div>
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground">Confirm you are 18+</p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-3">
                 Mature content may include adult themes, violence, or other age-restricted material. By enabling this, you confirm that you are at least 18 years old.
               </p>
               <div className="flex gap-3">
@@ -317,7 +317,7 @@ export default function SettingsPage() {
 
       {/* Header */}
       <div className="relative z-30 glass-header border-b border-border/50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center">
               <Settings className="w-5 h-5 text-white" />
@@ -335,7 +335,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
         <Tabs defaultValue="account" className={`flex flex-col ${sectionGap}`}>
           <TabsList className="glass-card p-1.5 h-auto flex-wrap justify-start gap-1">
             <TabsTrigger value="account" className="gap-2 data-[state=active]:bg-primex/10 data-[state=active]:text-primex">
@@ -837,7 +837,7 @@ export default function SettingsPage() {
                   Storage
                 </CardTitle>
               </CardHeader>
-              <CardContent className={`${cardPadding} flex flex-col gap-4`}>
+              <CardContent className={`${cardPadding} flex flex-col gap-3`}>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Storage Used</span>
                   <span className="font-medium">{storageUsed} MB / 500 MB</span>
@@ -950,7 +950,7 @@ function SettingRow({
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground shrink-0">
           {icon}

@@ -109,19 +109,19 @@ export default function AuthPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <img src="/primex-logo.png" alt="PrimeX" className="w-14 h-14 rounded-2xl glow-effect shadow-xl object-contain" />
             <h1 className="text-5xl font-bold text-shimmer">PrimeX</h1>
           </div>
           <h2 className="text-2xl font-bold mb-2">
             The Future of <span className="text-gradient-animated">Video & Social</span>
           </h2>
-          <p className="text-muted-foreground mb-8 max-w-md">
+          <p className="text-muted-foreground mb-6 max-w-md">
             Watch long videos, scroll reels, connect with friends, and share exclusive content. 
             No subscriptions. No paywalls. Just pure entertainment.
           </p>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {features.map((f, i) => (
               <motion.div
                 key={f.title}
@@ -149,7 +149,7 @@ export default function AuthPage() {
           className="w-full max-w-md"
         >
           {/* Mobile Logo */}
-          <div className="text-center mb-6 lg:hidden">
+          <div className="text-center mb-4 lg:hidden">
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -165,16 +165,16 @@ export default function AuthPage() {
           </div>
 
           {/* Auth Card with glass-card-premium and gradient-border-primex */}
-          <div className="glass-card-premium gradient-border-primex p-6 lg:p-8">
+          <div className="glass-card-premium gradient-border-primex p-5 lg:p-6">
             <h2 className="text-xl font-bold mb-1 hidden lg:block">
               {isLogin ? 'Welcome back' : 'Join PrimeX'}
             </h2>
-            <p className="text-sm text-muted-foreground mb-5 hidden lg:block">
+            <p className="text-sm text-muted-foreground mb-4 hidden lg:block">
               {isLogin ? 'Sign in to continue' : 'Create your account to get started'}
             </p>
 
             {/* Tab Toggle */}
-            <div className="flex rounded-xl bg-muted/50 p-1 mb-5">
+            <div className="flex rounded-xl bg-muted/50 p-1 mb-4">
               <button
                 onClick={() => { setIsLogin(true); setError(''); }}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
@@ -200,7 +200,7 @@ export default function AuthPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm notification-pop"
+                  className="mb-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm notification-pop"
                 >
                   {error}
                 </motion.div>
@@ -216,7 +216,7 @@ export default function AuthPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   onSubmit={handleLogin}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
                   <div>
                     <Label className="text-sm text-muted-foreground mb-1.5 block">Email or Username</Label>
@@ -265,7 +265,7 @@ export default function AuthPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   onSubmit={handleRegister}
-                  className="space-y-3"
+                  className="space-y-2.5"
                 >
                   <div>
                     <Label className="text-sm text-muted-foreground mb-1.5 block">Username</Label>
@@ -334,7 +334,7 @@ export default function AuthPage() {
           </div>
 
           {/* Bottom badges */}
-          <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
+          <div className="mt-4 grid grid-cols-3 gap-2 lg:hidden">
             <div className="glass-card-premium p-2.5 text-center rounded-xl hover-lift">
               <Shield className="w-4 h-4 mx-auto mb-1 text-primex" />
               <span className="text-[10px] text-muted-foreground">Secure</span>

@@ -194,8 +194,8 @@ export default function ChatPage() {
   if (!activeChatUser) {
     return (
       <div className="h-full flex flex-col">
-        <div className="p-4 border-b border-border/50">
-          <h2 className="text-xl font-bold primex-gradient-text mb-3">Messages</h2>
+        <div className="p-3 border-b border-border/50">
+          <h2 className="text-xl font-bold primex-gradient-text mb-2">Messages</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -208,7 +208,7 @@ export default function ChatPage() {
         </div>
 
         {loading ? (
-          <div className="p-4 space-y-3">
+          <div className="p-3 space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full skeleton-pulse skeleton-circle" />
@@ -242,7 +242,7 @@ export default function ChatPage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="w-full glass-card-premium hover-lift p-3 rounded-xl mb-1 mx-1 flex items-center gap-3 transition-all gradient-border-primex"
+                  className="w-full glass-card-premium hover-lift p-2.5 rounded-xl mb-1 mx-1 flex items-center gap-2.5 transition-all gradient-border-primex"
                   onClick={() => setActiveChatUser({
                     id: conv.userId,
                     username: conv.username,
@@ -290,7 +290,7 @@ export default function ChatPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Chat header */}
-      <div className="flex items-center gap-3 p-3 border-b border-border/50 glass-card-premium">
+      <div className="flex items-center gap-2.5 p-2.5 border-b border-border/50 glass-card-premium">
         <Button
           variant="ghost"
           size="icon"
@@ -324,7 +324,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto premium-scrollbar p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto premium-scrollbar p-3 space-y-2">
         <AnimatePresence>
           {messages.map((msg) => {
             const isMine = msg.senderId === user?.id;
@@ -335,7 +335,7 @@ export default function ChatPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
+                <div className={`max-w-[70%] rounded-2xl px-3 py-2 ${
                   isMine
                     ? 'primex-gradient text-white rounded-br-md'
                     : 'glass-card-premium rounded-bl-md'
@@ -358,7 +358,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-border/50">
+      <div className="p-2.5 border-t border-border/50">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground">
             <ImageIcon className="w-5 h-5" />

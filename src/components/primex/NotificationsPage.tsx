@@ -159,9 +159,9 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 lg:p-6">
+    <div className="max-w-2xl mx-auto p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center">
             <Bell className="w-5 h-5 text-white" />
@@ -195,7 +195,7 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="glass-card-premium p-4 rounded-xl">
+            <div key={i} className="glass-card-premium p-3 rounded-xl">
               <div className="flex items-center gap-3">
                 <Skeleton className="w-10 h-10 rounded-full" />
                 <div className="flex-1 space-y-1">
@@ -215,10 +215,10 @@ export default function NotificationsPage() {
           <p className="text-sm text-muted-foreground">You&apos;re all caught up!</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {groupedNotifications().map((group, gi) => (
             <div key={group.label}>
-              {gi > 0 && <div className="divider-primex my-4" />}
+              {gi > 0 && <div className="divider-primex my-3" />}
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">{group.label}</p>
               <div className="space-y-2">
                 <AnimatePresence>
@@ -229,7 +229,7 @@ export default function NotificationsPage() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                      className={`notification-pop glass-card-premium hover-lift active-press p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-colors ${
+                      className={`notification-pop glass-card-premium hover-lift active-press p-3 rounded-xl flex items-center gap-3 cursor-pointer transition-colors ${
                         !notif.read ? 'bg-primex/5 border-primex/20' : ''
                       }`}
                       onClick={() => handleNotificationClick(notif)}

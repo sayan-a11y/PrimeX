@@ -248,9 +248,9 @@ export default function PlaylistsPage() {
 
   if (loading) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
         <div className="orb-primex-sm top-10 -right-16 opacity-40" />
-        <div className="relative z-10 flex items-center justify-between mb-6">
+        <div className="relative z-10 flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="skeleton-circle w-10 h-10 skeleton-pulse" />
             <div className="skeleton-heading w-36 h-7 skeleton-pulse" />
@@ -276,17 +276,17 @@ export default function PlaylistsPage() {
   // Playlist Detail View
   if (activePlaylist) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
         <div className="orb-primex-sm top-20 -right-16 opacity-30" />
         <button
-          className="btn-ghost-primex mb-4 gap-2 text-muted-foreground hover:text-foreground relative z-10"
+          className="btn-ghost-primex mb-3 gap-2 text-muted-foreground hover:text-foreground relative z-10"
           onClick={() => setActivePlaylist(null)}
         >
           <ChevronLeft className="w-4 h-4" /> Back to Playlists
         </button>
 
         {/* Playlist header */}
-        <div className="glass-card-premium p-6 rounded-2xl mb-6 hover-lift card-shine relative z-10">
+        <div className="glass-card-premium p-4 rounded-2xl mb-4 hover-lift card-shine relative z-10">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold text-shimmer mb-1">{activePlaylist.name}</h1>
@@ -316,7 +316,7 @@ export default function PlaylistsPage() {
           </div>
         </div>
 
-        <div className="divider-primex relative z-10 mb-6" />
+        <div className="divider-primex relative z-10 mb-4" />
 
         {/* Videos list */}
         {activePlaylist.videos.length === 0 ? (
@@ -337,10 +337,10 @@ export default function PlaylistsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ delay: index * 0.05, duration: 0.3 }}
-                  className="glass-card-premium p-4 rounded-xl hover-lift card-shine group cursor-pointer"
+                  className="glass-card-premium p-3 rounded-xl hover-lift card-shine group cursor-pointer"
                   onClick={() => handlePlayVideo(pv.video.id)}
                 >
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     {/* Thumbnail */}
                     <div className="relative w-36 sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-muted group-hover:ring-2 group-hover:ring-primex/40 transition-all duration-300">
                       {pv.video.thumbnail ? (
@@ -413,10 +413,10 @@ export default function PlaylistsPage() {
   // Empty State
   if (playlists.length === 0 && !showCreateModal) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
         <div className="orb-primex-sm top-20 -right-16 opacity-40" />
         <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
-        <div className="relative z-10 mb-6 page-header-premium">
+        <div className="relative z-10 mb-4 page-header-premium">
           <div className="flex items-center gap-3">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -429,11 +429,11 @@ export default function PlaylistsPage() {
           </div>
         </div>
         <div className="empty-state-premium relative z-10">
-          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6 breathe">
+          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
             <Music className="w-10 h-10 text-primex/50" />
           </div>
           <h2 className="text-xl font-semibold mb-2">No playlists yet</h2>
-          <p className="text-muted-foreground mb-6 text-center max-w-sm">
+          <p className="text-muted-foreground mb-4 text-center max-w-sm">
             Create playlists to organize and save your favorite videos.
           </p>
           <button
@@ -463,13 +463,13 @@ export default function PlaylistsPage() {
 
   // Main Playlists Grid
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+    <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
       <div className="orb-primex-sm top-10 -right-16 opacity-40" />
       <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6 page-header-premium">
+      <div className="relative z-10 mb-4 page-header-premium">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
@@ -510,10 +510,10 @@ export default function PlaylistsPage() {
         </div>
       </div>
 
-      <div className="divider-primex relative z-10 mb-6" />
+      <div className="divider-primex relative z-10 mb-4" />
 
       {/* Playlist Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 relative z-10">
         <AnimatePresence>
           {filteredPlaylists.map((playlist, index) => {
             const firstThumbnail = playlist.videos[0]?.video?.thumbnail;
@@ -566,7 +566,7 @@ export default function PlaylistsPage() {
                 </div>
 
                 {/* Info */}
-                <div className="p-4">
+                <div className="p-3">
                   <h3 className="font-semibold text-sm line-clamp-1 mb-1 group-hover:text-primex transition-colors">
                     {playlist.name}
                   </h3>
@@ -635,15 +635,15 @@ export default function PlaylistsPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10"
+              className="glass-card-premium w-full max-w-md rounded-2xl p-4 relative z-10"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-bold text-shimmer">Save to Playlist</h3>
                 <button className="btn-ghost-primex p-2" onClick={() => { setShowPicker(false); setPickerVideoId(null); }}>
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="divider-primex mb-4" />
+              <div className="divider-primex mb-3" />
               <div className="space-y-2 max-h-80 overflow-y-auto premium-scrollbar">
                 {playlists.map((pl) => (
                   <button
@@ -713,16 +713,16 @@ function CreatePlaylistModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10"
+            className="glass-card-premium w-full max-w-md rounded-2xl p-4 relative z-10"
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-shimmer">Create Playlist</h3>
               <button className="btn-ghost-primex p-2" onClick={onClose}>
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Playlist Name</label>
                 <Input

@@ -130,9 +130,9 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-4 lg:p-6">
-        <div className="skeleton-pulse h-8 w-48 mb-6" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="skeleton-pulse h-8 w-48 mb-4" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="glass-card p-4 rounded-xl">
               <div className="skeleton-pulse skeleton-circle w-10 h-10 mb-3" />
@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative overflow-hidden">
+    <div className="max-w-4xl mx-auto p-4 bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
       <div className="orb-primex top-10 -right-20 float-slow" />
       <div className="orb-primex-sm bottom-20 -left-16 float-medium" />
@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
       <div className="orb-primex-sm bottom-0 right-1/4 opacity-20 float-slow" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6 page-header-premium">
+      <div className="relative z-10 mb-4 page-header-premium">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         {statCards.map((stat, i) => (
           <StatCard
             key={stat.label}

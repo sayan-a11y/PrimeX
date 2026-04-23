@@ -275,17 +275,17 @@ export default function VideoCard({ video, index = 0, showContentWarning }: Vide
       </div>
 
       {/* Info */}
-      <div className="flex gap-3 mt-3 px-0.5">
+      <div className="flex gap-2 mt-2 px-0.5">
         <div className="shrink-0">
           {video.user.profilePic ? (
             <img
               src={video.user.profilePic}
               alt={video.user.username}
-              className="w-9 h-9 rounded-full object-cover ring-2 ring-transparent group-hover:gradient-border-primex transition-all duration-300"
+              className="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:gradient-border-primex transition-all duration-300"
             />
           ) : (
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-primex/10 group-hover:ring-2 group-hover:ring-primex/40 transition-all duration-300">
-              <UserCircle className="w-9 h-9 text-muted-foreground" />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primex/10 group-hover:ring-2 group-hover:ring-primex/40 transition-all duration-300">
+              <UserCircle className="w-8 h-8 text-muted-foreground" />
             </div>
           )}
         </div>
@@ -293,13 +293,13 @@ export default function VideoCard({ video, index = 0, showContentWarning }: Vide
           <h3 className="text-sm font-medium text-foreground line-clamp-2 leading-snug group-hover:text-shimmer transition-all duration-300">
             {video.title}
           </h3>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
             {video.user.username}
             {video.user.isCreator && (
               <span className="tag-primex text-[10px] px-1.5 py-0">Creator</span>
             )}
           </p>
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
             <Eye className="w-3 h-3" />
             {formatViews(video.views)} views · {timeAgo(video.createdAt)}
           </p>

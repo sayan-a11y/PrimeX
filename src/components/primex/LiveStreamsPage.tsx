@@ -96,7 +96,7 @@ function FeaturedStream({ stream }: { stream: LiveStream }) {
         <div className="video-overlay-gradient absolute inset-0" />
 
         {/* Content overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6">
+        <div className="absolute inset-0 flex flex-col justify-end p-4">
           <div className="flex items-center gap-3 mb-3">
             <LiveBadge />
             <span className="flex items-center gap-1 text-white/90 text-sm">
@@ -105,10 +105,10 @@ function FeaturedStream({ stream }: { stream: LiveStream }) {
             </span>
             <span className="text-white/60 text-xs">{stream.startedAt}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 line-clamp-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 line-clamp-2">
             {stream.streamTitle}
           </h2>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="gradient-border-primex rounded-full p-0.5">
               <Avatar className="w-10 h-10">
                 <AvatarFallback className="bg-primex/20 text-primex font-bold text-sm">
@@ -174,7 +174,7 @@ function StreamCard({ stream, index }: { stream: LiveStream; index: number }) {
 
       {/* Info */}
       <div className="p-3">
-        <div className="flex gap-2.5">
+        <div className="flex gap-2">
           {/* Avatar */}
           <div className="gradient-border-primex rounded-full p-0.5 shrink-0">
             <Avatar className="w-9 h-9">
@@ -217,12 +217,12 @@ export default function LiveStreamsPage() {
       <div className="orb-primex-sm top-20 left-10 float-slow" />
       <div className="orb-primex-sm bottom-40 right-20 float-slow" style={{ animationDelay: '2s' }} />
 
-      <div className="relative z-10 p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="relative z-10 p-4 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4"
         >
           <div className="flex items-center gap-3">
             <div className="relative flex items-center gap-2">
@@ -248,7 +248,7 @@ export default function LiveStreamsPage() {
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6"
+          className="mb-4"
         >
           <div className="tab-bar-premium inline-flex items-center gap-1 p-1 rounded-xl overflow-x-auto max-w-full no-scrollbar">
             {CATEGORIES.map((cat) => {
@@ -260,7 +260,7 @@ export default function LiveStreamsPage() {
                   onClick={() => {
                     setActiveCategory(cat.id);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
                     isActive
                       ? 'bg-primex text-white shadow-lg shadow-primex/20'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -285,12 +285,12 @@ export default function LiveStreamsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="empty-state-premium"
             >
-              <div className="glass-card-premium rounded-2xl p-12 text-center max-w-md mx-auto">
-                <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+              <div className="glass-card-premium rounded-2xl p-4 text-center max-w-md mx-auto">
+                <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3">
                   <Radio className="w-10 h-10 text-red-400" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">No one is live right now</h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-3">
                   Check back soon or be the first to go live!
                 </p>
                 <button
@@ -310,8 +310,8 @@ export default function LiveStreamsPage() {
             >
               {/* Featured Stream */}
               {activeCategory === 'all' && featuredStream && (
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3">
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
                     <ChevronRight className="w-4 h-4 text-primex" />
                     <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Featured Stream</h2>
                   </div>

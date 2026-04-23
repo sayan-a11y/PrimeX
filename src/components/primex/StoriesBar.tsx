@@ -243,10 +243,10 @@ export default function StoriesBar() {
 
   if (loading) {
     return (
-      <div className="flex gap-4 px-4 py-3 overflow-x-auto no-scrollbar">
+      <div className="flex gap-3 px-3 py-2 overflow-x-auto no-scrollbar">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-            <div className="w-16 h-16 rounded-full skeleton-pulse" />
+          <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+            <div className="w-14 h-14 rounded-full skeleton-pulse" />
             <div className="w-12 h-2.5 rounded skeleton-pulse" />
           </div>
         ))}
@@ -260,19 +260,19 @@ export default function StoriesBar() {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-4 px-4 py-3 overflow-x-auto no-scrollbar scroll-smooth"
+          className="flex gap-3 px-3 py-2 overflow-x-auto no-scrollbar scroll-smooth"
         >
           {/* Your Story (Add) */}
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="flex flex-col items-center gap-1.5 shrink-0 group"
+            className="flex flex-col items-center gap-1 shrink-0 group"
             onClick={() => {
               /* Would open camera/upload */
             }}
           >
             <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-white/20 group-hover:border-primex/50 transition-colors">
-                <Plus className="w-6 h-6 text-muted-foreground group-hover:text-primex transition-colors" />
+              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-white/20 group-hover:border-primex/50 transition-colors">
+                <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primex transition-colors" />
               </div>
             </div>
             <span className="text-[11px] text-muted-foreground group-hover:text-primex transition-colors">
@@ -285,7 +285,7 @@ export default function StoriesBar() {
             <motion.button
               key={story.id}
               whileTap={{ scale: 0.95 }}
-              className="flex flex-col items-center gap-1.5 shrink-0 group"
+              className="flex flex-col items-center gap-1 shrink-0 group"
               onClick={() => openStory(i)}
             >
               <div className="relative">
@@ -297,7 +297,7 @@ export default function StoriesBar() {
                       : 'bg-gradient-to-tr from-primex via-primex-secondary to-primex-tertiary'
                   }`}
                 >
-                  <Avatar className="w-[58px] h-[58px] border-2 border-background group-hover:scale-105 transition-transform">
+                  <Avatar className="w-[52px] h-[52px] border-2 border-background group-hover:scale-105 transition-transform">
                     <AvatarImage src={story.avatar || ''} />
                     <AvatarFallback className="bg-primex/20 text-primex text-lg font-bold">
                       {story.username[0].toUpperCase()}

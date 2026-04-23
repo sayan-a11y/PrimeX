@@ -93,14 +93,14 @@ export default function ExplorePage() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+    <div className="max-w-5xl mx-auto p-4 bg-mesh min-h-screen relative">
       {/* Decorative orbs */}
       <div className="orb-primex-sm absolute top-4 right-12 opacity-20 pointer-events-none" />
       <div className="orb-primex-sm absolute bottom-20 left-6 opacity-15 pointer-events-none" />
       <div className="orb-primex-sm absolute top-1/2 right-4 opacity-10 pointer-events-none float-slow" />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-3 mb-6">
+      <div className="relative z-10 flex items-center gap-3 mb-4">
         <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
           <Compass className="w-6 h-6 text-white" />
         </div>
@@ -121,7 +121,7 @@ export default function ExplorePage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="tab-bar-premium mb-6 relative z-10">
+      <div className="tab-bar-premium mb-4 relative z-10">
         {[
           { key: 'trending', label: 'Trending', icon: TrendingUp },
           { key: 'users', label: 'Creators', icon: Users },
@@ -140,7 +140,7 @@ export default function ExplorePage() {
 
       {/* Trending Tab */}
       {activeTab === 'trending' && (
-        <div className="space-y-6 relative z-10">
+        <div className="space-y-4 relative z-10">
           {/* Live Now Section */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -149,8 +149,8 @@ export default function ExplorePage() {
                 <span className="text-shimmer">Live Now</span>
               </h2>
             </div>
-            <div className="glass-card-premium p-8 rounded-xl text-center card-shine hover-lift">
-              <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-3 breathe">
+            <div className="glass-card-premium p-4 rounded-xl text-center card-shine hover-lift">
+              <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-2 breathe">
                 <Radio className="w-7 h-7 text-red-400" />
               </div>
               <h3 className="font-medium mb-1">No one is live right now</h3>
@@ -176,7 +176,7 @@ export default function ExplorePage() {
                 <motion.div
                   key={t.tag}
                   variants={staggerItem}
-                  className="glass-card-premium p-4 rounded-xl cursor-pointer hover-lift card-shine group"
+                  className="glass-card-premium p-3 rounded-xl cursor-pointer hover-lift card-shine group"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{t.icon}</span>
@@ -227,7 +227,7 @@ export default function ExplorePage() {
                   <motion.div
                     key={u.id}
                     variants={staggerItem}
-                    className="glass-card-premium p-4 rounded-xl hover-lift card-shine cursor-pointer group"
+                    className="glass-card-premium p-3 rounded-xl hover-lift card-shine cursor-pointer group"
                     onClick={() => {
                       setViewingUser(u.id, u.username);
                       setCurrentView('profile');
@@ -269,8 +269,8 @@ export default function ExplorePage() {
                   </motion.div>
                 ))
               ) : (
-                <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-                  <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-3 breathe">
+                <div className="glass-card-premium p-4 rounded-xl text-center col-span-full card-shine hover-lift">
+                  <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 flex items-center justify-center mx-auto mb-2 breathe">
                     <Crown className="w-7 h-7 text-yellow-400" />
                   </div>
                   <h3 className="font-medium mb-1">No Creators Yet</h3>
@@ -340,8 +340,8 @@ export default function ExplorePage() {
                   </div>
                 </motion.div>
               )) : (
-                <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-                  <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3 breathe">
+                <div className="glass-card-premium p-4 rounded-xl text-center col-span-full card-shine hover-lift">
+                  <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-2 breathe">
                     <Play className="w-7 h-7 text-primex" />
                   </div>
                   <h3 className="font-medium mb-1">No Videos Yet</h3>
@@ -367,7 +367,7 @@ export default function ExplorePage() {
 
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="glass-card-premium p-4 rounded-xl flex items-center gap-3">
+              <div key={i} className="glass-card-premium p-3 rounded-xl flex items-center gap-3">
                 <div className="skeleton-pulse w-14 h-14 rounded-full" />
                 <div className="flex-1 space-y-1">
                   <div className="skeleton-pulse h-4 w-32 rounded" />
@@ -386,7 +386,7 @@ export default function ExplorePage() {
                 <motion.div
                   key={u.id}
                   variants={staggerItem}
-                  className="glass-card-premium p-4 rounded-xl flex items-center gap-4 hover-lift card-shine cursor-pointer group"
+                  className="glass-card-premium p-3 rounded-xl flex items-center gap-3 hover-lift card-shine cursor-pointer group"
                   onClick={() => {
                     setViewingUser(u.id, u.username);
                     setCurrentView('profile');
@@ -432,8 +432,8 @@ export default function ExplorePage() {
               ))}
             </motion.div>
           ) : (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-3 breathe hover-lift">
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-2xl glass-card-premium flex items-center justify-center mx-auto mb-2 breathe hover-lift">
                 <Crown className="w-7 h-7 text-yellow-400" />
               </div>
               <h3 className="font-medium mb-1">No Creators Found</h3>
@@ -493,8 +493,8 @@ export default function ExplorePage() {
               </div>
             </motion.div>
           )) : (
-            <div className="glass-card-premium p-8 rounded-xl text-center col-span-full card-shine hover-lift">
-              <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-3 breathe">
+            <div className="glass-card-premium p-4 rounded-xl text-center col-span-full card-shine hover-lift">
+              <div className="w-16 h-16 rounded-2xl bg-primex/10 flex items-center justify-center mx-auto mb-2 breathe">
                 <Play className="w-7 h-7 text-primex" />
               </div>
               <h3 className="font-medium mb-1">No Videos Yet</h3>

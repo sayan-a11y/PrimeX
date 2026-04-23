@@ -22,7 +22,7 @@ interface FriendItem {
 
 function EmptyState({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) {
   return (
-    <div className="empty-state-premium py-16">
+    <div className="empty-state-premium py-12">
       <div className="empty-icon w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
         <Icon className="w-8 h-8 text-primex/50" />
       </div>
@@ -179,7 +179,7 @@ export default function FriendsPage() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -80 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
-      className="glass-card-premium p-4 rounded-xl flex items-center gap-3 hover-lift cursor-pointer active-press group card-shine"
+      className="glass-card-premium p-3 rounded-xl flex items-center gap-3 hover-lift cursor-pointer active-press group card-shine"
       onClick={() => {
         setViewingUser(item.user.id, item.user.username);
         setCurrentView('profile');
@@ -258,13 +258,13 @@ export default function FriendsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative overflow-hidden">
+    <div className="max-w-2xl mx-auto p-4 bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
       <div className="orb-primex-sm top-10 -right-16" />
       <div className="orb-primex-sm bottom-20 -left-10 opacity-50" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6 page-header-premium">
+      <div className="relative z-10 mb-4 page-header-premium">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
@@ -288,7 +288,7 @@ export default function FriendsPage() {
       </div>
 
       {/* Add Friend */}
-      <div className="relative z-10 mb-4">
+      <div className="relative z-10 mb-3">
         <div className="glass-card-premium p-3 rounded-xl flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -317,7 +317,7 @@ export default function FriendsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative z-10 mb-4">
+      <div className="relative z-10 mb-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -331,7 +331,7 @@ export default function FriendsPage() {
       </div>
 
       {/* Tab Bar */}
-      <div className="relative z-10 tab-bar-premium w-full mb-4">
+      <div className="relative z-10 tab-bar-premium w-full mb-3">
         <button
           className={`tab-item flex-1 ${activeTab === 'pending' ? 'active' : ''}`}
           onClick={() => setActiveTab('pending')}
@@ -355,12 +355,12 @@ export default function FriendsPage() {
         </button>
       </div>
 
-      <div className="divider-primex relative z-10 mb-4" />
+      <div className="divider-primex relative z-10 mb-3" />
 
       {loading ? (
-        <div className="relative z-10 space-y-3">
+        <div className="relative z-10 space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass-card-premium p-4 rounded-xl flex items-center gap-3">
+            <div key={i} className="glass-card-premium p-3 rounded-xl flex items-center gap-3">
               <div className="skeleton-pulse skeleton-circle w-12 h-12" />
               <div className="flex-1 space-y-1.5">
                 <div className="skeleton-pulse skeleton-line w-28 h-4" />
@@ -377,42 +377,42 @@ export default function FriendsPage() {
         <div className="relative z-10">
           <AnimatePresence mode="wait">
             {activeTab === 'pending' && (
-              <motion.div key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+              <motion.div key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2">
                 {filterBySearch(pendingRequests).length === 0 ? (
                   <EmptyState icon={Clock} title="No pending requests" subtitle="When someone sends a request, it will appear here" />
                 ) : (
                   filterBySearch(pendingRequests).map((item, i) => (
                     <div key={item.id}>
                       <FriendCard item={item} type="pending" index={i} />
-                      {i < filterBySearch(pendingRequests).length - 1 && <div className="divider-primex my-3" />}
+                      {i < filterBySearch(pendingRequests).length - 1 && <div className="divider-primex my-2" />}
                     </div>
                   ))
                 )}
               </motion.div>
             )}
             {activeTab === 'sent' && (
-              <motion.div key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+              <motion.div key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2">
                 {filterBySearch(sentRequests).length === 0 ? (
                   <EmptyState icon={UserPlus} title="No sent requests" subtitle="Send friend requests to start connecting!" />
                 ) : (
                   filterBySearch(sentRequests).map((item, i) => (
                     <div key={item.id}>
                       <FriendCard item={item} type="sent" index={i} />
-                      {i < filterBySearch(sentRequests).length - 1 && <div className="divider-primex my-3" />}
+                      {i < filterBySearch(sentRequests).length - 1 && <div className="divider-primex my-2" />}
                     </div>
                   ))
                 )}
               </motion.div>
             )}
             {activeTab === 'friends' && (
-              <motion.div key="friends" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+              <motion.div key="friends" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2">
                 {filterBySearch(friends).length === 0 ? (
                   <EmptyState icon={Users} title="No friends yet" subtitle="Send friend requests to start connecting!" />
                 ) : (
                   filterBySearch(friends).map((item, i) => (
                     <div key={item.id}>
                       <FriendCard item={item} type="friend" index={i} />
-                      {i < filterBySearch(friends).length - 1 && <div className="divider-primex my-3" />}
+                      {i < filterBySearch(friends).length - 1 && <div className="divider-primex my-2" />}
                     </div>
                   ))
                 )}

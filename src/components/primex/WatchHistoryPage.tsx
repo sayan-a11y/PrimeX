@@ -189,23 +189,23 @@ export default function WatchHistoryPage() {
 
   if (loading) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
         <div className="orb-primex-sm top-10 -right-16 opacity-40" />
-        <div className="relative z-10 flex items-center justify-between mb-6">
+        <div className="relative z-10 flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="skeleton-circle w-10 h-10 skeleton-pulse" />
             <div className="skeleton-heading w-40 h-7 skeleton-pulse" />
           </div>
           <div className="skeleton-line w-24 h-9 skeleton-pulse rounded-lg" />
         </div>
-        <div className="flex gap-2 mb-6 relative z-10">
+        <div className="flex gap-2 mb-4 relative z-10">
           {[1, 2, 3].map((i) => (
             <div key={i} className="skeleton-line w-28 h-9 rounded-full skeleton-pulse" />
           ))}
         </div>
-        <div className="space-y-4 relative z-10">
+        <div className="space-y-3 relative z-10">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex gap-4 glass-card-premium p-4 rounded-xl">
+            <div key={i} className="flex gap-3 glass-card-premium p-3 rounded-xl">
               <div className="skeleton-pulse w-40 aspect-video rounded-lg shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="skeleton-heading w-3/4 h-5 skeleton-pulse" />
@@ -222,10 +222,10 @@ export default function WatchHistoryPage() {
 
   if (history.length === 0) {
     return (
-      <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
         <div className="orb-primex-sm top-20 -right-16 opacity-40" />
         <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
-        <div className="relative z-10 mb-6 page-header-premium">
+        <div className="relative z-10 mb-4 page-header-premium">
           <div className="flex items-center gap-3">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -238,11 +238,11 @@ export default function WatchHistoryPage() {
           </div>
         </div>
         <div className="empty-state-premium relative z-10">
-          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-6 breathe">
+          <div className="empty-icon w-20 h-20 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
             <Clock className="w-10 h-10 text-primex/50" />
           </div>
           <h2 className="text-xl font-semibold mb-2">No watch history yet</h2>
-          <p className="text-muted-foreground mb-6 text-center max-w-sm">
+          <p className="text-muted-foreground mb-4 text-center max-w-sm">
             Videos you watch will appear here so you can easily find them again.
           </p>
           <button
@@ -258,13 +258,13 @@ export default function WatchHistoryPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
+    <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
       <div className="orb-primex-sm top-10 -right-16 opacity-40" />
       <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6 page-header-premium">
+      <div className="relative z-10 mb-4 page-header-premium">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
@@ -328,17 +328,17 @@ export default function WatchHistoryPage() {
         ))}
       </div>
 
-      <div className="divider-primex relative z-10 mb-6" />
+      <div className="divider-primex relative z-10 mb-4" />
 
       {/* History Groups */}
-      <div className="relative z-10 space-y-8">
+      <div className="relative z-10 space-y-4">
         {dateOrder.map((group) => {
           const entries = groupedHistory[group];
           if (!entries || entries.length === 0) return null;
 
           return (
             <div key={group}>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{group}</h2>
                 <div className="flex-1 divider-primex" />
                 <span className="text-xs text-muted-foreground tag-info">{entries.length} video{entries.length > 1 ? 's' : ''}</span>
@@ -358,10 +358,10 @@ export default function WatchHistoryPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
-                        className="glass-card-premium p-4 rounded-xl hover-lift card-shine group cursor-pointer"
+                        className="glass-card-premium p-3 rounded-xl hover-lift card-shine group cursor-pointer"
                         onClick={() => handlePlayVideo(entry.videoId)}
                       >
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                           {/* Thumbnail */}
                           <div className="relative w-36 sm:w-44 aspect-video rounded-lg overflow-hidden shrink-0 bg-muted">
                             {entry.video.thumbnail ? (
@@ -460,7 +460,7 @@ export default function WatchHistoryPage() {
 
               {/* Divider between date groups */}
               {group !== dateOrder[dateOrder.length - 1] && (
-                <div className="divider-primex mt-8" />
+                <div className="divider-primex mt-4" />
               )}
             </div>
           );
@@ -469,7 +469,7 @@ export default function WatchHistoryPage() {
 
       {/* Load More */}
       {hasMore && (
-        <div className="relative z-10 flex justify-center mt-8">
+        <div className="relative z-10 flex justify-center mt-4">
           <button
             className="btn-outline-primex"
             onClick={() => fetchHistory(page + 1)}

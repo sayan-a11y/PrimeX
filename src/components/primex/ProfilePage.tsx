@@ -156,7 +156,7 @@ export default function ProfilePage() {
         </div>
       )}
       {/* Cover with bg-mesh */}
-      <div className="h-36 sm:h-48 relative overflow-hidden bg-mesh">
+      <div className="h-28 sm:h-40 relative overflow-hidden bg-mesh">
         <div className="absolute inset-0 bg-gradient-to-br from-primex/30 via-purple-900/20 to-primex/30" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
         {/* Animated gradient mesh */}
@@ -170,8 +170,8 @@ export default function ProfilePage() {
       </div>
 
       {/* Profile Info */}
-      <div className="px-4 lg:px-6 -mt-14 relative z-10">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 mb-5">
+      <div className="px-4 -mt-12 relative z-10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-3 mb-4">
           {/* Avatar with gradient-border-primex */}
           <div className="relative group gradient-border-primex rounded-2xl">
             <Avatar className="w-28 h-28 border-4 border-background shadow-xl">
@@ -275,10 +275,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Divider */}
-        <div className="divider-primex my-4" />
+        <div className="divider-primex my-3" />
 
         {/* Stats Bar with glass-card-premium */}
-        <div className="glass-card-premium p-4 rounded-xl mb-5 flex items-center justify-around card-shine hover-lift">
+        <div className="glass-card-premium p-3 rounded-xl mb-4 flex items-center justify-around card-shine hover-lift">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center flex-1">
               <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.color}`} />
@@ -295,7 +295,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="glass-card-premium p-5 rounded-xl mb-5 space-y-4 gradient-border-primex"
+              className="glass-card-premium p-4 rounded-xl mb-4 space-y-3 gradient-border-primex"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold flex items-center gap-2">
@@ -324,7 +324,7 @@ export default function ProfilePage() {
         {/* Content Tabs */}
         {!isViewingOther && (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="glass-card w-full h-11 rounded-xl p-1 mb-4">
+          <TabsList className="glass-card w-full h-10 rounded-xl p-1 mb-3">
             <TabsTrigger value="videos" className="rounded-lg flex-1 data-[state=active]:primex-gradient data-[state=active]:text-white data-[state=active]:glow-effect gap-1.5">
               <Film className="w-4 h-4" /> Videos
             </TabsTrigger>

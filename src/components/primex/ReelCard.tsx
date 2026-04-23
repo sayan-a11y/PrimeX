@@ -219,7 +219,7 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
       <div className="video-overlay-gradient" />
 
       {/* Right sidebar actions */}
-      <div className="reel-actions-float">
+      <div className="reel-actions-float" style={{ gap: '8px' }}>
         <button onClick={handleLike} className="flex flex-col items-center gap-1">
           <Heart
             className={`w-7 h-7 transition-all duration-200 ${
@@ -244,8 +244,8 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
 
       {/* Bottom caption with glass-card creator info */}
       <div className="absolute bottom-16 left-3 right-16">
-        <div className="glass-card p-3 rounded-xl">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="glass-card p-2 rounded-xl">
+          <div className="flex items-center gap-1.5 mb-1">
             <button onClick={goToProfile} className="flex items-center gap-2">
               {reel.user.profilePic ? (
                 <img
@@ -271,7 +271,7 @@ export default function ReelCard({ reel, isActive }: ReelCardProps) {
           {/* View Comments Button */}
           <button
             onClick={handleViewComments}
-            className="flex items-center gap-1.5 mt-2 text-white/70 hover:text-white transition-colors text-xs group"
+            className="flex items-center gap-1 mt-1.5 text-white/70 hover:text-white transition-colors text-xs group"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             <span>{commentCount > 0 ? `View ${commentCount} comment${commentCount !== 1 ? 's' : ''}` : 'Add a comment'}</span>

@@ -237,7 +237,7 @@ export default function UploadPage() {
         className="hidden"
         onChange={(e) => handleFileSelect(e, type)}
       />
-      <div className="relative z-10 p-8 text-center">
+      <div className="relative z-10 p-5 text-center">
         {file ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -279,14 +279,14 @@ export default function UploadPage() {
   const displayProgress = uploading ? Math.min(mockProgress, uploadProgress) : uploadProgress;
 
   return (
-    <div className="max-w-2xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative overflow-hidden">
+    <div className="max-w-2xl mx-auto p-4 bg-mesh min-h-screen relative overflow-hidden">
       {/* Decorative orbs */}
       <div className="orb-primex top-20 -left-20 float-slow" />
       <div className="orb-primex-sm bottom-40 -right-16 float-medium" />
       <div className="orb-primex-sm top-1/2 -left-10 opacity-30 float-slow" />
 
       {/* Header */}
-      <div className="relative z-10 mb-6 page-header-premium">
+      <div className="relative z-10 mb-4 page-header-premium">
         <div className="flex items-center gap-3">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -303,9 +303,9 @@ export default function UploadPage() {
       </div>
 
       {/* Upload Card */}
-      <div className="glass-card-premium p-6 rounded-2xl card-shine relative z-10">
+      <div className="glass-card-premium p-4 rounded-2xl card-shine relative z-10">
         {/* Premium Tab Switcher with glass styling & active indicator */}
-        <div className="glass-card p-1.5 rounded-xl w-full mb-6 flex relative">
+        <div className="glass-card p-1.5 rounded-xl w-full mb-4 flex relative">
           {/* Sliding active indicator */}
           <motion.div
             className="absolute top-1.5 bottom-1.5 rounded-lg bg-primex/20 border border-primex/30"
@@ -340,7 +340,7 @@ export default function UploadPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2"
+              className="mb-3 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2"
             >
               <X className="w-4 h-4 shrink-0" />{error}
             </motion.div>
@@ -354,7 +354,7 @@ export default function UploadPage() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="mb-4 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-sm flex items-center gap-2 notification-pop"
+              className="mb-3 p-3 rounded-xl bg-success/10 border border-success/20 text-success text-sm flex items-center gap-2 notification-pop"
             >
               <CheckCircle className="w-4 h-4 shrink-0" />Upload successful!
             </motion.div>
@@ -367,9 +367,9 @@ export default function UploadPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4"
+            className="mb-3"
           >
-            <div className="glass-card-hover p-3 rounded-xl">
+            <div className="glass-card-hover p-2.5 rounded-xl">
               <div className="progress-bar h-2 mb-2">
                 <div
                   className="progress-bar-fill"
@@ -390,14 +390,14 @@ export default function UploadPage() {
           </motion.div>
         )}
 
-        <div className="divider-primex mb-4" />
+        <div className="divider-primex mb-3" />
 
         {/* Long Video Tab */}
         {activeTab === 'video' && (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-3"
           >
             {renderDropZone(videoFile, 'video', setVideoFile)}
             <div>
@@ -465,14 +465,14 @@ export default function UploadPage() {
           </motion.div>
         )}
 
-        <div className="divider-primex my-4" />
+        <div className="divider-primex my-3" />
 
         {/* Reel Tab */}
         {activeTab === 'reel' && (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-3"
           >
             {renderDropZone(reelFile, 'reel', setReelFile)}
             <div>
@@ -503,9 +503,9 @@ export default function UploadPage() {
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-3"
           >
-            <div className="glass-card-hover p-4 rounded-xl gradient-border-primex">
+            <div className="glass-card-hover p-3 rounded-xl gradient-border-primex">
               <div className="flex items-center gap-2 text-primex mb-1">
                 <Lock className="w-4 h-4" />
                 <span className="text-sm font-medium">Friends Only</span>

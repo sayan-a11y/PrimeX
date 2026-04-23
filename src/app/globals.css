@@ -143,7 +143,7 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .glass-card-hover:hover {
@@ -640,11 +640,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
+  padding: 0.5rem 1.25rem;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  border-radius: 12px;
+  border-radius: 10px;
   color: oklch(1 0 0);
   background: linear-gradient(135deg, oklch(0.75 0.18 330), oklch(0.68 0.22 290));
   box-shadow:
@@ -694,11 +694,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
+  padding: 0.5rem 1.25rem;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  border-radius: 12px;
+  border-radius: 10px;
   color: oklch(0.75 0.18 330);
   background: transparent;
   border: 1.5px solid oklch(0.75 0.18 330 / 40%);
@@ -723,11 +723,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
+  padding: 0.5rem 1.25rem;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  border-radius: 12px;
+  border-radius: 10px;
   color: oklch(0.75 0.18 330);
   background: transparent;
   border: none;
@@ -752,7 +752,7 @@
 }
 
 .btn-lg {
-  padding: 0.875rem 2rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
   border-radius: 14px;
 }
@@ -1056,9 +1056,9 @@
   backdrop-filter: blur(40px) saturate(1.4);
   -webkit-backdrop-filter: blur(40px) saturate(1.4);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
+  border-radius: 14px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 6px 24px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
@@ -1067,7 +1067,7 @@
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.35),
+    0 12px 32px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
@@ -1090,7 +1090,7 @@
 .glass-input {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: 8px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1202,10 +1202,10 @@
 .reel-actions-float {
   position: absolute;
   right: 12px;
-  bottom: 100px;
+  bottom: 80px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
   z-index: 10;
 }
@@ -1239,8 +1239,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
@@ -1445,13 +1445,13 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   font-size: 12px;
   font-weight: 500;
   color: oklch(0.75 0.18 330);
   background: oklch(0.75 0.18 330 / 10%);
   border: 1px solid oklch(0.75 0.18 330 / 20%);
-  border-radius: 20px;
+  border-radius: 16px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

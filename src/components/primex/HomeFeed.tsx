@@ -188,17 +188,17 @@ export default function HomeFeed() {
 
   if (loading) {
     return (
-      <div className="p-4 lg:p-6">
+      <div className="p-3 lg:p-4">
         {/* Category skeleton */}
-        <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
+        <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="skeleton-pulse h-9 w-20 rounded-full shrink-0" />
+            <div key={i} className="skeleton-pulse h-8 w-16 rounded-full shrink-0" />
           ))}
         </div>
         {/* Video grid skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-2">
+            <div key={i} className="space-y-1.5">
               <div className="aspect-video shimmer rounded-xl" />
               <div className="flex gap-2">
                 <div className="w-9 h-9 skeleton-pulse skeleton-circle shrink-0" />
@@ -215,34 +215,34 @@ export default function HomeFeed() {
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-3 lg:p-4">
       {/* Stories Bar */}
       <StoriesBar />
 
       {/* Divider */}
-      <div className="divider-primex my-4" />
+      <div className="divider-primex my-3" />
 
       {/* Welcome Banner (only when no videos) */}
       {videos.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card-premium rounded-2xl p-6 lg:p-8 mb-6 gradient-border-primex overflow-hidden relative card-shine bg-mesh"
+          className="glass-card-premium rounded-2xl p-4 mb-4 gradient-border-primex overflow-hidden relative card-shine bg-mesh"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-primex/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-primex-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-1.5 mb-1.5">
               <img src="/primex-logo.png" alt="PrimeX" className="w-5 h-5 object-contain" />
               <span className="text-xs font-medium text-primex uppercase tracking-wider">Welcome to PrimeX</span>
             </div>
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2">
+            <h2 className="text-xl lg:text-2xl font-bold mb-1.5">
               Your Premium <span className="text-shimmer">Video Platform</span>
             </h2>
-            <p className="text-muted-foreground text-sm max-w-lg mb-4">
+            <p className="text-muted-foreground text-sm max-w-lg mb-3">
               Watch long videos, scroll through reels, connect with creators, and share your own content. No subscriptions — just pure entertainment.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               <Button
                 className="btn-primex rounded-xl gap-2 hover-lift"
                 onClick={() => setCurrentView('upload')}
@@ -259,7 +259,7 @@ export default function HomeFeed() {
             </div>
 
             {/* Feature highlights */}
-            <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="grid grid-cols-3 gap-2 mt-4">
               {[
                 { icon: Film, label: 'Long Videos', desc: '4K quality streaming' },
                 { icon: Play, label: 'Short Reels', desc: 'Quick entertainment' },
@@ -281,12 +281,12 @@ export default function HomeFeed() {
       )}
 
       {/* Category Tabs with tag-primex style */}
-      <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2">
+      <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar pb-1">
         {categories.map((cat) => (
           <button
             key={cat.name}
             onClick={() => setSelectedCategory(cat.name)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press hover-lift ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all active-press hover-lift ${
               selectedCategory === cat.name
                 ? 'tag-primex bg-primex/20 text-primex border-primex/40 shadow-lg glow-effect'
                 : 'glass-card text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -303,10 +303,10 @@ export default function HomeFeed() {
 
       {/* Trending Section (when videos exist) */}
       {videos.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold flex items-center gap-2 text-shimmer">
-              <TrendingUp className="w-5 h-5 text-primex" />
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-base font-semibold flex items-center gap-1.5 text-shimmer">
+              <TrendingUp className="w-4 h-4 text-primex" />
               Trending Now
             </h2>
             <Button
@@ -353,15 +353,15 @@ export default function HomeFeed() {
       )}
 
       {/* Divider */}
-      <div className="divider-primex my-4" />
+      <div className="divider-primex my-3" />
 
       {/* Recommended For You Section */}
       {recommendations.length > 0 && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <h2 className="text-lg font-semibold flex items-center gap-2 text-shimmer">
-                <Sparkle className="w-5 h-5 text-primex" />
+              <h2 className="text-base font-semibold flex items-center gap-1.5 text-shimmer">
+                <Sparkle className="w-4 h-4 text-primex" />
                 Recommended For You
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">Based on your watch history</p>
@@ -412,14 +412,14 @@ export default function HomeFeed() {
               </div>
             ))}
           </div>
-          <div className="divider-primex mt-6" />
+          <div className="divider-primex mt-3" />
         </div>
       )}
 
       {/* Recommended Loading Skeleton */}
       {recLoading && (
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="mb-4">
+          <div className="flex items-center gap-1.5 mb-2">
             <div className="skeleton-pulse skeleton-line w-48 h-5" />
           </div>
           <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -433,13 +433,13 @@ export default function HomeFeed() {
               </div>
             ))}
           </div>
-          <div className="divider-primex mt-6" />
+          <div className="divider-primex mt-3" />
         </div>
       )}
 
       {/* Video Grid */}
       {videos.length === 0 ? (
-        <div className="text-center py-8">
+        <div className="text-center py-4">
           <div className="w-16 h-16 mx-auto mb-3 rounded-2xl glass-card-premium flex items-center justify-center hover-lift">
             <Film className="w-7 h-7 text-primex" />
           </div>
@@ -448,11 +448,11 @@ export default function HomeFeed() {
         </div>
       ) : (
         <>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-shimmer">
-            <Clock className="w-5 h-5 text-muted-foreground" />
+          <h2 className="text-base font-semibold mb-2 flex items-center gap-1.5 text-shimmer">
+            <Clock className="w-4 h-4 text-muted-foreground" />
             Latest Videos
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {videos.map((video, i) => (
               <motion.div
                 key={video.id}
@@ -491,8 +491,8 @@ export default function HomeFeed() {
                 </div>
 
                 {/* Info */}
-                <div className="p-3">
-                  <div className="flex gap-2.5">
+                <div className="p-2.5">
+                  <div className="flex gap-2">
                     <Avatar className="w-9 h-9 shrink-0">
                       <AvatarImage src={video.user?.profilePic || ''} />
                       <AvatarFallback className="bg-primex/20 text-primex text-xs font-bold">
@@ -523,11 +523,11 @@ export default function HomeFeed() {
 
       {/* Infinite Scroll Sentinel + Load More Fallback + End State */}
       {videos.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-4">
           {hasMore ? (
             <>
               {/* Intersection Observer sentinel */}
-              <div ref={sentinelRef} className="flex flex-col items-center gap-3 py-4">
+              <div ref={sentinelRef} className="flex flex-col items-center gap-2 py-3">
                 {loadingMore ? (
                   <div className="flex items-center gap-2 text-primex">
                     <div className="spinner-primex" />
@@ -553,8 +553,8 @@ export default function HomeFeed() {
             </>
           ) : (
             <>
-              <div className="divider-primex my-4" />
-              <div className="text-center py-4">
+              <div className="divider-primex my-3" />
+              <div className="text-center py-3">
                 <Sparkles className="w-5 h-5 text-primex mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">You&apos;ve seen it all!</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">

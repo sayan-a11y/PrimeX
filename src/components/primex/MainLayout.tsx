@@ -332,7 +332,7 @@ export default function MainLayout() {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top Navbar */}
       <header className="sticky top-0 z-50 glass-card rounded-none border-b border-border/50">
-        <div className="flex items-center justify-between h-14 px-3 lg:px-6">
+        <div className="flex items-center justify-between h-12 px-3 lg:px-6">
           {/* Left: Logo + Menu */}
           <div className="flex items-center gap-2">
             <Button
@@ -501,21 +501,21 @@ export default function MainLayout() {
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-60 border-r border-border/50 p-3 gap-0.5 overflow-y-auto premium-scrollbar glass-sidebar">
+        <aside className="hidden lg:flex flex-col w-56 border-r border-border/50 p-2 gap-0.5 overflow-y-auto premium-scrollbar glass-sidebar">
           {/* User Card */}
-          <div className="glass-card-premium p-3 rounded-xl mb-3 flex items-center gap-3 cursor-pointer hover-lift card-shine gradient-border-primex transition-all"
+          <div className="glass-card-premium p-2.5 rounded-xl mb-2 flex items-center gap-3 cursor-pointer hover-lift card-shine gradient-border-primex transition-all"
             onClick={() => setCurrentView('profile')}
           >
-            <div className="w-10 h-10 rounded-xl primex-gradient flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center shrink-0">
               {user?.profilePic ? (
-                <Avatar className="w-10 h-10">
+                <Avatar className="w-9 h-9">
                   <AvatarImage src={user.profilePic} />
-                  <AvatarFallback className="bg-transparent text-white text-sm font-bold">
+                  <AvatarFallback className="bg-transparent text-white text-xs font-bold">
                     {user?.username?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <span className="text-white text-sm font-bold">
+                <span className="text-white text-xs font-bold">
                   {user?.username?.[0]?.toUpperCase() || 'U'}
                 </span>
               )}
@@ -527,12 +527,12 @@ export default function MainLayout() {
           </div>
 
           {/* Main Nav */}
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Menu</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-0.5">Menu</p>
           {sidebarItems.slice(0, 6).map((item) => (
             <Button
               key={item.view}
               variant="ghost"
-              className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              className={`justify-start gap-3 h-9 rounded-xl transition-all ${
                 currentView === item.view ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
               onClick={() => setCurrentView(item.view)}
@@ -542,14 +542,14 @@ export default function MainLayout() {
             </Button>
           ))}
 
-          <div className="border-t border-border/50 my-2" />
+          <div className="border-t border-border/50 my-1.5" />
 
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Social</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-0.5">Social</p>
           {sidebarItems.slice(6).map((item) => (
             <Button
               key={item.view}
               variant="ghost"
-              className={`justify-start gap-3 h-10 rounded-xl transition-all relative ${
+              className={`justify-start gap-3 h-9 rounded-xl transition-all relative ${
                 currentView === item.view ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
               onClick={() => setCurrentView(item.view)}
@@ -567,7 +567,7 @@ export default function MainLayout() {
           {/* Watch Later Quick Access */}
           <Button
             variant="ghost"
-            className={`justify-start gap-3 h-10 rounded-xl transition-all relative ${
+            className={`justify-start gap-3 h-9 rounded-xl transition-all relative ${
               currentView === 'playlists' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
             onClick={() => setCurrentView('playlists')}
@@ -587,12 +587,12 @@ export default function MainLayout() {
             )}
           </Button>
 
-          <div className="border-t border-border/50 my-2" />
+          <div className="border-t border-border/50 my-1.5" />
 
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Tools</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-0.5">Tools</p>
           <Button
             variant="ghost"
-            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+            className={`justify-start gap-3 h-9 rounded-xl transition-all ${
               currentView === 'analytics' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
             onClick={() => setCurrentView('analytics')}
@@ -602,7 +602,7 @@ export default function MainLayout() {
           </Button>
           <Button
             variant="ghost"
-            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+            className={`justify-start gap-3 h-9 rounded-xl transition-all ${
               currentView === 'settings' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
             onClick={() => setCurrentView('settings')}
@@ -612,7 +612,7 @@ export default function MainLayout() {
           </Button>
           <Button
             variant="ghost"
-            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+            className={`justify-start gap-3 h-9 rounded-xl transition-all ${
               currentView === 'history' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
             onClick={() => setCurrentView('history')}
@@ -622,7 +622,7 @@ export default function MainLayout() {
           </Button>
           <Button
             variant="ghost"
-            className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+            className={`justify-start gap-3 h-9 rounded-xl transition-all ${
               currentView === 'playlists' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
             }`}
             onClick={() => setCurrentView('playlists')}
@@ -634,7 +634,7 @@ export default function MainLayout() {
           {user?.isCreator && (
             <Button
               variant="ghost"
-              className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              className={`justify-start gap-3 h-9 rounded-xl transition-all ${
                 currentView === 'creator-dashboard' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
               onClick={() => setCurrentView('creator-dashboard')}
@@ -646,7 +646,7 @@ export default function MainLayout() {
           {user?.role === 'admin' && (
             <Button
               variant="ghost"
-              className={`justify-start gap-3 h-10 rounded-xl transition-all ${
+              className={`justify-start gap-3 h-9 rounded-xl transition-all ${
                 currentView === 'admin' ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
               onClick={() => setCurrentView('admin')}
@@ -657,11 +657,11 @@ export default function MainLayout() {
           )}
 
           {/* Sign Out at bottom */}
-          <div className="mt-auto pt-3">
-            <div className="border-t border-border/50 mb-2" />
+          <div className="mt-auto pt-2">
+            <div className="border-t border-border/50 mb-1.5" />
             <Button
               variant="ghost"
-              className="justify-start gap-3 h-10 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/5 w-full"
+              className="justify-start gap-3 h-9 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/5 w-full"
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5" />
@@ -689,7 +689,7 @@ export default function MainLayout() {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden sticky bottom-0 z-40 glass-card rounded-none border-t border-border/50 safe-area-bottom">
-        <div className="flex items-center h-14 px-1 overflow-x-auto no-scrollbar">
+        <div className="flex items-center h-12 px-1 overflow-x-auto no-scrollbar">
           <div className="flex items-center justify-around w-full min-w-0">
             {[
               ...mainNavItems.slice(0, 2),
@@ -737,9 +737,9 @@ export default function MainLayout() {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="absolute left-0 top-0 bottom-0 w-72 bg-background border-r border-border/50"
             >
-              <div className="p-4">
+              <div className="p-3">
                 {/* User Card */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center">
                       <span className="text-white text-lg font-bold">
@@ -762,7 +762,7 @@ export default function MainLayout() {
                     <Button
                       key={item.view}
                       variant="ghost"
-                      className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                      className={`w-full justify-start gap-3 h-9 rounded-xl ${
                         currentView === item.view ? 'bg-primex/10 text-primex' : ''
                       }`}
                       onClick={() => { setCurrentView(item.view); setShowMobileMenu(false); }}
@@ -780,7 +780,7 @@ export default function MainLayout() {
                   {/* Watch Later Quick Access in Mobile Menu */}
                   <Button
                     variant="ghost"
-                    className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    className={`w-full justify-start gap-3 h-9 rounded-xl ${
                       currentView === 'playlists' ? 'bg-primex/10 text-primex' : ''
                     }`}
                     onClick={() => { setCurrentView('playlists'); setShowMobileMenu(false); }}
@@ -799,7 +799,7 @@ export default function MainLayout() {
 
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                  className={`w-full justify-start gap-3 h-9 rounded-xl ${
                     currentView === 'analytics' ? 'bg-primex/10 text-primex' : ''
                   }`}
                   onClick={() => { setCurrentView('analytics'); setShowMobileMenu(false); }}
@@ -810,7 +810,7 @@ export default function MainLayout() {
 
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                  className={`w-full justify-start gap-3 h-9 rounded-xl ${
                     currentView === 'settings' ? 'bg-primex/10 text-primex' : ''
                   }`}
                   onClick={() => { setCurrentView('settings'); setShowMobileMenu(false); }}
@@ -821,7 +821,7 @@ export default function MainLayout() {
 
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                  className={`w-full justify-start gap-3 h-9 rounded-xl ${
                     currentView === 'history' ? 'bg-primex/10 text-primex' : ''
                   }`}
                   onClick={() => { setCurrentView('history'); setShowMobileMenu(false); }}
@@ -832,7 +832,7 @@ export default function MainLayout() {
 
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                  className={`w-full justify-start gap-3 h-9 rounded-xl ${
                     currentView === 'playlists' ? 'bg-primex/10 text-primex' : ''
                   }`}
                   onClick={() => { setCurrentView('playlists'); setShowMobileMenu(false); }}
@@ -844,7 +844,7 @@ export default function MainLayout() {
                 {user?.isCreator && (
                   <Button
                     variant="ghost"
-                    className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    className={`w-full justify-start gap-3 h-9 rounded-xl ${
                       currentView === 'creator-dashboard' ? 'bg-primex/10 text-primex' : ''
                     }`}
                     onClick={() => { setCurrentView('creator-dashboard'); setShowMobileMenu(false); }}
@@ -856,7 +856,7 @@ export default function MainLayout() {
                 {user?.role === 'admin' && (
                   <Button
                     variant="ghost"
-                    className={`w-full justify-start gap-3 h-10 rounded-xl ${
+                    className={`w-full justify-start gap-3 h-9 rounded-xl ${
                       currentView === 'admin' ? 'bg-primex/10 text-primex' : ''
                     }`}
                     onClick={() => { setCurrentView('admin'); setShowMobileMenu(false); }}
@@ -870,7 +870,7 @@ export default function MainLayout() {
 
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-3 h-10 rounded-xl text-red-400 hover:bg-red-500/5"
+                  className="w-full justify-start gap-3 h-9 rounded-xl text-red-400 hover:bg-red-500/5"
                   onClick={handleLogout}
                 >
                   <LogOut className="w-5 h-5" />

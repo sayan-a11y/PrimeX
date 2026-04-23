@@ -106,13 +106,13 @@ export default function ReelsFeed() {
   if (reels.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-4">
-        <div className="w-20 h-20 mb-4 rounded-2xl glass-card-premium flex items-center justify-center hover-lift">
+        <div className="w-20 h-20 mb-3 rounded-2xl glass-card-premium flex items-center justify-center hover-lift">
           <Film className="w-8 h-8 text-primex" />
         </div>
         <h3 className="text-lg font-medium mb-2">No Reels Yet</h3>
-        <p className="text-muted-foreground text-sm mb-4">Be the first to create a reel!</p>
+        <p className="text-muted-foreground text-sm mb-3">Be the first to create a reel!</p>
         <button
-          className="btn-primex rounded-xl gap-2 hover-lift px-6 py-2.5 text-sm font-medium"
+          className="btn-primex rounded-xl gap-2 hover-lift px-4 py-2 text-sm font-medium"
           onClick={() => setCurrentView('upload')}
         >
           <Film className="w-4 h-4" /> Create Reel
@@ -162,7 +162,7 @@ export default function ReelsFeed() {
           <div className="absolute bottom-0 left-0 right-0 h-1/3 video-overlay-gradient pointer-events-none" />
 
           {/* Right side actions */}
-          <div className="absolute right-3 bottom-24 flex flex-col items-center gap-5 reel-actions-float">
+          <div className="absolute right-3 bottom-24 flex flex-col items-center gap-3 reel-actions-float">
             {/* Avatar */}
             <div className="relative">
               <Avatar className="w-11 h-11 border-2 border-white">

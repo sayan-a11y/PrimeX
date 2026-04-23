@@ -683,17 +683,17 @@ export default function VideoPlayer() {
      ────────────────────────────────────────── */
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto p-4 lg:p-6">
-        <Skeleton className="aspect-video rounded-2xl mb-4" />
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="max-w-7xl mx-auto p-3 lg:p-4">
+        <Skeleton className="aspect-video rounded-2xl mb-3" />
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <Skeleton className="h-7 w-3/4 mb-3" />
-            <div className="flex gap-3 mb-4">
+            <div className="flex gap-2 mb-3">
               <Skeleton className="h-9 w-24" />
               <Skeleton className="h-9 w-24" />
               <Skeleton className="h-9 w-24" />
             </div>
-            <Skeleton className="h-20 w-full rounded-xl mb-4" />
+            <Skeleton className="h-20 w-full rounded-xl mb-3" />
             <Skeleton className="h-40 w-full rounded-xl" />
           </div>
           <div className="hidden lg:block w-80 space-y-3">
@@ -709,12 +709,12 @@ export default function VideoPlayer() {
   if (!video) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4 min-h-[60vh]">
-        <div className="glass-card p-8 rounded-2xl text-center">
-          <div className="w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mx-auto mb-4">
+        <div className="glass-card p-4 rounded-2xl text-center">
+          <div className="w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mx-auto mb-3">
             <Play className="w-8 h-8 text-primex" />
           </div>
           <p className="text-lg font-medium mb-2">Video not found</p>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground mb-3">
             This video may have been removed or is unavailable.
           </p>
           <Button
@@ -735,7 +735,7 @@ export default function VideoPlayer() {
      Render: Main
      ────────────────────────────────────────── */
   return (
-    <div className="max-w-7xl mx-auto p-3 sm:p-4 lg:p-6">
+    <div className="max-w-7xl mx-auto p-3 sm:p-4">
       {/* Back button */}
       <Button
         variant="ghost"
@@ -745,7 +745,7 @@ export default function VideoPlayer() {
         <ArrowLeft className="w-4 h-4" /> Back
       </Button>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* ── Left Column: Player + Info + Comments ── */}
         <div className="flex-1 min-w-0">
           {/* ══════════════════════════════════════
@@ -974,14 +974,14 @@ export default function VideoPlayer() {
           {/* ══════════════════════════════════════
               VIDEO INFORMATION SECTION
               ══════════════════════════════════════ */}
-          <div className="mt-4">
+          <div className="mt-3">
             {/* Title */}
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight mb-2">
               {video.title}
             </h1>
 
             {/* Views + Date + Action buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Eye className="w-4 h-4" />
                 <span>{formatViews(video.views)} views</span>
@@ -1102,8 +1102,8 @@ export default function VideoPlayer() {
             {showPlaylistPicker && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPlaylistPicker(false)} />
-                <div className="glass-card-premium w-full max-w-md rounded-2xl p-6 relative z-10">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="glass-card-premium w-full max-w-md rounded-2xl p-4 relative z-10">
+                  <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-bold">Save to Playlist</h3>
                     <button onClick={() => setShowPlaylistPicker(false)} className="p-1 rounded hover:bg-white/10">
                       <X className="w-5 h-5" />
@@ -1111,7 +1111,7 @@ export default function VideoPlayer() {
                   </div>
                   <div className="space-y-2 max-h-80 overflow-y-auto premium-scrollbar">
                     {playlists.length === 0 ? (
-                      <div className="text-center py-6">
+                      <div className="text-center py-3">
                         <p className="text-sm text-muted-foreground mb-3">No playlists yet</p>
                         <Button
                           className="btn-primex btn-sm"
@@ -1176,7 +1176,7 @@ export default function VideoPlayer() {
             )}
 
             {/* Creator info card */}
-            <div className="glass-card p-4 rounded-2xl mb-4 hover-lift">
+            <div className="glass-card p-4 rounded-2xl mb-3 hover-lift">
               <div className="flex items-center gap-3">
                 <Avatar className="w-11 h-11 border-2 border-primex/20">
                   <AvatarImage src={video.user?.profilePic || ''} />
@@ -1263,9 +1263,9 @@ export default function VideoPlayer() {
             {/* ══════════════════════════════════════
                 COMMENTS SECTION
                 ══════════════════════════════════════ */}
-            <div className="glass-card p-4 sm:p-6 rounded-2xl">
+            <div className="glass-card p-3 sm:p-4 rounded-2xl">
               {/* Comments header */}
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 mb-3">
                 <div className="flex items-center gap-2">
                   <MessageCircle className="w-5 h-5 text-primex" />
                   <span className="font-semibold">
@@ -1295,7 +1295,7 @@ export default function VideoPlayer() {
 
               {/* Comment input */}
               {token ? (
-                <div className="flex gap-3 mb-6">
+                <div className="flex gap-2 mb-3">
                   <Avatar className="w-9 h-9 shrink-0">
                     <AvatarImage src={user?.profilePic || ''} />
                     <AvatarFallback className="bg-primex/20 text-primex text-xs">
@@ -1329,7 +1329,7 @@ export default function VideoPlayer() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-4 mb-4 text-sm text-muted-foreground">
+                <div className="text-center py-3 mb-3 text-sm text-muted-foreground">
                   <a className="text-primex hover:underline cursor-pointer" onClick={() => setCurrentView('home')}>
                     Sign in
                   </a>{' '}
@@ -1338,7 +1338,7 @@ export default function VideoPlayer() {
               )}
 
               {/* Comments list */}
-              <div className="space-y-4 max-h-[600px] overflow-y-auto premium-scrollbar">
+              <div className="space-y-3 max-h-[600px] overflow-y-auto premium-scrollbar">
                 {comments.length === 0 ? (
                   <div className="text-center py-8">
                     <MessageCircle className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
@@ -1446,7 +1446,7 @@ export default function VideoPlayer() {
       </div>
 
       {/* ── Mobile Recommended (shown below comments) ── */}
-      <div className="lg:hidden mt-6">
+      <div className="lg:hidden mt-4">
         <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
           <Play className="w-4 h-4 text-primex" /> Up Next
         </h3>
@@ -1550,7 +1550,7 @@ function CommentItem({
           </p>
 
           {/* Comment actions */}
-          <div className="flex items-center gap-3 mt-1.5">
+          <div className="flex items-center gap-2 mt-1.5">
             <button
               className={`flex items-center gap-1 text-xs transition-colors ${
                 isLiked ? 'text-primex' : 'text-muted-foreground hover:text-foreground'

@@ -194,14 +194,14 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
+    <div className="max-w-6xl mx-auto p-4 bg-mesh min-h-screen relative">
       {/* Decorative orbs */}
       <div className="orb-primex-sm absolute top-6 right-16 opacity-20 pointer-events-none" />
       <div className="orb-primex-sm absolute bottom-10 left-8 opacity-15 pointer-events-none" />
       <div className="orb-primex-sm absolute top-1/3 right-6 opacity-10 pointer-events-none float-slow" />
 
       {/* Header */}
-      <div className="bg-mesh rounded-2xl p-6 mb-6 relative overflow-hidden">
+      <div className="bg-mesh rounded-2xl p-4 mb-4 relative overflow-hidden">
         <div className="orb-primex-sm absolute top-2 right-8 opacity-30" />
         <div className="orb-primex-sm absolute bottom-0 left-4 opacity-20" />
         <div className="relative z-10 flex items-center gap-3">
@@ -220,7 +220,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      <div className="tab-bar-premium mb-6 relative z-10">
+      <div className="tab-bar-premium mb-4 relative z-10">
         {[
           { key: 'overview', label: 'Overview', icon: BarChart3 },
           { key: 'users', label: 'Users', icon: Users },
@@ -246,9 +246,9 @@ export default function AdminPanel() {
         <div className="relative z-10">
           {/* Loading state */}
           {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="stat-card-premium p-5 rounded-2xl">
+                <div key={i} className="stat-card-premium p-4 rounded-2xl">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="skeleton-pulse w-9 h-9 rounded-lg" />
                     <div className="skeleton-pulse h-4 w-20 rounded" />
@@ -267,10 +267,10 @@ export default function AdminPanel() {
               variants={staggerContainer}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
             >
               {statCards.map((stat) => (
-                <motion.div key={stat.label} variants={staggerItem} className="stat-card-premium p-5 rounded-2xl">
+                <motion.div key={stat.label} variants={staggerItem} className="stat-card-premium p-4 rounded-2xl">
                   <div className="stat-icon">
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
@@ -302,17 +302,17 @@ export default function AdminPanel() {
             </motion.div>
           )}
 
-          <div className="divider-primex mb-6" />
+          <div className="divider-primex mb-4" />
 
           {/* Activity overview */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <motion.div
               variants={staggerContainer}
               initial="hidden"
               animate="show"
-              className="glass-card-premium p-5 rounded-2xl"
+              className="glass-card-premium p-4 rounded-2xl"
             >
-              <h3 className="font-semibold mb-4 flex items-center gap-2 text-shimmer">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-shimmer">
                 <Activity className="w-4 h-4 text-primex" /> Recent Activity
               </h3>
               <div className="space-y-3">
@@ -342,12 +342,12 @@ export default function AdminPanel() {
               variants={staggerContainer}
               initial="hidden"
               animate="show"
-              className="glass-card-premium p-5 rounded-2xl"
+              className="glass-card-premium p-4 rounded-2xl"
             >
-              <h3 className="font-semibold mb-4 flex items-center gap-2 text-shimmer">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-shimmer">
                 <Eye className="w-4 h-4 text-primex" /> Platform Health
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
                   { label: 'Server Uptime', value: 99.9, color: 'bg-green-400', icon: Server },
                   { label: 'API Response Time', value: 85, color: 'bg-primex', icon: Wifi },
@@ -376,7 +376,7 @@ export default function AdminPanel() {
       {/* Users */}
       {activeTab === 'users' && (
         <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 mb-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -424,7 +424,7 @@ export default function AdminPanel() {
               {filteredUsers.map((u) => (
                 <motion.div key={u.id} variants={staggerItem}>
                   <div
-                    className="interactive-card p-4 rounded-xl cursor-pointer"
+                    className="interactive-card p-3 rounded-xl cursor-pointer"
                     onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
                   >
                     <div className="flex items-center gap-3">
@@ -468,7 +468,7 @@ export default function AdminPanel() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="glass-card-premium p-4 rounded-xl mt-1 ml-6 border-l-2 border-primex/30">
+                        <div className="glass-card-premium p-3 rounded-xl mt-1 ml-6 border-l-2 border-primex/30">
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                             <div>
                               <p className="text-xs text-muted-foreground">Joined</p>
@@ -543,7 +543,7 @@ export default function AdminPanel() {
                 <motion.div
                   key={report.id}
                   variants={staggerItem}
-                  className="interactive-card p-4 rounded-xl"
+                  className="interactive-card p-3 rounded-xl"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -595,7 +595,7 @@ export default function AdminPanel() {
       {/* Content */}
       {activeTab === 'content' && (
         <div className="relative z-10">
-          <div className="divider-primex mb-6" />
+          <div className="divider-primex mb-4" />
 
           {/* Loading state */}
           {loading ? (
@@ -642,7 +642,7 @@ export default function AdminPanel() {
                       <span className="text-xs text-white/70 count-up">{item.views.toLocaleString()}</span>
                     </div>
                   </div>
-                  <div className="p-4">
+                  <div className="p-3">
                     <h4 className="font-medium text-sm truncate">{item.title}</h4>
                     <p className="text-xs text-muted-foreground mt-1">by {item.user.username}</p>
                     <div className="flex items-center justify-between mt-3">
