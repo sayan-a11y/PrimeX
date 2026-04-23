@@ -260,22 +260,33 @@ export default function StoriesBar() {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex gap-3 px-3 py-2 overflow-x-auto no-scrollbar scroll-smooth"
+          className="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth"
+          style={{ padding: '10px 12px' }}
         >
           {/* Your Story (Add) */}
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="flex flex-col items-center gap-1 shrink-0 group"
+            className="flex flex-col items-center justify-center shrink-0 group"
+            style={{ minWidth: '70px' }}
             onClick={() => {
               /* Would open camera/upload */
             }}
           >
-            <div className="relative">
-              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-white/20 group-hover:border-primex/50 transition-colors">
-                <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primex transition-colors" />
-              </div>
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                border: '2px dashed rgba(255,255,255,0.3)',
+              }}
+            >
+              <Plus style={{ fontSize: '22px', color: 'white' }} className="group-hover:text-primex transition-colors" />
             </div>
-            <span className="text-[11px] text-muted-foreground group-hover:text-primex transition-colors">
+            <span
+              className="group-hover:text-primex transition-colors"
+              style={{ marginTop: '6px', fontSize: '12px', textAlign: 'center', color: '#ccc' }}
+            >
               Add
             </span>
           </motion.button>
@@ -285,7 +296,8 @@ export default function StoriesBar() {
             <motion.button
               key={story.id}
               whileTap={{ scale: 0.95 }}
-              className="flex flex-col items-center gap-1 shrink-0 group"
+              className="flex flex-col items-center justify-center shrink-0 group"
+              style={{ minWidth: '70px' }}
               onClick={() => openStory(i)}
             >
               <div className="relative">

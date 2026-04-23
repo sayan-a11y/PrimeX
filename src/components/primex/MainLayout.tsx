@@ -354,7 +354,7 @@ export default function MainLayout() {
               src="/primex-logo.png"
               alt="PrimeX"
               className="block object-contain"
-              style={{ width: 'clamp(90px, 12vw, 160px)', height: 'auto' }}
+              style={{ width: 'clamp(110px, 18vw, 200px)', height: 'auto', maxHeight: '45px' }}
             />
           </div>
 

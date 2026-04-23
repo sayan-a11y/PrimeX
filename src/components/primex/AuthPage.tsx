@@ -110,7 +110,7 @@ export default function AuthPage() {
           transition={{ duration: 0.6 }}
         >
           <div className="flex justify-center mb-5">
-            <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(80px, 15vw, 140px)', height: 'auto', marginBottom: '20px' }} />
+            <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(110px, 18vw, 200px)', height: 'auto', marginBottom: '25px' }} />
           </div>
           <h2 className="text-2xl font-bold mb-2">
             The Future of <span className="text-gradient-animated">Video & Social</span>
@@ -154,7 +154,7 @@ export default function AuthPage() {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200 }}
             >
-              <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(80px, 15vw, 140px)', height: 'auto', marginBottom: '20px' }} />
+              <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(110px, 18vw, 200px)', height: 'auto', marginBottom: '25px' }} />
             </motion.div>
           </div>
 
