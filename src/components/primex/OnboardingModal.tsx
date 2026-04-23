@@ -131,11 +131,11 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
                     {/* Welcome illustration */}
                     <div className="flex justify-center mb-6">
                       <motion.div
-                        className="w-20 h-20 rounded-2xl primex-gradient flex items-center justify-center shadow-lg shadow-primex/30"
+                        className="w-20 h-20 rounded-2xl shadow-lg shadow-primex/30 overflow-hidden"
                         animate={{ scale: [1, 1.05, 1] }}
                         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                       >
-                        <Sparkles className="w-10 h-10 text-white" />
+                        <img src="/primex-logo.png" alt="PrimeX" className="w-full h-full object-contain" />
                       </motion.div>
                     </div>
 

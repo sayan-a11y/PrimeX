@@ -223,14 +223,10 @@ export default function StoriesBar() {
   const [stories, setStories] = useState<StoryItem[]>([]);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // No mock data — in production, fetch stories from API here
-    // e.g. fetch('/api/stories').then(res => res.json()).then(data => setStories(data))
-    setLoading(false);
-  }, []);
+  // No mock data — stories will be populated from API when available
 
   const openStory = (index: number) => {
     setViewerIndex(index);

@@ -347,11 +347,7 @@ export default function MainLayout() {
               className="flex items-center gap-2.5 cursor-pointer group"
               onClick={() => setCurrentView('home')}
             >
-              <div className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center shadow-lg group-hover:shadow-primex/30 transition-shadow">
-                <svg className="w-5 h-5 text-white fill-white" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
+              <img src="/primex-logo.png" alt="PrimeX" className="w-9 h-9 rounded-xl shadow-lg group-hover:shadow-primex/30 transition-shadow object-contain" />
               <span className="text-xl font-bold primex-gradient-text hidden sm:block text-shimmer">PrimeX</span>
             </div>
           </div>

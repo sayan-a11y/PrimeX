@@ -110,11 +110,7 @@ export default function AuthPage() {
           transition={{ duration: 0.6 }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-14 h-14 rounded-2xl primex-gradient flex items-center justify-center glow-effect shadow-xl">
-              <svg className="w-7 h-7 text-white fill-white" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
+            <img src="/primex-logo.png" alt="PrimeX" className="w-14 h-14 rounded-2xl glow-effect shadow-xl object-contain" />
             <h1 className="text-5xl font-bold text-shimmer">PrimeX</h1>
           </div>
           <h2 className="text-2xl font-bold mb-2">
@@ -160,9 +156,7 @@ export default function AuthPage() {
               transition={{ type: 'spring', stiffness: 200 }}
               className="inline-flex items-center gap-3 mb-3"
             >
-              <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
-                <Play className="w-6 h-6 text-white fill-white" />
-              </div>
+              <img src="/primex-logo.png" alt="PrimeX" className="w-12 h-12 rounded-xl glow-effect object-contain" />
               <h1 className="text-4xl font-bold text-shimmer">PrimeX</h1>
             </motion.div>
             <p className="text-gradient-animated text-sm font-medium">

@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   authors: [{ name: "PrimeX Team" }],
   manifest: "/manifest.json",
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
-    apple: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/primex-logo.png",
+    apple: "/primex-logo.png",
   },
   appleWebApp: {
     capable: true,

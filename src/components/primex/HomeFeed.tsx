@@ -264,7 +264,7 @@ export default function HomeFeed() {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-primex-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-primex" />
+              <img src="/primex-logo.png" alt="PrimeX" className="w-5 h-5 object-contain" />
               <span className="text-xs font-medium text-primex uppercase tracking-wider">Welcome to PrimeX</span>
             </div>
             <h2 className="text-2xl lg:text-3xl font-bold mb-2">
