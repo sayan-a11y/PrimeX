@@ -109,9 +109,8 @@ export default function AuthPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <img src="/primex-logo.png" alt="PrimeX" className="w-14 h-14 rounded-2xl glow-effect shadow-xl object-contain" />
-            <h1 className="text-5xl font-bold text-shimmer">PrimeX</h1>
+          <div className="flex justify-center mb-5">
+            <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(80px, 15vw, 140px)', height: 'auto', marginBottom: '20px' }} />
           </div>
           <h2 className="text-2xl font-bold mb-2">
             The Future of <span className="text-gradient-animated">Video & Social</span>
@@ -149,19 +148,14 @@ export default function AuthPage() {
           className="w-full max-w-md"
         >
           {/* Mobile Logo */}
-          <div className="text-center mb-4 lg:hidden">
+          <div className="flex justify-center mb-5 lg:hidden">
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200 }}
-              className="inline-flex items-center gap-3 mb-3"
             >
-              <img src="/primex-logo.png" alt="PrimeX" className="w-12 h-12 rounded-xl glow-effect object-contain" />
-              <h1 className="text-4xl font-bold text-shimmer">PrimeX</h1>
+              <img src="/primex-logo.png" alt="PrimeX" className="object-contain" style={{ width: 'clamp(80px, 15vw, 140px)', height: 'auto', marginBottom: '20px' }} />
             </motion.div>
-            <p className="text-gradient-animated text-sm font-medium">
-              The ultimate video & social platform
-            </p>
           </div>
 
           {/* Auth Card with glass-card-premium and gradient-border-primex */}

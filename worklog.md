@@ -2061,3 +2061,22 @@ Task: Remove empty space above "Upload Content" and fix UI spacing across all co
 | Playlists | ~80px | ~16px |
 | History | ~80px | ~16px |
 | Creator Dashboard | ~96px | ~16px |
+---
+Task ID: 9
+Agent: Main Agent
+Task: Remove "PrimeX" text from Login/Auth page header - show only logo image
+
+Work Log:
+- Copied user-uploaded logo to /public/primex-logo.png (replacing old logo)
+- Edited AuthPage.tsx: Removed "PrimeX" h1 text from desktop left panel (line 112-115)
+- Edited AuthPage.tsx: Removed "PrimeX" h1 text and tagline from mobile logo section (lines 150-165)
+- Replaced both with centered logo-only displays using flex justify-center
+- Applied responsive sizing: width: clamp(80px, 15vw, 140px), height: auto, object-fit: contain
+- Added marginBottom: 20px for spacing below logo
+- Removed text containers entirely from DOM (not hidden)
+
+Stage Summary:
+- Login page now shows only the logo image (no "PrimeX" text) in both desktop and mobile views
+- Logo is centered horizontally with responsive clamp sizing
+- Clean, premium, centered look achieved
+- New uploaded logo file active at /public/primex-logo.png
