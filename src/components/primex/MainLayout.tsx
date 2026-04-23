@@ -529,17 +529,29 @@ export default function MainLayout() {
           {/* Main Nav */}
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-0.5">Menu</p>
           {sidebarItems.slice(0, 6).map((item) => (
-            <Button
-              key={item.view}
-              variant="ghost"
-              className={`justify-start gap-3 h-9 rounded-xl transition-all ${
-                currentView === item.view ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-              }`}
-              onClick={() => setCurrentView(item.view)}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm">{item.label}</span>
-            </Button>
+            item.view === 'upload' ? (
+              <button
+                key={item.view}
+                onClick={() => setCurrentView(item.view)}
+                className="w-full flex items-center gap-3 h-10 rounded-xl transition-all mt-1 mb-1 px-3 primex-gradient text-white font-medium text-sm shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                style={{ boxShadow: '0 4px 16px oklch(0.75 0.18 330 / 30%), 0 0 24px oklch(0.7 0.22 280 / 20%)' }}
+              >
+                <item.icon className="w-5 h-5" />
+                <span>Upload</span>
+              </button>
+            ) : (
+              <Button
+                key={item.view}
+                variant="ghost"
+                className={`justify-start gap-3 h-9 rounded-xl transition-all ${
+                  currentView === item.view ? 'bg-primex/10 text-primex glow-border' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                }`}
+                onClick={() => setCurrentView(item.view)}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="text-sm">{item.label}</span>
+              </Button>
+            )
           ))}
 
           <div className="border-t border-border/50 my-1.5" />
@@ -704,13 +716,13 @@ export default function MainLayout() {
                 }`}
               >
                 {item.view === 'upload' ? (
-                  <div className="w-9 h-9 primex-gradient rounded-xl flex items-center justify-center -mt-3 shadow-lg glow-effect">
+                  <div className="upload-fab">
                     <item.icon className="w-5 h-5 text-white" />
                   </div>
                 ) : (
                   <item.icon className="w-5 h-5" />
                 )}
-                <span className={`text-[10px] ${item.view === 'upload' ? 'mt-0.5' : ''}`}>{item.label}</span>
+                <span className={`text-[10px] ${item.view === 'upload' ? 'mt-1' : ''}`}>{item.label}</span>
                 {currentView === item.view && item.view !== 'upload' && (
                   <div className="absolute -bottom-0.5 w-4 h-0.5 rounded-full bg-primex" />
                 )}

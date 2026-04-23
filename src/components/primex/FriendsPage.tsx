@@ -22,12 +22,12 @@ interface FriendItem {
 
 function EmptyState({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) {
   return (
-    <div className="empty-state-premium py-12">
-      <div className="empty-icon w-16 h-16 rounded-full bg-primex/10 flex items-center justify-center mb-4 breathe">
-        <Icon className="w-8 h-8 text-primex/50" />
+    <div className="py-4 text-center">
+      <div className="w-10 h-10 rounded-full bg-primex/10 flex items-center justify-center mx-auto mb-2">
+        <Icon className="w-5 h-5 text-primex/50" />
       </div>
-      <p className="text-muted-foreground mb-1">{title}</p>
-      <p className="text-sm text-muted-foreground/60">{subtitle}</p>
+      <p className="text-xs text-muted-foreground mb-0.5">{title}</p>
+      <p className="text-[11px] text-muted-foreground/60">{subtitle}</p>
     </div>
   );
 }
@@ -258,25 +258,25 @@ export default function FriendsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pt-4 pb-2 bg-mesh relative overflow-hidden">
+    <div className="max-w-2xl mx-auto px-4 pt-3 pb-2 bg-mesh relative overflow-hidden">
       {/* Header */}
-      <div className="relative z-10 mb-3 page-header-premium">
+      <div className="relative z-10 mb-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+              className="w-8 h-8 rounded-lg bg-primex/10 flex items-center justify-center"
             >
-              <Users className="w-5 h-5 text-primex" />
+              <Users className="w-4 h-4 text-primex" />
             </motion.div>
             <div>
-              <h1 className="text-2xl font-bold text-shimmer">Friends</h1>
-              <p className="text-muted-foreground text-sm mt-0.5">Manage your connections</p>
+              <h1 className="text-lg font-bold text-shimmer">Friends</h1>
+              <p className="text-muted-foreground text-xs">Manage your connections</p>
             </div>
           </div>
           {pendingRequests.length > 0 && (
-            <div className="badge-pulse px-2.5 py-1 text-xs">
+            <div className="badge-pulse px-2 py-0.5 text-[10px]">
               {pendingRequests.length} new
             </div>
           )}
@@ -284,8 +284,8 @@ export default function FriendsPage() {
       </div>
 
       {/* Add Friend */}
-      <div className="relative z-10 mb-3">
-        <div className="glass-card-premium p-3 rounded-xl flex gap-2">
+      <div className="relative z-10 mb-2">
+        <div className="glass-card-premium p-2.5 rounded-xl flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -294,7 +294,7 @@ export default function FriendsPage() {
               value={addFriendUsername}
               onChange={(e) => setAddFriendUsername(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendRequest()}
-              className="glass-input w-full h-9 pl-9 pr-4 text-sm rounded-lg"
+              className="glass-input w-full h-8 pl-9 pr-4 text-xs rounded-lg"
             />
           </div>
           <button
@@ -313,7 +313,7 @@ export default function FriendsPage() {
       </div>
 
       {/* Search */}
-      <div className="relative z-10 mb-3">
+      <div className="relative z-10 mb-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -321,18 +321,18 @@ export default function FriendsPage() {
             placeholder="Search friends..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="glass-input w-full h-10 pl-9 pr-4 text-sm rounded-xl"
+            className="glass-input w-full h-8 pl-9 pr-4 text-xs rounded-lg"
           />
         </div>
       </div>
 
       {/* Tab Bar */}
-      <div className="relative z-10 tab-bar-premium w-full mb-3">
+      <div className="relative z-10 tab-bar-premium w-full mb-2">
         <button
           className={`tab-item flex-1 ${activeTab === 'pending' ? 'active' : ''}`}
           onClick={() => setActiveTab('pending')}
         >
-          <Clock className="w-4 h-4" /> Requests
+          <Clock className="w-3.5 h-3.5" /> Requests
           {pendingRequests.length > 0 && (
             <span className="badge-pulse ml-1 px-1.5 py-0.5 text-[9px]">{pendingRequests.length}</span>
           )}
@@ -341,17 +341,17 @@ export default function FriendsPage() {
           className={`tab-item flex-1 ${activeTab === 'sent' ? 'active' : ''}`}
           onClick={() => setActiveTab('sent')}
         >
-          <UserPlus className="w-4 h-4" /> Sent
+          <UserPlus className="w-3.5 h-3.5" /> Sent
         </button>
         <button
           className={`tab-item flex-1 ${activeTab === 'friends' ? 'active' : ''}`}
           onClick={() => setActiveTab('friends')}
         >
-          <Sparkles className="w-4 h-4" /> Friends
+          <Sparkles className="w-3.5 h-3.5" /> Friends
         </button>
       </div>
 
-      <div className="divider-primex relative z-10 mb-3" />
+      <div className="divider-primex relative z-10 mb-2" />
 
       {loading ? (
         <div className="relative z-10 space-y-2">
