@@ -279,31 +279,26 @@ export default function UploadPage() {
   const displayProgress = uploading ? Math.min(mockProgress, uploadProgress) : uploadProgress;
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-mesh min-h-screen relative overflow-hidden">
-      {/* Decorative orbs */}
-      <div className="orb-primex top-20 -left-20 float-slow" />
-      <div className="orb-primex-sm bottom-40 -right-16 float-medium" />
-      <div className="orb-primex-sm top-1/2 -left-10 opacity-30 float-slow" />
-
+    <div className="max-w-2xl mx-auto px-4 pt-4 pb-4 bg-mesh relative overflow-hidden">
       {/* Header */}
-      <div className="relative z-10 mb-4 page-header-premium">
-        <div className="flex items-center gap-3">
+      <div className="relative z-10 mb-3">
+        <div className="flex items-center gap-2">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-10 h-10 rounded-xl bg-primex/10 flex items-center justify-center"
+            className="w-8 h-8 rounded-lg bg-primex/10 flex items-center justify-center"
           >
-            <Upload className="w-5 h-5 text-primex" />
+            <Upload className="w-4 h-4 text-primex" />
           </motion.div>
           <div>
-            <h1 className="text-2xl font-bold text-shimmer">Upload Content</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">Share your videos, reels, or private content</p>
+            <h1 className="text-lg font-bold text-shimmer">Upload Content</h1>
+            <p className="text-muted-foreground text-xs">Share your videos, reels, or private content</p>
           </div>
         </div>
       </div>
 
       {/* Upload Card */}
-      <div className="glass-card-premium p-4 rounded-2xl card-shine relative z-10">
+      <div className="glass-card-premium p-3 rounded-xl card-shine relative z-10">
         {/* Premium Tab Switcher with glass styling & active indicator */}
         <div className="glass-card p-1.5 rounded-xl w-full mb-4 flex relative">
           {/* Sliding active indicator */}

@@ -1654,8 +1654,8 @@
 /* Standardized page header */
 .page-header-premium {
   position: relative;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .page-header-premium::after {
@@ -1931,8 +1931,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.5rem 0 1rem;
+  gap: 0.25rem;
+  padding: 0.5rem 0 0.5rem;
 }
 
 .page-header-premium::before {

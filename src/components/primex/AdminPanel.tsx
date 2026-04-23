@@ -194,16 +194,9 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-mesh min-h-screen relative">
-      {/* Decorative orbs */}
-      <div className="orb-primex-sm absolute top-6 right-16 opacity-20 pointer-events-none" />
-      <div className="orb-primex-sm absolute bottom-10 left-8 opacity-15 pointer-events-none" />
-      <div className="orb-primex-sm absolute top-1/3 right-6 opacity-10 pointer-events-none float-slow" />
-
+    <div className="max-w-6xl mx-auto px-4 pt-4 pb-2 bg-mesh relative">
       {/* Header */}
-      <div className="bg-mesh rounded-2xl p-4 mb-4 relative overflow-hidden">
-        <div className="orb-primex-sm absolute top-2 right-8 opacity-30" />
-        <div className="orb-primex-sm absolute bottom-0 left-4 opacity-20" />
+      <div className="bg-mesh rounded-2xl p-4 mb-3 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
             <Shield className="w-6 h-6 text-white" />

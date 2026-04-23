@@ -211,14 +211,9 @@ export default function CreatorDashboard() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 lg:p-6 bg-mesh min-h-screen relative">
-      {/* Decorative orbs */}
-      <div className="orb-primex-sm absolute top-10 right-10 opacity-20 pointer-events-none" />
-      <div className="orb-primex-sm absolute bottom-20 left-5 opacity-15 pointer-events-none" />
-      <div className="orb-primex-sm absolute top-1/2 right-8 opacity-10 pointer-events-none float-slow" />
-
+    <div className="max-w-6xl mx-auto px-4 pt-4 pb-2 lg:px-6 lg:pt-4 lg:pb-4 bg-mesh relative">
       {/* Header */}
-      <div className="relative z-10 mb-6">
+      <div className="relative z-10 mb-3">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
             <DollarSign className="w-6 h-6 text-white" />

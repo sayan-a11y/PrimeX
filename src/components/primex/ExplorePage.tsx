@@ -93,14 +93,9 @@ export default function ExplorePage() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 bg-mesh min-h-screen relative">
-      {/* Decorative orbs */}
-      <div className="orb-primex-sm absolute top-4 right-12 opacity-20 pointer-events-none" />
-      <div className="orb-primex-sm absolute bottom-20 left-6 opacity-15 pointer-events-none" />
-      <div className="orb-primex-sm absolute top-1/2 right-4 opacity-10 pointer-events-none float-slow" />
-
+    <div className="max-w-5xl mx-auto px-4 pt-4 pb-2 bg-mesh relative">
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-3 mb-4">
+      <div className="relative z-10 flex items-center gap-3 mb-3">
         <div className="w-12 h-12 rounded-xl primex-gradient flex items-center justify-center glow-effect">
           <Compass className="w-6 h-6 text-white" />
         </div>

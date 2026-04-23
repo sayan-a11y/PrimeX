@@ -1982,3 +1982,82 @@ Applied global compact spacing rules to the MainLayout component:
 - Lint: ✅ 0 errors, 0 warnings
 - All spacing values now within the 8-16px padding, 8-12px gap, 16-24px section gap guidelines
 - Layout remains aligned, compact, and content-focused
+
+---
+Task ID: 1
+Agent: subagent
+Task: Remove min-h-screen from content pages
+
+Work Log:
+- CreatorDashboard.tsx: Removed `min-h-screen`, changed `p-4 lg:p-6` to `px-4 pt-4 pb-2 lg:px-6 lg:pt-4 lg:pb-4`, removed 3 decorative orb-primex-sm divs, reduced header `mb-6` to `mb-3`
+- AdminPanel.tsx: Removed `min-h-screen`, changed `p-4` to `px-4 pt-4 pb-2`, removed 3 outer decorative orb-primex-sm divs + 2 inner header orb divs, reduced header `mb-4` to `mb-3`
+- PlaylistsPage.tsx: Removed `min-h-screen` from all 4 container divs (loading, detail, empty, main), changed `p-4` to `px-4 pt-4 pb-2` on all 4, removed 5 decorative orb-primex-sm divs across states, reduced page-header-premium `mb-4` to `mb-3` where applicable
+- AnalyticsPage.tsx: Removed `min-h-screen`, changed `p-4` to `px-4 pt-4 pb-2`, removed 5 decorative orb/orb-primex-sm divs (including orb-primex with float-slow), reduced page-header-premium `mb-4` to `mb-3`
+- FriendsPage.tsx: Removed `min-h-screen`, changed `p-4` to `px-4 pt-4 pb-2`, removed 2 decorative orb-primex-sm divs, reduced page-header-premium `mb-4` to `mb-3`
+- ExplorePage.tsx: Removed `min-h-screen`, changed `p-4` to `px-4 pt-4 pb-2`, removed 3 decorative orb-primex-sm divs (including float-slow), reduced header `mb-4` to `mb-3`
+- WatchHistoryPage.tsx: Removed `min-h-screen` from all 3 container divs (loading, empty, main), changed `p-4` to `px-4 pt-4 pb-2` on all 3, removed 3 decorative orb-primex-sm divs, reduced page-header-premium `mb-4` to `mb-3` where applicable
+
+Stage Summary:
+- Removed min-h-screen from 7 component files (11 total container divs across all files)
+- Changed padding from uniform p-4 to explicit px-4 pt-4 pb-2 to eliminate excessive top padding
+- Removed all decorative orb-primex divs from content pages (visual noise)
+- Reduced header margins from mb-4/mb-6 to mb-3 for tighter spacing
+- Did NOT touch AuthPage.tsx, MainLayout.tsx, or SettingsPage.tsx (they need min-h-screen)
+- Verified: no remaining min-h-screen or orb-primex references in the 7 modified files
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: Remove empty space above "Upload Content" and fix UI spacing across all content pages
+
+## Work Completed
+
+### UploadPage.tsx (Primary Fix)
+- Removed `min-h-screen` from outer container — was forcing full viewport height
+- Removed 3 decorative orb divs (`orb-primex`, `orb-primex-sm`) — visual noise
+- Changed `p-4` to `px-4 pt-4 pb-4` — explicit padding, no excessive top spacing
+- Removed `page-header-premium` class from header — was adding 1.5rem top padding + 1.5rem bottom margin
+- Compact header: icon `w-10 h-10` → `w-8 h-8`, title `text-2xl` → `text-lg`, subtitle `text-sm` → `text-xs`
+- Header margin: `mb-4` → `mb-3`
+- Card padding: `p-4 rounded-2xl` → `p-3 rounded-xl`
+
+### globals.css — page-header-premium class
+- First definition: `padding-bottom: 1rem; margin-bottom: 1.5rem` → `padding-bottom: 0.5rem; margin-bottom: 0.75rem`
+- Second definition: `gap: 0.5rem; padding: 1.5rem 0 1rem` → `gap: 0.25rem; padding: 0.5rem 0 0.5rem`
+
+### globals.css — empty-state-premium class
+- First definition: `padding: 5rem 1rem` → `padding: 1.5rem 1rem`
+- Second definition: `gap: 1rem; padding: 3rem 1.5rem` → `gap: 0.5rem; padding: 1.5rem 1rem`
+- `.empty-icon`: `width/height: 64px` → `48px`
+
+### All Content Pages — Removed min-h-screen + Decorative Orbs
+- CreatorDashboard.tsx: Removed `min-h-screen`, changed padding, removed 3 orbs, header `mb-6` → `mb-3`
+- AdminPanel.tsx: Removed `min-h-screen`, changed padding, removed 5 orbs, header `mb-4` → `mb-3`
+- PlaylistsPage.tsx: Removed `min-h-screen` from all 4 containers, changed padding, removed 5 orbs
+- AnalyticsPage.tsx: Removed `min-h-screen`, changed padding, removed 5 orbs, header `mb-4` → `mb-3`
+- FriendsPage.tsx: Removed `min-h-screen`, changed padding, removed 2 orbs, header `mb-4` → `mb-3`
+- ExplorePage.tsx: Removed `min-h-screen`, changed padding, removed 3 orbs, header `mb-4` → `mb-3`
+- WatchHistoryPage.tsx: Removed `min-h-screen` from all 3 containers, changed padding, removed 3 orbs
+
+### Preserved (NOT changed)
+- AuthPage.tsx — needs `min-h-screen` for centered login
+- MainLayout.tsx — needs `min-h-screen` for flex layout
+- SettingsPage.tsx — needs `min-h-screen` for full-page settings
+
+## Verification Results
+- Upload page: Header starts at 16px from top (pt-4), compact 44px header, 12px gap to card
+- Live section: Verified compact with "Live Now" + viewers + "Go Live" in one row
+- Dev server: ✅ No compilation errors
+- Lint: No new errors
+
+## Key Metrics
+| Page | Top Spacing Before | Top Spacing After |
+|------|-------------------|-------------------|
+| Upload | ~80px (min-h-screen + orbs + page-header-premium) | ~16px (pt-4 only) |
+| Explore | ~80px | ~16px |
+| Friends | ~80px | ~16px |
+| Analytics | ~80px | ~16px |
+| Admin | ~80px | ~16px |
+| Playlists | ~80px | ~16px |
+| History | ~80px | ~16px |
+| Creator Dashboard | ~96px | ~16px |

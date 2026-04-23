@@ -248,9 +248,8 @@ export default function PlaylistsPage() {
 
   if (loading) {
     return (
-      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
-        <div className="orb-primex-sm top-10 -right-16 opacity-40" />
-        <div className="relative z-10 flex items-center justify-between mb-4">
+      <div className="px-4 pt-4 pb-2 max-w-5xl mx-auto bg-mesh relative overflow-hidden">
+        <div className="relative z-10 flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="skeleton-circle w-10 h-10 skeleton-pulse" />
             <div className="skeleton-heading w-36 h-7 skeleton-pulse" />
@@ -276,8 +275,7 @@ export default function PlaylistsPage() {
   // Playlist Detail View
   if (activePlaylist) {
     return (
-      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
-        <div className="orb-primex-sm top-20 -right-16 opacity-30" />
+      <div className="px-4 pt-4 pb-2 max-w-5xl mx-auto bg-mesh relative overflow-hidden">
         <button
           className="btn-ghost-primex mb-3 gap-2 text-muted-foreground hover:text-foreground relative z-10"
           onClick={() => setActivePlaylist(null)}
@@ -413,10 +411,8 @@ export default function PlaylistsPage() {
   // Empty State
   if (playlists.length === 0 && !showCreateModal) {
     return (
-      <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
-        <div className="orb-primex-sm top-20 -right-16 opacity-40" />
-        <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
-        <div className="relative z-10 mb-4 page-header-premium">
+      <div className="px-4 pt-4 pb-2 max-w-5xl mx-auto bg-mesh relative overflow-hidden">
+        <div className="relative z-10 mb-3 page-header-premium">
           <div className="flex items-center gap-3">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -463,13 +459,9 @@ export default function PlaylistsPage() {
 
   // Main Playlists Grid
   return (
-    <div className="p-4 max-w-5xl mx-auto bg-mesh min-h-screen relative overflow-hidden">
-      {/* Decorative orbs */}
-      <div className="orb-primex-sm top-10 -right-16 opacity-40" />
-      <div className="orb-primex-sm bottom-20 -left-10 opacity-30" />
-
+    <div className="px-4 pt-4 pb-2 max-w-5xl mx-auto bg-mesh relative overflow-hidden">
       {/* Header */}
-      <div className="relative z-10 mb-4 page-header-premium">
+      <div className="relative z-10 mb-3 page-header-premium">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <motion.div
