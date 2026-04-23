@@ -333,8 +333,8 @@ export default function MainLayout() {
       {/* Top Navbar */}
       <header className="sticky top-0 z-50 glass-card rounded-none border-b border-border/50">
         <div className="flex items-center justify-between h-12 px-3 lg:px-6">
-          {/* Left: Logo + Menu */}
-          <div className="flex items-center gap-2">
+          {/* Left: Menu (mobile) */}
+          <div className="flex items-center shrink-0">
             <Button
               variant="ghost"
               size="icon"
@@ -343,66 +343,74 @@ export default function MainLayout() {
             >
               <Menu className="w-5 h-5" />
             </Button>
-            <div
-              className="flex items-center gap-2.5 cursor-pointer group"
-              onClick={() => setCurrentView('home')}
-            >
-              <img src="/primex-logo.png" alt="PrimeX" className="w-9 h-9 rounded-xl shadow-lg group-hover:shadow-primex/30 transition-shadow object-contain" />
-              <span className="text-xl font-bold primex-gradient-text hidden sm:block text-shimmer">PrimeX</span>
-            </div>
           </div>
 
-          {/* Center: Search with dropdown */}
-          <div className="flex-1 max-w-lg mx-4 hidden md:block relative">
-            <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={localSearchQuery}
-                onChange={(e) => setLocalSearchQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => {
-                  // Delay to allow click on dropdown items
-                  setTimeout(() => setSearchFocused(false), 200);
-                }}
-                placeholder="Search videos, users, tags..."
-                className="pl-10 bg-muted/50 border-border/50 h-10 rounded-xl focus:ring-primex/50 transition-all"
-              />
-              {localSearchQuery && (
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setLocalSearchQuery('')}
-                >
-                  <XCircle className="w-4 h-4" />
-                </button>
-              )}
-            </form>
-            {/* Search Dropdown */}
-            <AnimatePresence>
-              {searchFocused && !localSearchQuery && (
-                <SearchDropdown
-                  show={searchFocused && !localSearchQuery}
-                  onSelect={handleSearchSelect}
-                  onRemoveRecent={handleRemoveRecentSearch}
-                />
-              )}
-            </AnimatePresence>
+          {/* Center: Logo only */}
+          <div
+            className="flex items-center justify-center cursor-pointer"
+            onClick={() => setCurrentView('home')}
+          >
+            <img
+              src="/primex-logo.png"
+              alt="PrimeX"
+              className="block object-contain"
+              style={{ width: 'clamp(90px, 12vw, 160px)', height: 'auto' }}
+            />
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex items-center gap-1.5">
+          {/* Right: Search (mobile) */}
+          <div className="flex items-center shrink-0 md:hidden">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden h-9 w-9"
+              className="h-9 w-9"
               onClick={() => setShowSearch(!showSearch)}
             >
               <Search className="w-5 h-5" />
             </Button>
+          </div>
+
+          {/* Desktop: Search + Actions (right side) */}
+          <div className="hidden md:flex items-center gap-1.5 flex-1 justify-end max-w-lg ml-4 relative">
+            <div className="flex-1 relative">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => {
+                    setTimeout(() => setSearchFocused(false), 200);
+                  }}
+                  placeholder="Search videos, users, tags..."
+                  className="pl-10 bg-muted/50 border-border/50 h-10 rounded-xl focus:ring-primex/50 transition-all"
+                />
+                {localSearchQuery && (
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setLocalSearchQuery('')}
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                )}
+              </form>
+              {/* Search Dropdown */}
+              <AnimatePresence>
+                {searchFocused && !localSearchQuery && (
+                  <SearchDropdown
+                    show={searchFocused && !localSearchQuery}
+                    onSelect={handleSearchSelect}
+                    onRemoveRecent={handleRemoveRecentSearch}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+
             <Button
               variant="ghost"
               size="icon"
-              className="relative h-9 w-9"
+              className="relative h-9 w-9 shrink-0"
               onClick={() => setCurrentView('notifications')}
             >
               <Bell className="w-5 h-5" />
@@ -419,13 +427,13 @@ export default function MainLayout() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 relative"
+              className="h-9 w-9 relative shrink-0"
               onClick={() => setCurrentView('friends')}
             >
               <Users className="w-5 h-5" />
             </Button>
             <div
-              className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity ml-1"
+              className="w-9 h-9 rounded-xl primex-gradient flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity shrink-0"
               onClick={() => setCurrentView('profile')}
             >
               {user?.profilePic ? (
