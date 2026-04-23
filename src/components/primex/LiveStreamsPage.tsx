@@ -68,7 +68,7 @@ function getGradientForStream(index: number): string {
 /* ── Live Badge Component ──────────────────────────────────── */
 function LiveBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-red-500 text-white text-[10px] font-bold uppercase tracking-wider">
+    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-red-500 text-white text-[9px] font-bold uppercase tracking-wider">
       <span className="relative flex h-1.5 w-1.5">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
@@ -85,40 +85,40 @@ function FeaturedStream({ stream }: { stream: LiveStream }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative rounded-2xl overflow-hidden glass-card-premium hover-lift card-shine cursor-pointer group"
+      className="relative rounded-xl overflow-hidden glass-card-premium hover-lift card-shine cursor-pointer group"
     >
       {/* Thumbnail / Gradient Background */}
       <div className={`relative aspect-[21/9] bg-gradient-to-br ${getGradientForStream(0)}`}>
         {/* Red shimmer border */}
-        <div className="absolute inset-0 rounded-2xl border-2 border-red-500/40 animate-pulse" />
+        <div className="absolute inset-0 rounded-xl border-2 border-red-500/40 animate-pulse" />
 
         {/* Video overlay gradient */}
         <div className="video-overlay-gradient absolute inset-0" />
 
         {/* Content overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-4">
-          <div className="flex items-center gap-3 mb-3">
+        <div className="absolute inset-0 flex flex-col justify-end p-3">
+          <div className="flex items-center gap-2 mb-2">
             <LiveBadge />
-            <span className="flex items-center gap-1 text-white/90 text-sm">
-              <Eye className="w-4 h-4" />
+            <span className="flex items-center gap-1 text-white/90 text-xs">
+              <Eye className="w-3 h-3" />
               {formatViewers(stream.viewers)}
             </span>
-            <span className="text-white/60 text-xs">{stream.startedAt}</span>
+            <span className="text-white/60 text-[10px]">{stream.startedAt}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 line-clamp-2">
+          <h2 className="text-base sm:text-lg font-bold text-white mb-1.5 line-clamp-2">
             {stream.streamTitle}
           </h2>
           <div className="flex items-center gap-2">
             <div className="gradient-border-primex rounded-full p-0.5">
-              <Avatar className="w-10 h-10">
-                <AvatarFallback className="bg-primex/20 text-primex font-bold text-sm">
+              <Avatar className="w-8 h-8">
+                <AvatarFallback className="bg-primex/20 text-primex font-bold text-xs">
                   {stream.streamerName[0]}
                 </AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <p className="text-white font-medium text-sm">{stream.streamerName}</p>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border ${getCategoryColor(stream.category)}`}>
+              <p className="text-white font-medium text-xs">{stream.streamerName}</p>
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium border ${getCategoryColor(stream.category)}`}>
                 {CATEGORIES.find((c) => c.id === stream.category)?.label || stream.category}
               </span>
             </div>
@@ -127,8 +127,8 @@ function FeaturedStream({ stream }: { stream: LiveStream }) {
 
         {/* Play button on hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Video className="w-8 h-8 text-white" />
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <Video className="w-7 h-7 text-white" />
           </div>
         </div>
       </div>
@@ -154,44 +154,44 @@ function StreamCard({ stream, index }: { stream: LiveStream; index: number }) {
         <div className="video-overlay-gradient absolute inset-0" />
 
         {/* LIVE badge */}
-        <div className="absolute top-2.5 left-2.5 z-10">
+        <div className="absolute top-2 left-2 z-10">
           <LiveBadge />
         </div>
 
         {/* Viewer count */}
-        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-xs">
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[10px]">
           <Eye className="w-3 h-3" />
           {formatViewers(stream.viewers)}
         </div>
 
         {/* Play button on hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Video className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <Video className="w-5 h-5 text-white" />
           </div>
         </div>
       </div>
 
       {/* Info */}
-      <div className="p-3">
+      <div className="p-2.5">
         <div className="flex gap-2">
           {/* Avatar */}
           <div className="gradient-border-primex rounded-full p-0.5 shrink-0">
-            <Avatar className="w-9 h-9">
-              <AvatarFallback className="bg-primex/20 text-primex font-bold text-xs">
+            <Avatar className="w-8 h-8">
+              <AvatarFallback className="bg-primex/20 text-primex font-bold text-[10px]">
                 {stream.streamerName[0]}
               </AvatarFallback>
             </Avatar>
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="font-medium text-sm text-foreground truncate">{stream.streamerName}</p>
-            <p className="text-xs text-foreground/80 line-clamp-2 mt-0.5 leading-relaxed">{stream.streamTitle}</p>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${getCategoryColor(stream.category)}`}>
+            <p className="font-medium text-xs text-foreground truncate">{stream.streamerName}</p>
+            <p className="text-[11px] text-foreground/80 line-clamp-2 mt-0.5 leading-relaxed">{stream.streamTitle}</p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium border ${getCategoryColor(stream.category)}`}>
                 {CATEGORIES.find((c) => c.id === stream.category)?.label || stream.category}
               </span>
-              <span className="text-[10px] text-muted-foreground">{stream.startedAt}</span>
+              <span className="text-[9px] text-muted-foreground">{stream.startedAt}</span>
             </div>
           </div>
         </div>
@@ -212,33 +212,29 @@ export default function LiveStreamsPage() {
   const featuredStream = STREAMS.length > 0 ? [...STREAMS].sort((a, b) => b.viewers - a.viewers)[0] : null;
 
   return (
-    <div className="relative min-h-screen bg-mesh">
-      {/* Decorative orbs */}
-      <div className="orb-primex-sm top-20 left-10 float-slow" />
-      <div className="orb-primex-sm bottom-40 right-20 float-slow" style={{ animationDelay: '2s' }} />
-
-      <div className="relative z-10 p-4 max-w-7xl mx-auto">
-        {/* Header */}
+    <div className="relative bg-mesh">
+      <div className="relative z-10 px-4 pt-3 pb-2 max-w-7xl mx-auto">
+        {/* Header — single compact row: Live Now + viewers + Go Live */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4"
+          className="flex items-center justify-between gap-2 mb-2"
         >
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative flex items-center gap-1.5 shrink-0">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
               </span>
-              <h1 className="text-2xl sm:text-3xl font-bold text-shimmer">Live Now</h1>
+              <h1 className="text-lg font-bold text-shimmer">Live Now</h1>
             </div>
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Users className="w-4 h-4" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Users className="w-3.5 h-3.5" />
               <span>{formatViewers(totalViewers)} watching</span>
             </div>
           </div>
-          <button className="btn-primex flex items-center gap-2 text-sm">
-            <Radio className="w-4 h-4" />
+          <button className="btn-primex flex items-center gap-1.5 text-xs px-3 py-1.5 shrink-0">
+            <Radio className="w-3.5 h-3.5" />
             Go Live
           </button>
         </motion.div>
@@ -248,9 +244,9 @@ export default function LiveStreamsPage() {
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-4"
+          className="mb-2"
         >
-          <div className="tab-bar-premium inline-flex items-center gap-1 p-1 rounded-xl overflow-x-auto max-w-full no-scrollbar">
+          <div className="tab-bar-premium inline-flex items-center gap-0.5 p-0.5 rounded-lg overflow-x-auto max-w-full no-scrollbar">
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.id;
@@ -260,13 +256,13 @@ export default function LiveStreamsPage() {
                   onClick={() => {
                     setActiveCategory(cat.id);
                   }}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all whitespace-nowrap ${
                     isActive
                       ? 'bg-primex text-white shadow-lg shadow-primex/20'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3 h-3" />
                   {cat.label}
                 </button>
               );
@@ -277,25 +273,25 @@ export default function LiveStreamsPage() {
         {/* Content */}
         <AnimatePresence mode="wait">
           {filteredStreams.length === 0 ? (
-            /* Empty State */
+            /* Empty State — compact */
             <motion.div
               key="empty"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="empty-state-premium"
+              className="py-4"
             >
-              <div className="glass-card-premium rounded-2xl p-4 text-center max-w-md mx-auto">
-                <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3">
-                  <Radio className="w-10 h-10 text-red-400" />
+              <div className="glass-card-premium rounded-xl p-3 text-center max-w-xs mx-auto">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-2">
+                  <Radio className="w-5 h-5 text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No one is live right now</h3>
-                <p className="text-sm text-muted-foreground mb-3">
+                <h3 className="text-sm font-semibold mb-1">No one is live right now</h3>
+                <p className="text-xs text-muted-foreground mb-2">
                   Check back soon or be the first to go live!
                 </p>
                 <button
                   onClick={() => setActiveCategory('all')}
-                  className="btn-outline-primex text-sm"
+                  className="btn-outline-primex text-xs"
                 >
                   Browse All Categories
                 </button>
@@ -310,24 +306,24 @@ export default function LiveStreamsPage() {
             >
               {/* Featured Stream */}
               {activeCategory === 'all' && featuredStream && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <ChevronRight className="w-4 h-4 text-primex" />
-                    <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Featured Stream</h2>
+                <div className="mb-3">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <ChevronRight className="w-3.5 h-3.5 text-primex" />
+                    <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Featured Stream</h2>
                   </div>
                   <FeaturedStream stream={featuredStream} />
                 </div>
               )}
 
               {/* Stream Grid */}
-              <div className="flex items-center gap-2 mb-3">
-                <ChevronRight className="w-4 h-4 text-primex" />
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 mb-2">
+                <ChevronRight className="w-3.5 h-3.5 text-primex" />
+                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {activeCategory === 'all'
                     ? 'All Live Streams'
                     : `${CATEGORIES.find((c) => c.id === activeCategory)?.label} Streams`}
                 </h2>
-                <span className="text-xs text-muted-foreground/60 ml-1">
+                <span className="text-[10px] text-muted-foreground/60 ml-0.5">
                   ({filteredStreams.length})
                 </span>
               </div>
