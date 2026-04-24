@@ -12,7 +12,11 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['https://alpha.vercel.app', 'http://localhost:3000'],
+  origin: [
+    'https://alpha.vercel.app', 
+    'http://localhost:3000',
+    /\.vercel\.app$/ // Allow all vercel.app subdomains
+  ],
   credentials: true
 }));
 

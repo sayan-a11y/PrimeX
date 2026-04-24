@@ -51,7 +51,8 @@ export default function AuthPage() {
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch {
+    } catch (error) {
+      console.error('API error:', error);
       setError('Network error. Please try again.');
     }
     setLoading(false);
@@ -85,7 +86,8 @@ export default function AuthPage() {
       } else {
         setError(data.error || 'Registration failed');
       }
-    } catch {
+    } catch (error) {
+      console.error('API error:', error);
       setError('Network error. Please try again.');
     }
     setLoading(false);
