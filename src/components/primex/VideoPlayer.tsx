@@ -36,8 +36,11 @@ import {
   UserCheck,
   ArrowLeft,
   X,
+  FastForward,
+  Rewind,
 } from 'lucide-react';
 import ShareModal from './ShareModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /* ────────────────────────────────────────────
    Types
@@ -164,6 +167,12 @@ export default function VideoPlayer() {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverX, setHoverX] = useState(0);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Seek states
+  const [seekFeedback, setSeekFeedback] = useState<{ type: 'forward' | 'rewind', amount: number } | null>(null);
+  const seekTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastInteractionRef = useRef<{ time: number; zone: 'left' | 'center' | 'right' | null }>({ time: 0, zone: null });
+  const tapCountRef = useRef(0);
 
   // Comments state
   const [comments, setComments] = useState<CommentData[]>([]);
@@ -669,13 +678,63 @@ export default function VideoPlayer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  /* ── Double-click to like ────────────────── */
-  const lastTapRef = useRef(0);
-  const handleVideoDoubleClick = () => {
-    if (!liked) {
-      handleLike();
+  const handleInteraction = (e: React.MouseEvent<HTMLDivElement>) => {
+    const vid = videoRef.current;
+    if (!vid) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    
+    // Divide into zones: Left (30%), Center (40%), Right (30%)
+    let zone: 'left' | 'center' | 'right' = 'center';
+    if (x < width * 0.3) zone = 'left';
+    else if (x > width * 0.7) zone = 'right';
+
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+
+    if (lastInteractionRef.current.zone === zone && now - lastInteractionRef.current.time < DOUBLE_TAP_DELAY) {
+      // Double/Multi Tap detected
+      if (zone === 'left') {
+        tapCountRef.current += 1;
+        const seekAmount = tapCountRef.current * 10;
+        vid.currentTime = Math.max(0, vid.currentTime - 10);
+        setSeekFeedback({ type: 'rewind', amount: seekAmount });
+        if (seekTimeoutRef.current) clearTimeout(seekTimeoutRef.current);
+        seekTimeoutRef.current = setTimeout(() => {
+          setSeekFeedback(null);
+          tapCountRef.current = 0;
+        }, 800);
+      } else if (zone === 'right') {
+        tapCountRef.current += 1;
+        const seekAmount = tapCountRef.current * 10;
+        vid.currentTime = Math.min(vid.duration, vid.currentTime + 10);
+        setSeekFeedback({ type: 'forward', amount: seekAmount });
+        if (seekTimeoutRef.current) clearTimeout(seekTimeoutRef.current);
+        seekTimeoutRef.current = setTimeout(() => {
+          setSeekFeedback(null);
+          tapCountRef.current = 0;
+        }, 800);
+      } else {
+        // Double tap center
+        if (!liked) handleLike();
+        handleHeartBurst();
+      }
+      lastInteractionRef.current = { time: now, zone };
+    } else {
+      // Single Tap
+      lastInteractionRef.current = { time: now, zone };
+      
+      // Delay single tap action to allow for double tap detection
+      setTimeout(() => {
+        if (Date.now() - lastInteractionRef.current.time >= 280) {
+          if (zone === 'center') {
+            togglePlay();
+          }
+        }
+      }, DOUBLE_TAP_DELAY);
     }
-    handleHeartBurst();
   };
 
   /* ──────────────────────────────────────────
@@ -756,26 +815,37 @@ export default function VideoPlayer() {
             className="relative aspect-video bg-black rounded-2xl overflow-hidden group cursor-pointer select-none"
             onMouseMove={resetControlsTimeout}
             onMouseLeave={() => isPlaying && setShowControls(false)}
-            onClick={(e) => {
-              // Detect double-click on desktop
-              const now = Date.now();
-              if (now - lastTapRef.current < 300) {
-                handleVideoDoubleClick();
-              } else {
-                lastTapRef.current = now;
-                // Single click toggles play on mobile tap
-                setTimeout(() => {
-                  if (Date.now() - lastTapRef.current >= 280) {
-                    togglePlay();
-                  }
-                }, 300);
-              }
-            }}
-            onDoubleClick={(e) => {
-              e.preventDefault();
-              // Already handled by click double-tap detection
-            }}
+            onClick={handleInteraction}
           >
+            {/* SEEK FEEDBACK OVERLAYS */}
+            <AnimatePresence>
+               {seekFeedback?.type === 'rewind' && (
+                 <motion.div 
+                   initial={{ opacity: 0, x: -20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="absolute left-0 inset-y-0 w-1/3 flex items-center justify-center bg-white/10 backdrop-blur-sm z-40 pointer-events-none"
+                 >
+                    <div className="flex flex-col items-center gap-2">
+                       <Rewind size={48} className="text-white fill-white" />
+                       <span className="text-white font-black text-xl drop-shadow-lg">{seekFeedback.amount}s</span>
+                    </div>
+                 </motion.div>
+               )}
+               {seekFeedback?.type === 'forward' && (
+                 <motion.div 
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: 20 }}
+                   className="absolute right-0 inset-y-0 w-1/3 flex items-center justify-center bg-white/10 backdrop-blur-sm z-40 pointer-events-none"
+                 >
+                    <div className="flex flex-col items-center gap-2">
+                       <FastForward size={48} className="text-white fill-white" />
+                       <span className="text-white font-black text-xl drop-shadow-lg">{seekFeedback.amount}s</span>
+                    </div>
+                 </motion.div>
+               )}
+            </AnimatePresence>
             {/* Video element */}
             <video
               ref={videoRef}

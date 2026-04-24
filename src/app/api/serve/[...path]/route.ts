@@ -3,7 +3,7 @@ import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-const DOWNLOAD_DIR = '/home/z/my-project/download';
+const DOWNLOAD_DIR = join(process.cwd(), 'uploads');
 
 export async function GET(
   request: NextRequest,
