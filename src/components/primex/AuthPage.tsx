@@ -10,6 +10,7 @@ import {
   Eye, EyeOff, Play, Shield, Zap, Users, Film,
   Heart, MessageCircle, Crown, Star
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const features = [
   { icon: Film, title: 'Long Videos', desc: '4K quality streaming with adaptive bitrate' },
@@ -34,6 +35,7 @@ export default function AuthPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const { login } = useAppStore();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +50,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (data.success) {
         login(data.data.user, data.data.accessToken);
+        router.push('/');
       } else {
         setError(data.error || 'Login failed');
       }
@@ -83,6 +86,7 @@ export default function AuthPage() {
       const data = await res.json();
       if (data.success) {
         login(data.data.user, data.data.accessToken);
+        router.push('/');
       } else {
         setError(data.error || 'Registration failed');
       }

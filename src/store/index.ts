@@ -90,6 +90,8 @@ export const useAppStore = create<AppState>((set) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('primex_token', token);
       localStorage.setItem('primex_user', JSON.stringify(user));
+      // Set cookie for server-side awareness and extra persistence
+      document.cookie = `accessToken=${token}; path=/; max-age=604800; SameSite=Strict`;
     }
     set({ user, token, isAuthenticated: true });
   },
@@ -97,6 +99,7 @@ export const useAppStore = create<AppState>((set) => ({
     if (typeof window !== 'undefined') {
       localStorage.removeItem('primex_token');
       localStorage.removeItem('primex_user');
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
     set({ user: null, token: null, isAuthenticated: false, currentView: 'home' });
   },

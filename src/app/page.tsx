@@ -13,36 +13,47 @@ export default function Home() {
   // Check for existing session on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('primex_token');
+      let token = localStorage.getItem('primex_token');
       const userStr = localStorage.getItem('primex_user');
 
-      if (token && userStr) {
+      // Fallback to cookie if localStorage is empty
+      if (!token) {
+        const cookieToken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('accessToken='))
+          ?.split('=')[1];
+        if (cookieToken) token = cookieToken;
+      }
+
+      if (token) {
         try {
           // Verify token is still valid
-          const res = await fetch('/api/auth/me', {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
           if (data.success) {
             login(data.data.user, token);
           } else {
-            // Token expired, try refresh
+            // Token expired
             localStorage.removeItem('primex_token');
             localStorage.removeItem('primex_user');
+            document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         } catch {
-          // Network error, use cached data
-          try {
-            const user = JSON.parse(userStr);
-            setUser(user);
-            setToken(token);
-          } catch {}
+          // Network error, use cached data if available
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              login(user, token);
+            } catch {}
+          }
         }
       }
       setInitializing(false);
     };
     checkAuth();
-  }, [login, setUser, setToken]);
+  }, [login]);
 
   // Global 401 interceptor - auto-logout on expired tokens
   useEffect(() => {

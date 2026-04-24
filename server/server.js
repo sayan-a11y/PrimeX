@@ -125,6 +125,43 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// GET /api/auth/me
+app.get('/api/auth/me', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ success: false, error: 'Your account has been suspended' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Auth me error:', error);
+    res.status(401).json({ success: false, error: 'Invalid token' });
+  }
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.send('PrimeX Backend API is running...');
