@@ -71,6 +71,10 @@ interface AppState {
   // Onboarding
   showOnboarding: boolean;
   setShowOnboarding: (show: boolean) => void;
+
+  // Theme
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -132,4 +136,15 @@ export const useAppStore = create<AppState>((set) => ({
   // Onboarding
   showOnboarding: false,
   setShowOnboarding: (showOnboarding) => set({ showOnboarding }),
+
+  // Theme
+  theme: 'dark',
+  setTheme: (theme) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', theme);
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    }
+    set({ theme });
+  },
 }));

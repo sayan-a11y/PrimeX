@@ -37,6 +37,7 @@ import {
   ArrowLeft,
   X,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ShareModal from './ShareModal';
 
 /* ────────────────────────────────────────────
@@ -197,6 +198,33 @@ export default function VideoPlayer() {
 
   // Watch history recording
   const historyRecordedRef = useRef(false);
+
+  // Seek gesture state
+  const [seekOverlay, setSeekOverlay] = useState<{ type: 'left' | 'right'; count: number } | null>(null);
+  const seekTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const tapCountRef = useRef(0);
+
+  const handleSeekGesture = (side: 'left' | 'right') => {
+    const vid = videoRef.current;
+    if (!vid) return;
+
+    tapCountRef.current += 1;
+    const seekAmount = 10;
+    
+    if (side === 'left') {
+      vid.currentTime = Math.max(0, vid.currentTime - seekAmount);
+      setSeekOverlay({ type: 'left', count: tapCountRef.current * seekAmount });
+    } else {
+      vid.currentTime = Math.min(vid.duration, vid.currentTime + seekAmount);
+      setSeekOverlay({ type: 'right', count: tapCountRef.current * seekAmount });
+    }
+
+    if (seekTimeoutRef.current) clearTimeout(seekTimeoutRef.current);
+    seekTimeoutRef.current = setTimeout(() => {
+      setSeekOverlay(null);
+      tapCountRef.current = 0;
+    }, 800);
+  };
 
   /* ── Check friend status ─────────────────── */
   const checkFriendStatus = useCallback(
@@ -757,24 +785,39 @@ export default function VideoPlayer() {
             onMouseMove={resetControlsTimeout}
             onMouseLeave={() => isPlaying && setShowControls(false)}
             onClick={(e) => {
-              // Detect double-click on desktop
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const width = rect.width;
+              
+              let zone: 'left' | 'center' | 'right' = 'center';
+              if (x < width * 0.3) zone = 'left';
+              else if (x > width * 0.7) zone = 'right';
+
               const now = Date.now();
               if (now - lastTapRef.current < 300) {
-                handleVideoDoubleClick();
+                // Double Tap Detection
+                if (zone === 'left') {
+                  handleSeekGesture('left');
+                } else if (zone === 'right') {
+                  handleSeekGesture('right');
+                } else {
+                  handleVideoDoubleClick(); // Double tap center = Like
+                }
+                // We don't reset lastTapRef to 0 here to allow triple/quadruple taps
+                lastTapRef.current = now;
               } else {
                 lastTapRef.current = now;
-                // Single click toggles play on mobile tap
-                setTimeout(() => {
-                  if (Date.now() - lastTapRef.current >= 280) {
-                    togglePlay();
-                  }
-                }, 300);
+                // Single tap logic
+                if (zone === 'center') {
+                  setTimeout(() => {
+                    if (Date.now() - lastTapRef.current >= 280) {
+                      togglePlay();
+                    }
+                  }, 300);
+                }
               }
             }}
-            onDoubleClick={(e) => {
-              e.preventDefault();
-              // Already handled by click double-tap detection
-            }}
+            onDoubleClick={(e) => e.preventDefault()}
           >
             {/* Video element */}
             <video
@@ -789,7 +832,41 @@ export default function VideoPlayer() {
               playsInline
             />
 
-            {/* Heart burst on double-click */}
+            {/* Seek Feedback Overlays */}
+            <AnimatePresence>
+              {seekOverlay && (
+                <motion.div
+                  key={seekOverlay.type}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`absolute top-0 bottom-0 w-[30%] z-40 flex flex-col items-center justify-center pointer-events-none ${
+                    seekOverlay.type === 'left' ? 'left-0 rounded-r-full' : 'right-0 rounded-l-full'
+                  }`}
+                  style={{
+                    background: seekOverlay.type === 'left' 
+                      ? 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)' 
+                      : 'linear-gradient(to left, rgba(255,255,255,0.08), transparent)'
+                  }}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-md border border-white/10">
+                      {seekOverlay.type === 'left' ? (
+                        <span className="text-2xl">⏪</span>
+                      ) : (
+                        <span className="text-2xl">⏩</span>
+                      )}
+                    </div>
+                    <span className="text-white font-bold text-sm drop-shadow-md bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm border border-white/5">
+                      {seekOverlay.count}s
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Heart burst on double-click center */}
             {heartBurst && (
               <div className="like-heart-burst absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
                 <Heart className="w-24 h-24 text-red-500 fill-red-500 drop-shadow-lg" />

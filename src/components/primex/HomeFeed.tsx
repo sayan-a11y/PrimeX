@@ -219,67 +219,6 @@ export default function HomeFeed() {
       {/* Stories Bar */}
       <StoriesBar />
 
-      {/* Divider */}
-      <div className="divider-primex my-3" />
-
-      {/* Welcome Banner (only when no videos) */}
-      {videos.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card-premium rounded-2xl p-4 mb-4 gradient-border-primex overflow-hidden relative card-shine bg-mesh"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primex/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-primex-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <img src="/primex-logo.png" alt="PrimeX" className="w-5 h-5 object-contain" />
-              <span className="text-xs font-medium text-primex uppercase tracking-wider">Welcome to PrimeX</span>
-            </div>
-            <h2 className="text-xl lg:text-2xl font-bold mb-1.5">
-              Your Premium <span className="text-shimmer">Video Platform</span>
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-lg mb-3">
-              Watch long videos, scroll through reels, connect with creators, and share your own content. No subscriptions — just pure entertainment.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                className="btn-primex rounded-xl gap-2 hover-lift"
-                onClick={() => setCurrentView('upload')}
-              >
-                <Film className="w-4 h-4" /> Upload Your First Video
-              </Button>
-              <Button
-                variant="outline"
-                className="btn-outline-primex rounded-xl gap-2"
-                onClick={() => setCurrentView('explore')}
-              >
-                <Compass className="w-4 h-4" /> Explore Content
-              </Button>
-            </div>
-
-            {/* Feature highlights */}
-            <div className="grid grid-cols-3 gap-2 mt-4">
-              {[
-                { icon: Film, label: 'Long Videos', desc: '4K quality streaming' },
-                { icon: Play, label: 'Short Reels', desc: 'Quick entertainment' },
-                { icon: Heart, label: 'Private Content', desc: 'Friends-only access' },
-              ].map(f => (
-                <div key={f.label} className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primex/10 flex items-center justify-center shrink-0">
-                    <f.icon className="w-4 h-4 text-primex" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium">{f.label}</p>
-                    <p className="text-[10px] text-muted-foreground">{f.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
       {/* Category Tabs with tag-primex style */}
       <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar pb-1">
         {categories.map((cat) => (
