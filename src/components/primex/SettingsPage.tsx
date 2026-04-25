@@ -43,7 +43,7 @@ function loadSavedSettings() {
 }
 
 export default function SettingsPage() {
-  const { user, setTheme } = useAppStore();
+  const { user } = useAppStore();
 
   // Load persisted settings once via lazy initializer
   const [saved] = useState(loadSavedSettings);
@@ -67,7 +67,6 @@ export default function SettingsPage() {
   const [accentColor, setAccentColor] = useState<AccentColor>(saved.accentColor || 'primex');
   const [compactMode, setCompactMode] = useState(saved.compactMode ?? false);
   const [animations, setAnimations] = useState(saved.animations ?? true);
-  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark'>(saved.theme || 'dark');
 
   // Notifications state
   const [pushNotifications, setPushNotifications] = useState(saved.pushNotifications ?? true);
@@ -121,10 +120,8 @@ export default function SettingsPage() {
       defaultVideoQuality,
       showMatureContent,
       storageUsed,
-      theme: selectedTheme,
     };
     localStorage.setItem('primex_settings', JSON.stringify(settings));
-    setTheme(selectedTheme);
     showToast('Settings saved successfully!');
   };
 
@@ -589,57 +586,20 @@ export default function SettingsPage() {
             <Card className="glass-card hover-lift border-border/50">
               <CardHeader className={`${cardPadding} pb-0`}>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Monitor className="w-5 h-5 text-primex" />
-                  Appearance Theme
+                  <Moon className="w-5 h-5 text-primex" />
+                  Theme
                 </CardTitle>
               </CardHeader>
               <CardContent className={`${cardPadding}`}>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <Label className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Select Theme</Label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => setSelectedTheme('light')}
-                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
-                          selectedTheme === 'light'
-                            ? 'border-primex bg-primex/5 text-primex shadow-[0_0_15px_rgba(139,92,246,0.1)]'
-                            : 'border-border/50 bg-white/5 text-muted-foreground hover:bg-white/10'
-                        }`}
-                      >
-                        <div className={`p-2 rounded-lg ${selectedTheme === 'light' ? 'bg-primex text-white' : 'bg-muted text-muted-foreground'}`}>
-                          <Palette className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col items-start">
-                          <span className="text-sm font-bold">Light Mode</span>
-                          <span className="text-[10px] opacity-60">Clean & Bright</span>
-                        </div>
-                        {selectedTheme === 'light' && <Check className="w-4 h-4 ml-auto" />}
-                      </button>
-
-                      <button
-                        onClick={() => setSelectedTheme('dark')}
-                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
-                          selectedTheme === 'dark'
-                            ? 'border-primex bg-primex/5 text-primex shadow-[0_0_15px_rgba(139,92,246,0.1)]'
-                            : 'border-border/50 bg-white/5 text-muted-foreground hover:bg-white/10'
-                        }`}
-                      >
-                        <div className={`p-2 rounded-lg ${selectedTheme === 'dark' ? 'bg-primex text-white' : 'bg-muted text-muted-foreground'}`}>
-                          <Moon className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col items-start">
-                          <span className="text-sm font-bold">Dark Mode</span>
-                          <span className="text-[10px] opacity-60">Sleek & Premium</span>
-                        </div>
-                        {selectedTheme === 'dark' && <Check className="w-4 h-4 ml-auto" />}
-                      </button>
-                    </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Dark Mode</p>
+                    <p className="text-xs text-muted-foreground">PrimeX is optimized for dark theme</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-primex/5 border border-primex/10 flex items-start gap-3">
-                    <Shield className="w-4 h-4 text-primex shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Theme changes will be applied globally across the entire application once you click <span className="text-primex font-bold">Save Changes</span>.
-                    </p>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primex/10 border border-primex/20">
+                    <Moon className="w-4 h-4 text-primex" />
+                    <span className="text-sm font-medium text-primex">Dark</span>
+                    <Lock className="w-3 h-3 text-primex/50" />
                   </div>
                 </div>
               </CardContent>

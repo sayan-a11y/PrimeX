@@ -71,10 +71,6 @@ interface AppState {
   // Onboarding
   showOnboarding: boolean;
   setShowOnboarding: (show: boolean) => void;
-
-  // Theme
-  theme: 'light' | 'dark';
-  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -94,6 +90,8 @@ export const useAppStore = create<AppState>((set) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('primex_token', token);
       localStorage.setItem('primex_user', JSON.stringify(user));
+      // Set cookie for server-side awareness and extra persistence
+      document.cookie = `accessToken=${token}; path=/; max-age=604800; SameSite=Strict`;
     }
     set({ user, token, isAuthenticated: true });
   },
@@ -101,6 +99,7 @@ export const useAppStore = create<AppState>((set) => ({
     if (typeof window !== 'undefined') {
       localStorage.removeItem('primex_token');
       localStorage.removeItem('primex_user');
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
     set({ user: null, token: null, isAuthenticated: false, currentView: 'home' });
   },
@@ -136,15 +135,4 @@ export const useAppStore = create<AppState>((set) => ({
   // Onboarding
   showOnboarding: false,
   setShowOnboarding: (showOnboarding) => set({ showOnboarding }),
-
-  // Theme
-  theme: 'dark',
-  setTheme: (theme) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', theme);
-      if (theme === 'dark') document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
-    }
-    set({ theme });
-  },
 }));

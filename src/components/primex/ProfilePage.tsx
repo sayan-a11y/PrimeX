@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore, type User } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,6 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [editBio, setEditBio] = useState('');
   const [activeTab, setActiveTab] = useState('videos');
-  const [updatingPic, setUpdatingPic] = useState(false);
-  const profileInputRef = useRef<HTMLInputElement>(null);
 
   // Determine if viewing own or other's profile
   const isViewingOther = !!(viewingUserId && viewingUserId !== user?.id);
@@ -83,48 +81,6 @@ export default function ProfilePage() {
         setEditing(false);
       }
     } catch {}
-  };
-
-  const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !token) return;
-
-    setUpdatingPic(true);
-    try {
-      // 1. Upload file
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload?type=profile', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      const uploadData = await res.json();
-      if (!uploadData.success) throw new Error(uploadData.error);
-      
-      const imageUrl = uploadData.data.url;
-
-      // 2. Update profile
-      const updateRes = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ profilePic: imageUrl }),
-      });
-      const updateData = await updateRes.json();
-      
-      if (updateData.success) {
-        setProfile(prev => prev ? { ...prev, profilePic: imageUrl } : null);
-        // Sync global store
-        useAppStore.setState({ user: { ...user, profilePic: imageUrl } as User });
-      }
-    } catch (err) {
-      console.error('Profile upload error:', err);
-    } finally {
-      setUpdatingPic(false);
-    }
   };
 
   const formatCount = (n: number) => {
@@ -225,25 +181,10 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             {!isViewingOther && (
-              <button
-                className="absolute bottom-1 right-1 w-9 h-9 rounded-full primex-gradient flex items-center justify-center border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity active-press"
-                onClick={() => profileInputRef.current?.click()}
-                disabled={updatingPic}
-              >
-                {updatingPic ? (
-                  <div className="spinner-primex-sm" />
-                ) : (
-                  <Camera className="w-4 h-4 text-white" />
-                )}
+              <button className="absolute bottom-1 right-1 w-9 h-9 rounded-full primex-gradient flex items-center justify-center border-2 border-background shadow-lg opacity-0 group-hover:opacity-100 transition-opacity active-press">
+                <Camera className="w-4 h-4 text-white" />
               </button>
             )}
-            <input
-              type="file"
-              ref={profileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleProfilePicUpload}
-            />
             {/* Online indicator */}
             <div className="absolute bottom-2 left-2 w-4 h-4 rounded-full bg-green-500 border-2 border-background badge-dot-pulse" />
           </div>

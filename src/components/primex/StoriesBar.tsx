@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /* ── Types ────────────────────────────────────────────────── */
 interface StoryItem {
@@ -254,8 +254,6 @@ export default function StoriesBar() {
     );
   }
 
-  if (stories.length === 0) return null;
-
   return (
     <>
       {/* Stories Bar */}
@@ -265,6 +263,33 @@ export default function StoriesBar() {
           className="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth"
           style={{ padding: '10px 12px' }}
         >
+          {/* Your Story (Add) */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            className="flex flex-col items-center justify-center shrink-0 group"
+            style={{ minWidth: '70px' }}
+            onClick={() => {
+              /* Would open camera/upload */
+            }}
+          >
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                border: '2px dashed rgba(255,255,255,0.3)',
+              }}
+            >
+              <Plus style={{ fontSize: '22px', color: 'white' }} className="group-hover:text-primex transition-colors" />
+            </div>
+            <span
+              className="group-hover:text-primex transition-colors"
+              style={{ marginTop: '6px', fontSize: '12px', textAlign: 'center', color: '#ccc' }}
+            >
+              Add
+            </span>
+          </motion.button>
 
           {/* Story Items */}
           {stories.length > 0 && stories.map((story, i) => (
